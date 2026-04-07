@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import ConnectButton from "@/components/ConnectButton";
 
 const links = [
@@ -13,6 +14,7 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <nav style={{ 
       background: "rgba(255,255,255,0.9)", 
@@ -41,7 +43,7 @@ export default function Navbar() {
           gap:8,
           flex: 1,
           justifyContent: "center",
-        }} className="nav-links">
+        }} className="hide-mobile">
           {links.map((l) => (
             <Link key={l.href} href={l.href}
               style={{ padding:"8px 0", margin:"0 12px", fontSize:11, fontWeight:800, letterSpacing:"0.08em", textTransform:"uppercase", textDecoration:"none", transition:"all 0.1s", whiteSpace:"nowrap",
@@ -52,10 +54,35 @@ export default function Navbar() {
           ))}
         </div>
 
-        <div style={{ flexShrink:0 }}>
-          <ConnectButton />
+        <div style={{ flexShrink:0, display:"flex", alignItems:"center", gap:12 }}>
+          <div className="hide-mobile">
+            <ConnectButton />
+          </div>
+          
+          <button className="show-mobile" onClick={() => setMenuOpen(!menuOpen)} style={{ background:"transparent", border:"none", fontSize:24, cursor:"pointer", color:"#000", padding:"0 8px" }}>
+            {menuOpen ? "✕" : "☰"}
+          </button>
         </div>
       </div>
+
+      {/* MOBILE MENU OVERLAY */}
+      {menuOpen && (
+        <div className="show-mobile" style={{ 
+          position:"fixed", top:64, left:0, right:0, bottom:0, background:"#fff", zIndex:40, 
+          display:"flex", flexDirection:"column", padding:24, overflowY:"auto" 
+        }}>
+          <div style={{ display:"flex", flexDirection:"column", gap:24, marginBottom:40 }}>
+            {links.map((l) => (
+              <Link key={l.href} href={l.href} onClick={() => setMenuOpen(false)}
+                style={{ fontSize:20, fontWeight:900, textTransform:"uppercase", textDecoration:"none", paddingBottom:12, borderBottom:"1px solid #f0f1f4",
+                  color: pathname === l.href ? "#000" : "#5a6478" }}>
+                {l.label}
+              </Link>
+            ))}
+          </div>
+          <ConnectButton />
+        </div>
+      )}
     </nav>
   );
 }

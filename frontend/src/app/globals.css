@@ -54,6 +54,17 @@ h1, h2, h3, h4, h5, h6 {
 @media (max-width: 1024px) { .container-app { padding: 0 40px; } }
 @media (max-width: 768px)  { .container-app { padding: 0 20px; } }
 
+/* ── Responsive Mobile Classes ── */
+@media (max-width: 768px) {
+  .mobile-flex-col {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  .mobile-flex-col > * {
+    width: 100% !important;
+  }
+}
+
 /* ── Premium Aesthetic Utilities ── */
 .pixel-border {
   border: 2px solid var(--black);

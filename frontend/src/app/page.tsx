@@ -144,7 +144,7 @@ export default function HomePage() {
 
       {/* ── COLLECTION PREVIEW ────────────────────────────────────────────────── */}
       <section className="container-app" style={{ padding:"80px 20px" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:32 }}>
+        <div className="mobile-flex-col" style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:32, gap:16 }}>
           <div>
             <div style={{ fontSize:10, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8 }}>COLLECTION PREVIEW</div>
             <h2 style={{ fontSize:36, fontWeight:800, textTransform:"uppercase" }}>4,699 PIXEL CATS</h2>
@@ -274,7 +274,7 @@ export default function HomePage() {
 
       {/* ── FOOTER CTA ────────────────────────────────────────────────────────── */}
       <section style={{ background:"#0a0f14", color:"#fff", padding:"100px 20px", borderTop:"1px solid #1a1a1a" }}>
-        <div className="container-app" style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:40 }}>
+        <div className="container-app mobile-flex-col" style={{ display:"flex", justifyContent:"space-between", alignItems:"center", gap:40 }}>
           <div>
             <h2 style={{ fontSize:32, fontWeight:800, marginBottom:16 }}>READY TO MINT?</h2>
             <div style={{ fontSize:11, color:"#5a6478", letterSpacing:"0.1em", fontWeight:700 }}>

@@ -191,7 +191,7 @@ function MarketplaceContent() {
       </div>
 
       {/* ── MAIN CONTENT ── */}
-      <div className="container-app" style={{ display:"flex", minHeight:"60vh" }}>
+      <div className="container-app mobile-flex-col" style={{ display:"flex", minHeight:"60vh" }}>
         
         {tab === "listings" && (
           <>

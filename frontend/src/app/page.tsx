@@ -1,9 +1,10 @@
 "use client";
 import Link from "next/link";
 import Image from "next/image";
-import { useReadContract } from "wagmi";
+import dynamic from "next/dynamic";
 import { CONTRACTS, MAX_SUPPLY, MINT_PRICE } from "@/lib/config";
-import { NFT_ABI } from "@/lib/abis";
+
+const MintProgress = dynamic(() => import("@/components/MintProgress"), { ssr: false });
 
 const HERO_SAMPLES = [50, 100, 200, 300, 500, 700, 900, 1200];
 const GRID_SAMPLES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1500, 2000, 2500, 3000];
@@ -63,13 +64,6 @@ function PixelCat({ size = 220 }: { size?: number }) {
 }
 
 export default function HomePage() {
-  const { data: totalSupply } = useReadContract({
-    address: CONTRACTS.NFT, abi: NFT_ABI, functionName: "totalSupply",
-  });
-  const minted    = totalSupply ? Number(totalSupply) : 0;
-  const remaining = MAX_SUPPLY - minted;
-  const progress  = (minted / MAX_SUPPLY) * 100;
-
   return (
     <div style={{ background:"#ffffff", minHeight:"100vh", paddingTop:56 }}>
 
@@ -105,15 +99,7 @@ export default function HomePage() {
               </Link>
             </div>
 
-            <div style={{ maxWidth:400 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", fontSize:10, fontWeight:700, color:"#9aa0ae", letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:6 }}>
-                <span>{minted.toLocaleString()} / {MAX_SUPPLY.toLocaleString()} minted</span>
-                <span style={{ color:"#0f1419" }}>{Math.round(progress)}%</span>
-              </div>
-              <div style={{ height:4, background:"#e0e3ea" }}>
-                <div style={{ width:`${progress}%`, height:"100%", background:"#0f1419", transition:"width 0.6s" }} />
-              </div>
-            </div>
+            <MintProgress />
           </div>
 
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:20, flexShrink:0 }}>
@@ -135,8 +121,8 @@ export default function HomePage() {
           {[
             { label:"Total Supply",  value:"4,699" },
             { label:"Mint Price",    value:`τ ${MINT_PRICE}` },
-            { label:"Minted",        value: minted.toLocaleString() },
-            { label:"Remaining",     value: remaining.toLocaleString() },
+            { label:"Minted",        value: "—" },
+            { label:"Remaining",     value: "—" },
             { label:"Chain",         value:"Bittensor EVM" },
             { label:"Team Tokens",   value:"Zero" },
             { label:"Whitelist",     value:"None" },

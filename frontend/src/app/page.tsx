@@ -214,16 +214,14 @@ export default function HomePage() {
           <div style={{ fontSize:10, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:12 }}>ON-CHAIN RARITY</div>
           <h2 style={{ fontSize:32, fontWeight:800 }}>5 RARITY TIERS</h2>
         </div>
-        <div className="responsive-grid grid-cols-5" style={{ gap:12 }}>
+        <div className="responsive-grid grid-cols-5" style={{ gap:4 }}>
           {TIERS.map(t => (
-            <div key={t.name} style={{ border:`2px solid ${t.color}`, padding:"24px", background:"#fff", display:"flex", flexDirection:"column", minHeight:"240px" }}>
-              <div style={{ width:12, height:12, background:t.color, marginBottom:24 }} />
-              <div style={{ flex:1 }}>
-                <h3 style={{ fontSize:12, fontWeight:800, color:t.color, marginBottom:16, letterSpacing:"0.05em" }}>{t.name}</h3>
-                <div style={{ fontSize:32, fontWeight:800, marginBottom:8, color:"#000" }}>{t.count}</div>
-                <div style={{ fontSize:10, color:"#9aa0ae", fontWeight:700, textTransform:"uppercase", marginBottom:24 }}>{t.pct} OF SUPPLY</div>
-              </div>
-              <p style={{ fontSize:11, color:"#5a6478", lineHeight:1.6, borderTop:"1px solid #f0f1f4", paddingTop:16 }}>{t.desc}</p>
+            <div key={t.name} style={{ border:`1.5px solid ${t.color}`, padding:"24px", background:t.bg }}>
+              <div style={{ width:12, height:12, background:t.color, marginBottom:20 }} />
+              <h3 style={{ fontSize:12, fontWeight:800, color:t.color, marginBottom:8 }}>{t.name}</h3>
+              <div style={{ fontSize:28, fontWeight:800, marginBottom:8 }}>{t.count}</div>
+              <div style={{ fontSize:10, color:"#9aa0ae", textTransform:"lowercase", marginBottom:16 }}>{t.pct} of supply</div>
+              <p style={{ fontSize:11, color:"#5a6478", lineHeight:1.6 }}>{t.desc}</p>
             </div>
           ))}
         </div>

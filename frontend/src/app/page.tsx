@@ -214,23 +214,16 @@ export default function HomePage() {
           <div style={{ fontSize:10, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:12 }}>ON-CHAIN RARITY</div>
           <h2 style={{ fontSize:32, fontWeight:800 }}>5 RARITY TIERS</h2>
         </div>
-        <div className="responsive-grid grid-cols-5" style={{ gap:1, border:"1px solid #eee", background:"#eee" }}>
+        <div className="responsive-grid grid-cols-5" style={{ gap:12 }}>
           {TIERS.map(t => (
-            <div key={t.name} style={{ 
-              padding:"20px", 
-              background:t.bg, 
-              display:"flex", 
-              flexDirection:"column", 
-              justifyContent:"space-between",
-              minHeight: "180px"
-            }}>
-              <div>
-                <div style={{ width:10, height:10, background:t.color, marginBottom:16 }} />
-                <h3 style={{ fontSize:10, fontWeight:800, color:t.color, marginBottom:4, letterSpacing:"0.05em" }}>{t.name}</h3>
-                <div style={{ fontSize:22, fontWeight:800, marginBottom:4, color:"#000" }}>{t.pct}</div>
-                <div style={{ fontSize:9, color:"#9aa0ae", fontWeight:700, textTransform:"uppercase", marginBottom:12 }}>{t.count} UNITS</div>
+            <div key={t.name} style={{ border:`2px solid ${t.color}`, padding:"24px", background:"#fff", display:"flex", flexDirection:"column", minHeight:"240px" }}>
+              <div style={{ width:12, height:12, background:t.color, marginBottom:24 }} />
+              <div style={{ flex:1 }}>
+                <h3 style={{ fontSize:12, fontWeight:800, color:t.color, marginBottom:16, letterSpacing:"0.05em" }}>{t.name}</h3>
+                <div style={{ fontSize:32, fontWeight:800, marginBottom:8, color:"#000" }}>{t.count}</div>
+                <div style={{ fontSize:10, color:"#9aa0ae", fontWeight:700, textTransform:"uppercase", marginBottom:24 }}>{t.pct} OF SUPPLY</div>
               </div>
-              <p style={{ fontSize:10, color:"#5a6478", lineHeight:1.5, borderTop:"1px solid rgba(0,0,0,0.05)", paddingTop:12 }}>{t.desc}</p>
+              <p style={{ fontSize:11, color:"#5a6478", lineHeight:1.6, borderTop:"1px solid #f0f1f4", paddingTop:16 }}>{t.desc}</p>
             </div>
           ))}
         </div>

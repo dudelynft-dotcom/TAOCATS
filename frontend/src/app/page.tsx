@@ -200,7 +200,7 @@ export default function HomePage() {
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:2, background:"#000", border:"2px solid #000" }}>
               {[100, 500, 900, 1500, 2000, 2500].map(n => (
                 <div key={n} style={{ aspectRatio:"1/1", background:"#000" }}>
-                  <Image src={`/samples/${n % 12 + 1}.png`} alt="" width={300} height={300} />
+                  <Image src={`/samples/${n % 12 + 1}.png`} alt="" width={300} height={300} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
                 </div>
               ))}
             </div>

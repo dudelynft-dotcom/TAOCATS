@@ -1,6 +1,41 @@
 "use client";
 import React from "react";
-import Image from "next/image";
+
+function PixelCatSilhouette({ size = 280, color = "#fff" }: { size?: number, color?: string }) {
+  const px = Math.round(size / 24);
+  const grid = [
+    [0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,0],
+    [0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,0],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+    [0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+    [0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1],
+    [0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1],
+    [0,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,1,0],
+    [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+    [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0],
+    [0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0],
+  ];
+  return (
+    <div style={{ display:"inline-block", lineHeight:0 }}>
+      {grid.map((row, ri) => (
+        <div key={ri} style={{ display:"flex" }}>
+          {row.map((cell, ci) => (
+            <div key={ci} style={{ width:px, height:px, background: cell ? color : "transparent" }} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function HypeGraphicPage() {
   return (
@@ -35,9 +70,9 @@ export default function HypeGraphicPage() {
           
           {/* PURE SNEAK PEEK GRID */}
           <div style={{ zIndex: 10, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, background: "#333", border: "2px solid #333" }}>
-            {[2, 5, 8, 12].map(n => (
-              <div key={n} style={{ background: "#050505", width: "12vw", height: "12vw", minWidth: 150, minHeight: 150, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
-                 <Image src={`/samples/${n}.png`} alt="mystery cat" fill style={{ objectFit: "cover", filter: "brightness(0) invert(1)", opacity: 0.9 }} />
+            {[1, 2, 3, 4].map(n => (
+              <div key={n} style={{ background: "#050505", width: "12vw", height: "12vw", minWidth: 150, minHeight: 150, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                 <PixelCatSilhouette size={100} color="#fff" />
               </div>
             ))}
           </div>

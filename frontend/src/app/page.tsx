@@ -66,8 +66,8 @@ export default function HomePage() {
       <section style={{ borderBottom:"1px solid #e0e3ea", padding:"100px 0 80px" }}>
         <div className="container-app" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:64, flexWrap:"wrap" }}>
           
-          <div style={{ flex: "1 1 500px" }}>
-            <div style={{ display:"flex", gap:10, marginBottom:32 }}>
+          <div style={{ flex: "1 1 100%", maxWidth:600 }}>
+            <div style={{ display:"flex", gap:10, marginBottom:32, flexWrap:"wrap" }}>
               <span style={{ background:"#000", color:"#fff", padding:"4px 12px", fontSize:10, fontWeight:700, letterSpacing:"0.1em" }}>LIVE ON BITTENSOR EVM</span>
               <span style={{ border:"1px solid #000", padding:"3px 12px", fontSize:10, fontWeight:700, letterSpacing:"0.1em" }}>CHAIN 964</span>
               <span style={{ border:"1px solid #000", padding:"3px 12px", fontSize:10, fontWeight:700, letterSpacing:"0.1em" }}>OPEN MINT</span>
@@ -107,7 +107,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div style={{ flex:"0 0 auto", margin:"0 auto", textAlign:"center" }}>
+          <div style={{ flex:"1 1 100%", maxWidth:320, margin:"0 auto", textAlign:"center" }}>
             <div style={{ marginBottom:32 }}>
               <PixelCatSilhouette size={280} />
             </div>
@@ -170,7 +170,7 @@ export default function HomePage() {
       {/* ── ABOUT SECTION ─────────────────────────────────────────────────────── */}
       <section style={{ background:"#0a0f14", color:"#fff", borderTop:"4px solid #000" }}>
         <div className="container-app" style={{ padding:"100px 20px" }}>
-          <div className="responsive-grid grid-cols-2" style={{ gap:80, alignItems:"center" }}>
+          <div className="responsive-grid grid-cols-2" style={{ gap:40, alignItems:"center" }}>
             <div>
               <div style={{ fontSize:10, fontWeight:700, color:"#5a6478", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:16 }}>ABOUT THE COLLECTION</div>
               <h2 style={{ fontSize:42, fontWeight:800, textTransform:"uppercase", lineHeight:1, marginBottom:32 }}>THE FIRST NFT<br/>ON BITTENSOR EVM</h2>
@@ -281,7 +281,7 @@ export default function HomePage() {
               τ {MINT_PRICE} PER CAT - UP TO 20 PER WALLET - {MAX_SUPPLY.toLocaleString()} TOTAL SUPPLY
             </div>
           </div>
-          <div style={{ display:"flex", gap:16 }}>
+          <div style={{ display:"flex", gap:16, flexWrap:"wrap" }}>
             <Link href="/mint" style={{ padding:"16px 40px", background:"#fff", color:"#000", fontWeight:800, fontSize:11, letterSpacing:"0.1em", textDecoration:"none" }}>
               MINT NOW | τ {MINT_PRICE}
             </Link>

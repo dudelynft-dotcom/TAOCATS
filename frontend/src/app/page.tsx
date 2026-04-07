@@ -120,7 +120,7 @@ export default function HomePage() {
 
       {/* STATS BAR */}
       <div style={{ borderBottom:"1px solid #0f1419", background:"#0f1419" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 40px", display:"flex", overflowX:"auto" }}>
+        <div className="stats-bar-inner" style={{ maxWidth:1400, margin:"0 auto", padding:"0 40px", display:"flex", overflowX:"auto" }}>
           {[
             { label:"Total Supply",  value:"4,699" },
             { label:"Mint Price",    value:`τ ${MINT_PRICE}` },
@@ -139,7 +139,7 @@ export default function HomePage() {
       </div>
 
       {/* COLLECTION PREVIEW */}
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"56px 40px" }}>
+      <div className="section-pad" style={{ maxWidth:1400, margin:"0 auto", padding:"56px 40px" }}>
         <div style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", marginBottom:24 }}>
           <div>
             <div style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:8 }}>Collection Preview</div>
@@ -168,7 +168,7 @@ export default function HomePage() {
 
       {/* ABOUT */}
       <div style={{ background:"#0f1419", borderTop:"3px solid #0f1419" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px" }}>
+        <div className="section-pad" style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px" }}>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:64, alignItems:"center" }} className="about-grid">
             <div>
               <div style={{ fontSize:9, fontWeight:700, color:"#5a6478", textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:12 }}>About the Collection</div>
@@ -214,7 +214,7 @@ export default function HomePage() {
 
       {/* RARITY TIERS */}
       <div style={{ borderTop:"1px solid #e0e3ea", borderBottom:"1px solid #e0e3ea" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px" }}>
+        <div className="section-pad" style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px" }}>
           <div style={{ marginBottom:40 }}>
             <div style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:8 }}>On-Chain Rarity</div>
             <h2 style={{ fontSize:28, fontWeight:700, color:"#0f1419", textTransform:"uppercase", letterSpacing:"-0.02em" }}>5 Rarity Tiers</h2>
@@ -235,7 +235,7 @@ export default function HomePage() {
 
       {/* HOW TO MINT */}
       <div style={{ background:"#f7f8fa", borderBottom:"1px solid #e0e3ea" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px" }}>
+        <div className="section-pad" style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px" }}>
           <div style={{ marginBottom:40 }}>
             <div style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:8 }}>Getting Started</div>
             <h2 style={{ fontSize:28, fontWeight:700, color:"#0f1419", textTransform:"uppercase", letterSpacing:"-0.02em" }}>How to Mint</h2>
@@ -255,7 +255,7 @@ export default function HomePage() {
 
       {/* WHY TAO CATS */}
       <div style={{ borderBottom:"1px solid #e0e3ea" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px" }}>
+        <div className="section-pad" style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px" }}>
           <div style={{ marginBottom:40 }}>
             <div style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.14em", marginBottom:8 }}>Why TAO Cats</div>
             <h2 style={{ fontSize:28, fontWeight:700, color:"#0f1419", textTransform:"uppercase", letterSpacing:"-0.02em" }}>Built Different</h2>
@@ -281,7 +281,7 @@ export default function HomePage() {
 
       {/* CTA */}
       <div style={{ background:"#0f1419" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:32, flexWrap:"wrap" }}>
+        <div className="section-pad" style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:32, flexWrap:"wrap" }}>
           <div>
             <h2 style={{ fontSize:32, fontWeight:700, color:"#ffffff", textTransform:"uppercase", letterSpacing:"-0.02em", marginBottom:8 }}>Ready to Mint?</h2>
             <p style={{ color:"#5a6478", fontSize:13 }}>τ {MINT_PRICE} per cat · Up to 20 per wallet · {MAX_SUPPLY.toLocaleString()} total supply</p>
@@ -306,10 +306,18 @@ export default function HomePage() {
             </div>
             <span style={{ fontWeight:700, letterSpacing:"0.12em", fontSize:11, textTransform:"uppercase", color:"#ffffff" }}>TAO CATS</span>
           </div>
-          <div style={{ display:"flex", gap:24 }}>
+          <div style={{ display:"flex", gap:24, alignItems:"center" }}>
             <Link href="/mint"        style={{ color:"#5a6478", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none" }}>Mint</Link>
             <Link href="/marketplace" style={{ color:"#5a6478", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none" }}>Market</Link>
             <Link href="/dashboard"   style={{ color:"#5a6478", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none" }}>Dashboard</Link>
+            <a href="https://x.com/CatsonTao" target="_blank" rel="noopener noreferrer"
+              style={{ display:"flex", alignItems:"center", gap:6, color:"#fff", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none",
+                padding:"5px 12px", border:"1px solid #2a3040", background:"#1a1a2e", transition:"border-color 0.1s" }}
+              onMouseEnter={e => (e.currentTarget.style.borderColor="#fff")}
+              onMouseLeave={e => (e.currentTarget.style.borderColor="#2a3040")}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              @CatsonTao
+            </a>
           </div>
           <p style={{ color:"#2a3040", fontSize:10, letterSpacing:"0.06em" }}>Bittensor EVM · Chain 964 · 4,699 Cats · 2025 TAO CATS</p>
         </div>

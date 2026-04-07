@@ -57,7 +57,12 @@ function MarketplaceContent() {
   const [sellId, setSellId]     = useState("");
   const [sellPrice, setSellPrice] = useState("");
   const [filterTier, setFilterTier] = useState("all");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Open sidebar by default on desktop, closed on mobile
+  useEffect(() => {
+    setSidebarOpen(window.innerWidth >= 768);
+  }, []);
 
   const { address, isConnected } = useAccount();
   const { writeContract, isPending } = useWriteContract();
@@ -181,7 +186,7 @@ function MarketplaceContent() {
           <>
             {/* Sidebar */}
             {sidebarOpen && (
-              <div style={{ width:240, borderRight:"1px solid #eee", padding:"24px 24px 24px 0", flexShrink:0 }}>
+              <div className="marketplace-sidebar" style={{ width:240, borderRight:"1px solid #eee", padding:"24px 24px 24px 0", flexShrink:0 }}>
                 <div style={{ marginBottom:32 }}>
                   <div style={{ fontSize:10, fontWeight:800, marginBottom:16, letterSpacing:"0.1em" }}>RARITY TIER</div>
                   {["all","Legendary","Epic","Rare","Uncommon","Common"].map(tier => (

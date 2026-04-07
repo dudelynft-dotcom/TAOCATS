@@ -7,72 +7,72 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
- * @title BittensorCatNFT
- * @dev 4699 supply bear NFTs on Bittensor EVM (Subtensor)
+ * @title TaoCatNFT
+ * @dev 4,699 generative pixel cats on Bittensor EVM
  *
- * Tokenomics:
- *  - Mint price: 6.99 TAO per bear
- *  - Total raise: 4699 × 6.99 = ~32,860 TAO
- *  - 100% of all mint fees forwarded to $BTCAT liquidity pool
- *  - No team allocation. No whitelist. Open to all.
+ * - Mint price: 0.015 TAO per cat (owner can update)
+ * - 100% of mint fees forwarded to liquidity receiver
+ * - No team allocation. No whitelist. Open to all.
  *
- * Chain: Subtensor EVM | Chain ID: 964 | RPC: https://lite.chain.opentensor.ai
+ * Chain: Bittensor EVM | Chain ID: 964 | Testnet: 945
  */
 contract BittensorCatNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
     using Strings for uint256;
 
-    uint256 public constant MAX_SUPPLY    = 4699;
-    uint256 public constant MINT_PRICE    = 6.99 ether; // 6.99 TAO (TAO uses 18 decimals like ETH)
+    uint256 public constant MAX_SUPPLY     = 4699;
     uint256 public constant MAX_PER_WALLET = 20;
+
+    uint256 public mintPrice = 0.015 ether; // 0.015 TAO — owner can update
 
     string private _baseTokenURI;
     string public  unrevealedURI;
-    bool   public  revealed    = false;
-    bool   public  mintActive  = false;
+    bool   public  revealed   = false;
+    bool   public  mintActive = false;
 
-    address public liquidityReceiver; // $BTCAT liquidity pool / multisig
+    address public liquidityReceiver;
 
     mapping(address => uint256) public mintedPerWallet;
 
-    event BearMinted(address indexed minter, uint256 indexed tokenId);
+    event CatMinted(address indexed minter, uint256 indexed tokenId);
     event FundsForwardedToLiquidity(uint256 amount);
     event MintStatusChanged(bool active);
+    event MintPriceChanged(uint256 newPrice);
     event Revealed(string baseURI);
 
     constructor(
         string memory _unrevealedURI,
         address       _liquidityReceiver
-    ) ERC721("BITTENSOR CAT", "TBEAR") Ownable(msg.sender) {
-        unrevealedURI    = _unrevealedURI;
+    ) ERC721("TAO CAT", "TCAT") Ownable(msg.sender) {
+        unrevealedURI     = _unrevealedURI;
         liquidityReceiver = _liquidityReceiver;
     }
 
     // ─── MINT ────────────────────────────────────────────────────────────────
 
     function mint(uint256 quantity) external payable nonReentrant {
-        require(mintActive,                                    "Mint not active");
-        require(quantity >= 1 && quantity <= MAX_PER_WALLET,  "Invalid quantity: 1-20");
-        require(totalSupply() + quantity <= MAX_SUPPLY,        "Exceeds max supply");
+        require(mintActive,                                      "Mint not active");
+        require(quantity >= 1 && quantity <= MAX_PER_WALLET,    "Invalid quantity: 1-20");
+        require(totalSupply() + quantity <= MAX_SUPPLY,          "Exceeds max supply");
         require(
             mintedPerWallet[msg.sender] + quantity <= MAX_PER_WALLET,
             "Exceeds wallet limit"
         );
-        require(msg.value >= MINT_PRICE * quantity, "Insufficient TAO");
+        require(msg.value >= mintPrice * quantity, "Insufficient TAO");
 
         mintedPerWallet[msg.sender] += quantity;
 
         for (uint256 i = 0; i < quantity; i++) {
             uint256 tokenId = totalSupply() + 1;
             _safeMint(msg.sender, tokenId);
-            emit BearMinted(msg.sender, tokenId);
+            emit CatMinted(msg.sender, tokenId);
         }
 
-        // Forward 100% to $BTCAT liquidity — zero kept by contract
+        // Forward 100% to liquidity — zero kept by contract
         _forwardToLiquidity();
 
-        // Refund any overpayment
-        uint256 paid    = MINT_PRICE * quantity;
-        uint256 excess  = msg.value - paid;
+        // Refund overpayment
+        uint256 paid   = mintPrice * quantity;
+        uint256 excess = msg.value - paid;
         if (excess > 0) {
             (bool refunded,) = payable(msg.sender).call{value: excess}("");
             require(refunded, "Refund failed");
@@ -97,8 +97,8 @@ contract BittensorCatNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
     }
 
     function reveal(string memory baseURI) external onlyOwner {
-        revealed       = true;
-        _baseTokenURI  = baseURI;
+        revealed      = true;
+        _baseTokenURI = baseURI;
         emit Revealed(baseURI);
     }
 
@@ -107,6 +107,12 @@ contract BittensorCatNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
     function setMintActive(bool _active) external onlyOwner {
         mintActive = _active;
         emit MintStatusChanged(_active);
+    }
+
+    function setMintPrice(uint256 _price) external onlyOwner {
+        require(_price > 0, "Price must be > 0");
+        mintPrice = _price;
+        emit MintPriceChanged(_price);
     }
 
     function setLiquidityReceiver(address _receiver) external onlyOwner {
@@ -118,7 +124,6 @@ contract BittensorCatNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
         unrevealedURI = _uri;
     }
 
-    // Safety sweep — goes to liquidity, never to owner
     function sweepToLiquidity() external onlyOwner {
         _forwardToLiquidity();
     }
@@ -138,7 +143,12 @@ contract BittensorCatNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
         return MAX_SUPPLY - totalSupply();
     }
 
-    function mintCostFor(uint256 quantity) external pure returns (uint256) {
-        return MINT_PRICE * quantity;
+    function mintCostFor(uint256 quantity) external view returns (uint256) {
+        return mintPrice * quantity;
+    }
+
+    // Legacy read — returns current mintPrice (was constant in v1)
+    function MINT_PRICE() external view returns (uint256) {
+        return mintPrice;
     }
 }

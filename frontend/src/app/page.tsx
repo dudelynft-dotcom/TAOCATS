@@ -2,7 +2,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { CONTRACTS, MAX_SUPPLY, MINT_PRICE } from "@/lib/config";
+import { MAX_SUPPLY, MINT_PRICE } from "@/lib/config";
 
 const MintProgress = dynamic(() => import("@/components/MintProgress"), { ssr: false });
 

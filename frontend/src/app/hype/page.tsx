@@ -57,7 +57,7 @@ export default function HypeGraphicPage() {
         </div>
 
         <h1 style={{
-          fontSize: "clamp(60px, 8vw, 120px)", 
+          fontSize: "clamp(80px, 12vw, 160px)", 
           fontWeight: 900, 
           letterSpacing: "-0.04em",
           lineHeight: 0.9,
@@ -66,8 +66,7 @@ export default function HypeGraphicPage() {
           marginBottom: "24px",
           color: "#fff"
         }}>
-          THE FIRST <br/>
-          <span style={{ color: "#00c49a" }}>NFT</span> ON TAO.
+          ?
         </h1>
 
         <div style={{ width: 80, height: 4, background: "#00c49a", margin: "0 auto 40px auto" }} />
@@ -99,8 +98,8 @@ export default function HypeGraphicPage() {
           lineHeight: 1.6,
           letterSpacing: "0.02em"
         }}>
-          4,699 generative pixel cats. Zero insider allocation. Zero presale.
-          A pure, permissionless fair launch.
+          4,699 pixel cats. Zero insider allocation. Zero team allocation.
+          A pure permissionless fair launch.
         </p>
 
         <div style={{
@@ -110,8 +109,8 @@ export default function HypeGraphicPage() {
           border: "2px dashed #00c49a",
           background: "rgba(0, 196, 154, 0.05)"
         }}>
-          <h2 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "0.1em", color: "#fff" }}>
-            MINT GOES LIVE IN <span style={{ color: "#00c49a" }}>10 HOURS</span>
+          <h2 style={{ fontSize: "28px", fontWeight: 800, letterSpacing: "0.1em", color: "#fff", textTransform: "uppercase" }}>
+            More details in <span style={{ color: "#00c49a" }}>10 HOURS</span>
           </h2>
         </div>
 

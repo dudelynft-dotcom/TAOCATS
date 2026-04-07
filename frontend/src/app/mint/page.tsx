@@ -8,35 +8,44 @@ import ConnectButton from "@/components/ConnectButton";
 import { CONTRACTS, MAX_SUPPLY, MINT_PRICE, COLLECTION_NAME } from "@/lib/config";
 import { NFT_ABI } from "@/lib/abis";
 
-const SAMPLES = [1, 2, 3, 4, 1500, 2000, 2500, 3000];
-
 export default function MintPage() {
   const [qty, setQty] = useState(1);
-  const { isConnected } = useAccount();
+  const { address, isConnected } = useAccount();
 
   const { data: totalSupply } = useReadContract({
     address: CONTRACTS.NFT, abi: NFT_ABI, functionName: "totalSupply",
   });
+  const { data: mintActive } = useReadContract({
+    address: CONTRACTS.NFT, abi: NFT_ABI, functionName: "mintActive",
+  });
+  const { data: mintedByWallet } = useReadContract({
+    address: CONTRACTS.NFT, abi: NFT_ABI, functionName: "mintedPerWallet",
+    args: address ? [address] : undefined, query: { enabled: !!address },
+  });
+
   const minted    = totalSupply ? Number(totalSupply) : 0;
   const remaining = MAX_SUPPLY - minted;
   const progress  = (minted / MAX_SUPPLY) * 100;
+  const walletMinted = mintedByWallet ? Number(mintedByWallet) : 0;
 
   const { writeContract, isPending, error: mintError } = useWriteContract();
 
   function handleMint() {
-    writeContract({ 
-      address: CONTRACTS.NFT, 
-      abi: NFT_ABI, 
-      functionName: "mint", 
-      args: [BigInt(qty)], 
-      value: parseEther((qty * Number(MINT_PRICE)).toString()) 
+    writeContract({
+      address: CONTRACTS.NFT,
+      abi: NFT_ABI,
+      functionName: "mint",
+      args: [BigInt(qty)],
+      value: parseEther((qty * Number(MINT_PRICE)).toFixed(18)),
     });
   }
+
+  const totalCost = (qty * Number(MINT_PRICE)).toFixed(3);
 
   return (
     <div style={{ background:"#ffffff", minHeight:"100vh", paddingTop:80, paddingBottom:80 }}>
       <div className="container-app">
-        
+
         <header style={{ textAlign:"center", marginBottom:48 }}>
           <h1 style={{ fontSize:42, fontWeight:800, letterSpacing:"-0.02em", marginBottom:12 }}>MINT YOUR CAT</h1>
           <div style={{ display:"inline-block", padding:"4px 24px", border:"1px solid #f0f1f4", fontSize:10, fontWeight:700, color:"#9aa0ae", letterSpacing:"0.1em", textTransform:"uppercase" }}>
@@ -45,7 +54,7 @@ export default function MintPage() {
         </header>
 
         <div className="responsive-grid grid-cols-2" style={{ gap:40, alignItems:"start" }}>
-          
+
           {/* Left Feature Card */}
           <div className="pixel-border" style={{ padding:20, background:"#fff" }}>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:2, background:"#0f1419", border:"2px solid #0f1419", marginBottom:24 }}>
@@ -55,7 +64,7 @@ export default function MintPage() {
                 </div>
               ))}
             </div>
-            
+
             <div style={{ padding:"0 4px" }}>
               <div style={{ fontSize:9, fontWeight:800, textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:12 }}>Supply Allocation</div>
               <div style={{ height:12, background:"#f0f1f4", border:"1px solid #0f1419", position:"relative" }}>
@@ -74,14 +83,19 @@ export default function MintPage() {
               <table style={{ width:"100%", borderCollapse:"collapse", marginBottom:32 }}>
                 <tbody>
                   {[
-                    { l:"PRICE",     v:`τ ${MINT_PRICE} TAO` },
-                    { l:"YOUR MINTED", v:"0 / 20" },
-                    { l:"NETWORK",   v:"Bittensor EVM" },
+                    { l:"PRICE",       v:<><span style={{ fontFamily:"monospace" }}>τ {MINT_PRICE} TAO</span></> },
+                    { l:"YOUR MINTED", v:`${walletMinted} / 20` },
+                    { l:"NETWORK",     v:"Bittensor EVM" },
                     { l:"AVAILABLE",   v:remaining.toLocaleString() },
+                    { l:"MINT STATUS", v: mintActive === undefined ? "..." : mintActive ? (
+                      <span style={{ color:"#16a34a" }}>OPEN</span>
+                    ) : (
+                      <span style={{ color:"#dc2626" }}>PAUSED</span>
+                    )},
                   ].map((row, i) => (
                     <tr key={i} style={{ borderBottom:"1px solid #f0f1f4" }}>
-                      <td style={{ padding:"16px 0", fontSize:9, fontWeight:700, color:"#9aa0ae", letterSpacing:"0.05em" }}>{row.l}</td>
-                      <td style={{ padding:"16px 0", fontSize:13, fontWeight:700, textAlign:"right", fontFamily:"monospace" }}>{row.v}</td>
+                      <td style={{ padding:"14px 0", fontSize:9, fontWeight:700, color:"#9aa0ae", letterSpacing:"0.05em" }}>{row.l}</td>
+                      <td style={{ padding:"14px 0", fontSize:13, fontWeight:700, textAlign:"right", fontFamily:"monospace" }}>{row.v}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -91,6 +105,11 @@ export default function MintPage() {
                 <div style={{ textAlign:"center", padding:"20px 0" }}>
                   <ConnectButton />
                 </div>
+              ) : mintActive === false ? (
+                <div style={{ padding:"20px", background:"#fff9f0", border:"2px solid #f59e0b", textAlign:"center" }}>
+                  <div style={{ fontSize:12, fontWeight:700, color:"#92400e" }}>MINT NOT ACTIVE</div>
+                  <div style={{ fontSize:10, color:"#a16207", marginTop:6 }}>The mint is currently paused. Check back soon.</div>
+                </div>
               ) : (
                 <>
                   <div style={{ marginBottom:20 }}>
@@ -98,24 +117,24 @@ export default function MintPage() {
                     <div style={{ display:"flex", border:"2px solid #0f1419" }}>
                       <button onClick={() => setQty(Math.max(1, qty-1))} style={{ width:60, height:60, border:"none", background:"#fff", borderRight:"2px solid #0f1419", fontSize:20, fontWeight:700, cursor:"pointer" }}>-</button>
                       <div style={{ flex:1, display:"flex", alignItems:"center", justifyContent:"center", fontSize:24, fontWeight:800, fontFamily:"monospace" }}>{qty}</div>
-                      <button onClick={() => setQty(Math.min(20, qty+1))} style={{ width:60, height:60, border:"none", background:"#fff", borderLeft:"2px solid #0f1419", fontSize:20, fontWeight:700, cursor:"pointer" }}>+</button>
+                      <button onClick={() => setQty(Math.min(20 - walletMinted, qty+1))} style={{ width:60, height:60, border:"none", background:"#fff", borderLeft:"2px solid #0f1419", fontSize:20, fontWeight:700, cursor:"pointer" }}>+</button>
                     </div>
                   </div>
 
-                  <button onClick={handleMint} disabled={isPending} className="btn-primary" style={{ width:"100%", padding:24, fontSize:14, fontWeight:800, textTransform:"uppercase" }}>
-                    {isPending ? "CONFIRMING..." : (
-                      <><span>MINT {qty} CAT |&nbsp;</span><span style={{ textTransform:"none" }}>τ</span><span>&nbsp;{(qty * Number(MINT_PRICE)).toFixed(3)}</span></>
-                    )}
+                  <button onClick={handleMint} disabled={isPending} className="btn-primary"
+                    style={{ width:"100%", padding:24, fontSize:14, fontWeight:800, textTransform:"none", letterSpacing:"0.08em" }}>
+                    {isPending ? "CONFIRMING..." : `MINT ${qty} CAT · τ ${totalCost}`}
                   </button>
+
                   {mintError && (
                     <div style={{ marginTop:12, padding:"10px 14px", background:"#fff0f0", border:"1px solid #ef4444", fontSize:10, color:"#b91c1c", fontWeight:700, wordBreak:"break-all" }}>
-                      {mintError.message?.slice(0,160) ?? "Transaction failed"}
+                      ERROR: {(mintError as Error).message?.slice(0, 200) ?? "Transaction failed. Check network and balance."}
                     </div>
                   )}
                 </>
               )}
             </div>
-            
+
             <div style={{ background:"#f7f8fa", borderTop:"1px solid #f0f1f4", padding:"16px", textAlign:"center", fontSize:9, fontWeight:700, color:"#9aa0ae", letterSpacing:"0.15em" }}>
               PUBLIC MINT · FAIR LAUNCH · 4,699 GENESIS SUPPLY
             </div>

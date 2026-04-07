@@ -44,6 +44,15 @@ function PixelCatSilhouette({ size = 120 }: { size?: number }) {
   );
 }
 
+function VerifiedBadge() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L15.09 5.26L19.18 4.5L19.94 8.59L23.2 11.68L19.94 14.77L19.18 18.86L15.09 18.1L12 21.36L8.91 18.1L4.82 18.86L4.06 14.77L0.8 11.68L4.06 8.59L4.82 4.5L8.91 5.26L12 2Z" fill="#000" />
+      <path d="M9 12L11 14L15 10" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export default function MarketplacePage() {
   return (
     <Suspense fallback={<div style={{ padding:100, textAlign:"center" }}>LOADING...</div>}>
@@ -144,8 +153,11 @@ function MarketplaceContent() {
             <div style={{ width:48, height:48, background:"#000", display:"flex", alignItems:"center", justifyContent:"center" }}>
               <Image src="/samples/1.png" alt="" width={48} height={48} />
             </div>
-            <div>
-              <h1 style={{ fontSize:16, fontWeight:800 }}>TAO CAT MARKET</h1>
+            <div style={{ display:"flex", flexDirection:"column" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                <h1 style={{ fontSize:16, fontWeight:800 }}>TAO CAT</h1>
+                <VerifiedBadge />
+              </div>
               <div style={{ fontSize:9, color:"#9aa0ae", fontWeight:700 }}>4,699 GENESIS CATS · CHAIN 964</div>
             </div>
           </div>

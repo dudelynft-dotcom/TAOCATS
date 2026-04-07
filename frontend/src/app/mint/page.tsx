@@ -30,7 +30,7 @@ export default function MintPage() {
       abi: NFT_ABI, 
       functionName: "mint", 
       args: [BigInt(qty)], 
-      value: parseEther((qty * MINT_PRICE).toString()) 
+      value: parseEther((qty * Number(MINT_PRICE)).toString()) 
     });
   }
 
@@ -104,7 +104,7 @@ export default function MintPage() {
                   </div>
 
                   <button onClick={handleMint} disabled={isPending} className="btn-primary" style={{ width:"100%", padding:24, fontSize:14, fontWeight:800 }}>
-                    {isPending ? "CONFIRMING..." : `MINT ${qty} CAT | τ ${(qty * MINT_PRICE).toFixed(2)}`}
+                    {isPending ? "CONFIRMING..." : `MINT ${qty} CAT | τ ${(qty * Number(MINT_PRICE)).toFixed(2)}`}
                   </button>
                 </>
               )}

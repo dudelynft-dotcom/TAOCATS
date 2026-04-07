@@ -221,3 +221,58 @@ h1, h2, h3, h4, h5, h6 {
   .show-mobile { display: block; }
   .hide-mobile { display: none; }
 }
+
+/* ── Homepage named grids ── */
+@media (max-width: 768px) {
+  .about-grid {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  .why-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  .tiers-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  .how-grid   { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 640px) {
+  .tiers-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  .how-grid   { grid-template-columns: 1fr !important; }
+}
+
+/* ── Hero section ── */
+@media (max-width: 900px) {
+  .hero-inner {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 32px !important;
+    padding: 40px 20px 32px !important;
+  }
+  .hero-inner > div:first-child { max-width: 100% !important; }
+  .hero-right { flex-direction: row !important; align-items: center !important; gap: 16px !important; }
+  .hero-right .hero-cat { display: none !important; }
+}
+
+/* ── Section padding: reduce on mobile ── */
+@media (max-width: 768px) {
+  .section-pad { padding: 40px 20px !important; }
+  .stats-bar-inner { padding: 0 20px !important; }
+}
+
+/* ── Marketplace mobile ── */
+@media (max-width: 768px) {
+  .marketplace-sidebar {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid #eee !important;
+    padding: 16px 0 !important;
+  }
+  .marketplace-controls {
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .marketplace-controls select,
+  .marketplace-controls .view-toggle { font-size: 9px !important; }
+}

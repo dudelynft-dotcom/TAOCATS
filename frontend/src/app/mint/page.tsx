@@ -21,7 +21,7 @@ export default function MintPage() {
   const remaining = MAX_SUPPLY - minted;
   const progress  = (minted / MAX_SUPPLY) * 100;
 
-  const { writeContract, isPending } = useWriteContract();
+  const { writeContract, isPending, error: mintError } = useWriteContract();
 
   function handleMint() {
     writeContract({ 
@@ -102,9 +102,16 @@ export default function MintPage() {
                     </div>
                   </div>
 
-                  <button onClick={handleMint} disabled={isPending} className="btn-primary" style={{ width:"100%", padding:24, fontSize:14, fontWeight:800 }}>
-                    {isPending ? "CONFIRMING..." : `MINT ${qty} CAT | τ ${(qty * Number(MINT_PRICE)).toFixed(2)}`}
+                  <button onClick={handleMint} disabled={isPending} className="btn-primary" style={{ width:"100%", padding:24, fontSize:14, fontWeight:800, textTransform:"uppercase" }}>
+                    {isPending ? "CONFIRMING..." : (
+                      <><span>MINT {qty} CAT |&nbsp;</span><span style={{ textTransform:"none" }}>τ</span><span>&nbsp;{(qty * Number(MINT_PRICE)).toFixed(3)}</span></>
+                    )}
                   </button>
+                  {mintError && (
+                    <div style={{ marginTop:12, padding:"10px 14px", background:"#fff0f0", border:"1px solid #ef4444", fontSize:10, color:"#b91c1c", fontWeight:700, wordBreak:"break-all" }}>
+                      {mintError.message?.slice(0,160) ?? "Transaction failed"}
+                    </div>
+                  )}
                 </>
               )}
             </div>

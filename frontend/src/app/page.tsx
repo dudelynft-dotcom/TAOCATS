@@ -70,9 +70,9 @@ export default function HomePage() {
 
       {/* HERO */}
       <div style={{ background:"#ffffff", borderBottom:"3px solid #0f1419" }}>
-        <div style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px 48px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:48, flexWrap:"wrap" }}>
+        <div className="hero-inner" style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px 48px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:48, flexWrap:"wrap" }}>
 
-          <div style={{ maxWidth:560 }}>
+          <div style={{ maxWidth:560, flex:1, minWidth:280 }}>
             <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:20 }}>
               <span style={{ padding:"3px 10px", background:"#0f1419", color:"#ffffff", fontSize:9, fontWeight:700, letterSpacing:"0.14em", textTransform:"uppercase" }}>Live on Bittensor EVM</span>
               <span style={{ padding:"3px 10px", border:"1px solid #0f1419", color:"#0f1419", fontSize:9, fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase" }}>Chain 964</span>
@@ -104,7 +104,9 @@ export default function HomePage() {
           </div>
 
           <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:20, flexShrink:0 }}>
-            <PixelCat size={200} />
+            <div className="hide-mobile">
+              <PixelCat size={200} />
+            </div>
             <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:3, maxWidth:260 }}>
               {HERO_SAMPLES.map((n) => (
                 <div key={n} style={{ border:"2px solid #0f1419", overflow:"hidden", aspectRatio:"1/1" }}>

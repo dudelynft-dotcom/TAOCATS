@@ -1,12 +1,30 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ── Performance ────────────────────────────────────────────────────────────
   compress: true,
   poweredByHeader: false,
 
+  async headers() {
+    return [
+      {
+        source: "/samples/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/logo.png",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+      {
+        source: "/_next/static/:path*",
+        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+      },
+    ];
+  },
+
   images: {
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 86400,
+    minimumCacheTTL: 604800,
+    deviceSizes: [640, 828, 1080, 1200],
+    imageSizes: [64, 128, 256],
     remotePatterns: [
       { protocol: "https", hostname: "ipfs.io" },
       { protocol: "https", hostname: "**.ipfs.dweb.link" },
@@ -14,9 +32,8 @@ const nextConfig = {
     ],
   },
 
-  // ── Experimental speed boosts ──────────────────────────────────────────────
   experimental: {
-    optimizePackageImports: ["framer-motion", "wagmi", "viem"],
+    optimizePackageImports: ["wagmi", "viem", "@tanstack/react-query"],
   },
 
   webpack(config) {
@@ -25,10 +42,7 @@ const nextConfig = {
       "pino-pretty": false,
       "@react-native-async-storage/async-storage": false,
     };
-
-    // Suppress large wagmi/WalletConnect warnings in dev
     config.infrastructureLogging = { level: "error" };
-
     return config;
   },
 };

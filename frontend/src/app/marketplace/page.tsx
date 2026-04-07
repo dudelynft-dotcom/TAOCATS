@@ -17,30 +17,14 @@ const TIER_COLOR: Record<string, string> = {
   Legendary: "#7c3aed", Epic: "#1d4ed8", Rare: "#0a7a5a", Uncommon: "#a16207", Common: "#475569",
 };
 
-// CSS pixel cat silhouette component
+// SVG pixel cat — single element, no DOM overhead
 function PixelCatSilhouette({ size = 120 }: { size?: number }) {
-  const px = Math.round(size / 24);
-  const grid = [
-    [0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,0],
-    [0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,0],
-    [0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1],
-    [0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
-    [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1],
-    [0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1],
-    [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
-  ];
+  const rows = ["000000011110000000111100","000000111111000011111100","000001111111100111111111","000001111111101111111111","000001111111111111111110","111111111111111111111111","111111110001111110001111","011111110001111110001111","001111111111111111111100"];
+  const cols = 24;
   return (
-    <div style={{ display:"inline-block", lineHeight:0 }}>
-      {grid.map((row, ri) => (
-        <div key={ri} style={{ display:"flex" }}>
-          {row.map((cell, ci) => (
-            <div key={ci} style={{ width:px, height:px, background: cell ? "#fff" : "transparent" }} />
-          ))}
-        </div>
-      ))}
-    </div>
+    <svg width={size} height={Math.round(size * rows.length / cols)} viewBox={`0 0 ${cols} ${rows.length}`} fill="#fff" shapeRendering="crispEdges">
+      {rows.map((row, r) => row.split("").map((c, ci) => c === "1" ? <rect key={`${r}-${ci}`} x={ci} y={r} width={1} height={1} /> : null))}
+    </svg>
   );
 }
 

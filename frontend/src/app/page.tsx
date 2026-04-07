@@ -108,10 +108,10 @@ export default function HomePage() {
           </div>
 
           <div style={{ flex:"1 1 100%", maxWidth:320, margin:"0 auto", textAlign:"center" }}>
-            <div style={{ marginBottom:32 }}>
+            <div className="hide-mobile" style={{ marginBottom:32 }}>
               <PixelCatSilhouette size={280} />
             </div>
-            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:4, maxWidth:280 }}>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:4, maxWidth:320, margin:"0 auto" }}>
               {HERO_SAMPLES.map(n => (
                 <div key={n} style={{ border:"1.5px solid #000", overflow:"hidden", aspectRatio:"1/1" }}>
                   <Image src={`/samples/${n}.png`} alt="" width={80} height={80} style={{ width:"100%", height:"100%", objectFit:"cover" }} />

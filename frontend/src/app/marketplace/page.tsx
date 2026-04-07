@@ -208,10 +208,6 @@ function MarketplaceContent() {
                     </button>
                   ))}
                 </div>
-                <div>
-                  <div style={{ fontSize:10, fontWeight:800, marginBottom:16, letterSpacing:"0.1em" }}>PRICE FILTER</div>
-                  <input placeholder="Max TAO" style={{ width:"100%", padding:10, border:"1.5px solid #000", fontSize:11, outline:"none" }} />
-                </div>
               </div>
             )}
 

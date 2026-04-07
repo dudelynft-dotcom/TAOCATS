@@ -121,10 +121,10 @@ function MarketplaceContent() {
     <div style={{ background:"#ffffff", minHeight:"100vh", paddingTop:64 }}>
 
       {/* ── TRADING SOON BANNER ── */}
-      <div style={{ background:"#000", color:"#fff", padding:"40px 20px", display:"flex", alignItems:"center", justifyContent:"center", gap:48, overflow:"hidden", position:"relative" }}>
+      <div style={{ background:"#000", color:"#fff", padding:"32px 20px", display:"flex", alignItems:"center", justifyContent:"center", gap:48, overflow:"hidden", position:"relative" }}>
         <div style={{ opacity:0.1, position:"absolute", left:-20, top:-10 }}><PixelCatSilhouette size={240} /></div>
         <div style={{ textAlign:"center", zIndex:1 }}>
-          <h2 style={{ fontSize:32, fontWeight:800, letterSpacing:"-0.02em", marginBottom:8 }}>TAO CATS TRADING SOON</h2>
+          <h2 style={{ fontSize:"clamp(20px,5vw,32px)", fontWeight:800, letterSpacing:"-0.02em", marginBottom:8 }}>TAO CATS TRADING SOON</h2>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:12 }}>
             <span style={{ fontSize:10, fontWeight:700, letterSpacing:"0.2em", color:"#5a6478" }}>GENESIS COLLECTION</span>
             <div style={{ width:4, height:4, background:"#5a6478" }} />
@@ -201,16 +201,16 @@ function MarketplaceContent() {
             )}
 
             <div style={{ flex:1, padding:24 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", marginBottom:24 }}>
+              <div className="marketplace-controls" style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24, flexWrap:"wrap", gap:8 }}>
                 <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ padding:"6px 12px", border:"1.5px solid #000", fontSize:10, fontWeight:800 }}>
                   {sidebarOpen ? "HIDE FILTERS" : "SHOW FILTERS"}
                 </button>
-                <div style={{ display:"flex", gap:8 }}>
+                <div style={{ display:"flex", gap:8, flexWrap:"wrap" }}>
                   <select value={sort} onChange={e => setSort(e.target.value as SortBy)} style={{ padding:"6px 12px", border:"1.5px solid #000", fontSize:10, fontWeight:800 }}>
                     <option value="price_asc">Price: Low to High</option>
                     <option value="price_desc">Price: High to Low</option>
                   </select>
-                  <div style={{ display:"flex", border:"1.5px solid #000" }}>
+                  <div className="view-toggle" style={{ display:"flex", border:"1.5px solid #000" }}>
                     <button onClick={() => setView("grid")} style={{ padding:"6px 12px", background: view==="grid"?"#000":"#fff", color: view==="grid"?"#fff":"#000", border:"none" }}>GRID</button>
                     <button onClick={() => setView("list")} style={{ padding:"6px 12px", background: view==="list"?"#000":"#fff", color: view==="list"?"#fff":"#000", border:"none" }}>LIST</button>
                   </div>

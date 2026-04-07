@@ -102,7 +102,7 @@ function MarketplaceContent() {
         tier: rarityBatch?.[2]?.[i] as string | undefined,
         rank: rarityBatch?.[1]?.[i] ? Number(rarityBatch[1][i]) : undefined,
       };
-    }).filter(l => l.price > 0n);
+    }).filter(l => l.price > BigInt(0));
   }, [tokenIds, listingData, rarityBatch]);
 
   const filtered = useMemo(() => {

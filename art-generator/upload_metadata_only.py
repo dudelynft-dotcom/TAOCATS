@@ -2,7 +2,7 @@
 Upload metadata CAR to Pinata.
 All 10 image batches are already pinned from the previous run.
 This script:
-  1. Fixes metadata name/description (BITTENSOR CAT -> TAO Cat, removes $BTCAT)
+  1. Fixes metadata name/description (BITTENSOR CAT -> TAO CAT)
   2. Packs metadata/ as a CAR
   3. Uploads to Pinata
   4. Saves output/cids.json
@@ -67,9 +67,9 @@ def fix_metadata():
         tid  = int(data.get("tokenId") or jf.stem)
         cid  = token_id_to_cid(tid)
 
-        data["name"]        = f"TAO Cat #{tid}"
+        data["name"]        = f"TAO CAT #{tid}"
         data["description"] = (
-            "4,699 generative pixel cats on Bittensor EVM. "
+            "4,699 pixel cats on Bittensor EVM. "
             "The first NFT collection on the TAO ecosystem. "
             "100% of mint fees seed trading liquidity. No team allocation."
         )

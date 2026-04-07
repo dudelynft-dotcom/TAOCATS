@@ -1,5 +1,5 @@
 """
-BITTENSOR CAT - Generative Art Engine v5  (Layer Compositor)
+BITTENSOR CAT - Art Engine v5  (Layer Compositor)
 =========================================================
 Uses real CATCENTS PNG layer assets (2084x2084 RGBA).
 Composition order (back -> front):
@@ -30,7 +30,7 @@ TOTAL     = 4699
 OUT_DIR   = Path("./output")
 LAYERS    = Path("./layers")
 BASE_URI  = "ipfs://YOUR_CID_HERE/"
-COLL_DESC = ("4699 generative bear NFTs on Bittensor EVM. "
+COLL_DESC = ("4699 pixel cat NFTs on Bittensor EVM. "
              "100% of mint fees fund $BTCAT liquidity. No team tokens.")
 
 # ---- LAYER REGISTRY ----------------------------------------------------------
@@ -191,13 +191,13 @@ def main():
             print(f"  {key:12s} = {p.name if p else 'None'}")
 
     elif mode == "sheet":
-        print("Generating 4x4 preview sheet (16 bears)...")
+        print("Generating 4x4 preview sheet (16 cats)...")
         imgs = [compose(i + 1, pick_traits(rng.randint(0, 10**9))) for i in range(16)]
         make_grid(imgs, 4, 500).save("preview_sheet.png")
         print("Saved: preview_sheet.png  (2000x2000)")
 
     elif mode == "extreme":
-        print("Generating 3x3 showcase (9 varied bears)...")
+        print("Generating 3x3 showcase (9 varied cats)...")
         seeds, seen = [], set()
         for _ in range(500):
             if len(seeds) >= 9:

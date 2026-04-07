@@ -22,68 +22,91 @@ export default function ConnectButton() {
     return () => document.removeEventListener("mousedown", h);
   }, []);
 
-  const dropdownStyle: React.CSSProperties = {
-    position:"absolute", right:0, top:"calc(100% + 6px)", minWidth:200,
-    background:"#ffffff", border:"1px solid #e0e3ea", borderRadius:4,
-    overflow:"hidden", zIndex:100, boxShadow:"0 8px 32px rgba(0,0,0,0.10)",
-  };
-  const dropHeaderStyle: React.CSSProperties = {
-    padding:"8px 16px 6px", fontSize:10, fontWeight:700, letterSpacing:"0.10em",
-    textTransform:"uppercase", color:"#9aa0ae", borderBottom:"1px solid #e0e3ea", background:"#f7f8fa",
-  };
-
   if (!isConnected) return (
     <div ref={ref} style={{ position:"relative" }}>
-      <button onClick={() => setOpen(v => !v)} disabled={isPending}
-        style={{ padding:"7px 16px", background:"#0f1419", color:"#fff", border:"none", borderRadius:2, cursor:"pointer", fontSize:11, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", transition:"background 0.15s" }}>
+      <button 
+        onClick={() => setOpen(v => !v)} 
+        disabled={isPending} 
+        className="btn-primary"
+      >
         {isPending ? "Connecting..." : "Connect Wallet"}
       </button>
+      
       {open && (
-        <div style={dropdownStyle}>
-          <div style={dropHeaderStyle}>Select Wallet</div>
-          {connectors.map(c => (
-            <button key={c.uid} onClick={() => { connect({ connector: c }); setOpen(false); }}
-              style={{ width:"100%", display:"flex", alignItems:"center", gap:10, padding:"10px 16px", background:"transparent", border:"none", cursor:"pointer", color:"#0f1419", fontSize:12, fontWeight:600, textAlign:"left", letterSpacing:"0.04em", transition:"background 0.1s" }}
-              onMouseEnter={e => (e.currentTarget.style.background = "#f7f8fa")}
-              onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-              <div style={{ width:26, height:26, borderRadius:2, background:"#f2f4f7", border:"1px solid #e0e3ea", display:"flex", alignItems:"center", justifyContent:"center", fontSize:9, fontWeight:700, color:"#5a6478" }}>
-                {c.name.slice(0,2).toUpperCase()}
-              </div>
-              {c.name}
-            </button>
-          ))}
+        <div className="wallet-dropdown">
+          <div style={{ padding:"24px 20px", borderBottom:"3px solid #0f1419", background:"#0f1419" }}>
+            <div style={{ fontSize:10, fontWeight:700, letterSpacing:"0.2em", textTransform:"uppercase", color:"#ffffff", marginBottom:4 }}>Connect Wallet</div>
+            <div style={{ fontSize:9, color:"#9aa0ae", letterSpacing:"0.06em", textTransform: "uppercase" }}>{TARGET_CHAIN.name} · Genesis</div>
+          </div>
+          
+          <div style={{ maxHeight:400, overflowY:"auto" }}>
+            {connectors.map(c => (
+              <button 
+                key={c.uid} 
+                onClick={() => { connect({ connector: c }); setOpen(false); }}
+                className="wallet-option"
+              >
+                <div className="wallet-icon-box">
+                  {c.name.slice(0,1).toUpperCase()}
+                </div>
+                <div style={{ flex:1 }}>
+                  <div style={{ fontSize:14, fontWeight:700, color:"#0f1419", textTransform: "uppercase", letterSpacing: "0.04em" }}>{c.name}</div>
+                  <div style={{ fontSize:10, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.08em", marginTop:2 }}>Safe Selection</div>
+                </div>
+                <div style={{ fontSize:16, fontWeight:700 }}>→</div>
+              </button>
+            ))}
+          </div>
+          
+          <div style={{ padding:"16px 20px", background:"#f7f8fa" }}>
+            <p style={{ fontSize:9, color:"#9aa0ae", letterSpacing:"0.06em", textTransform: "uppercase", fontWeight: 700 }}>Bittensor EVM · Chain 964</p>
+          </div>
         </div>
       )}
     </div>
   );
 
   if (wrongNetwork) return (
-    <button onClick={() => switchChain({ chainId: TARGET_CHAIN.id })}
-      style={{ padding:"7px 16px", background:"#fde8e8", border:"1px solid #f5c6c6", color:"#c0392b", borderRadius:2, cursor:"pointer", fontSize:11, fontWeight:700, letterSpacing:"0.08em", textTransform:"uppercase" }}>
-      Wrong Network
+    <button 
+      onClick={() => switchChain({ chainId: TARGET_CHAIN.id })}
+      className="btn-primary"
+      style={{ background:"#fee2e2", color:"#b91c1c", borderColor:"#ef4444", boxShadow:"4px 4px 0px #ef4444" }}
+    >
+      Switch to Chain 964
     </button>
   );
 
   return (
     <div ref={ref} style={{ position:"relative" }}>
-      <button onClick={() => setOpen(v => !v)}
-        style={{ display:"flex", alignItems:"center", gap:8, padding:"7px 14px", background:"#f7f8fa", border:"1px solid #e0e3ea", borderRadius:2, cursor:"pointer", color:"#0f1419", fontSize:11, fontWeight:600, letterSpacing:"0.04em", transition:"all 0.15s" }}
-        onMouseEnter={e => ((e.currentTarget as HTMLButtonElement).style.borderColor = "#00c49a")}
-        onMouseLeave={e => ((e.currentTarget as HTMLButtonElement).style.borderColor = "#e0e3ea")}>
-        <div style={{ width:8, height:8, borderRadius:"50%", background:"#00c49a", flexShrink:0 }} />
-        <span style={{ fontFamily:"var(--font-mono), monospace", fontSize:11 }}>{address?.slice(0,6)}...{address?.slice(-4)}</span>
+      <button 
+        onClick={() => setOpen(v => !v)}
+        className="btn-primary"
+        style={{ background:"#fff", color:"#0f1419", display:"flex", alignItems:"center", gap:12 }}
+      >
+        <div style={{ width:8, height:8, background:"#00c49a", border:"1px solid #0f1419" }} />
+        <span style={{ fontFamily:"monospace", fontSize:13 }}>
+          {address?.slice(0,6)}...{address?.slice(-4)}
+        </span>
       </button>
+
       {open && (
-        <div style={dropdownStyle}>
-          <div style={{ padding:"10px 16px", borderBottom:"1px solid #e0e3ea", background:"#f7f8fa" }}>
-            <div style={{ fontSize:10, color:"#9aa0ae", marginBottom:3, textTransform:"uppercase", letterSpacing:"0.08em", fontWeight:700 }}>Connected · {TARGET_CHAIN.name}</div>
-            <div style={{ fontSize:11, fontFamily:"monospace", color:"#0f1419", fontWeight:600 }}>{address?.slice(0,10)}...{address?.slice(-4)}</div>
+        <div className="wallet-dropdown" style={{ width:280 }}>
+          <div style={{ padding:"24px 20px", borderBottom:"3px solid #0f1419", background:"#f7f8fa" }}>
+            <div style={{ fontSize:9, color:"#9aa0ae", marginBottom:8, textTransform:"uppercase", letterSpacing:"0.14em", fontWeight:700 }}>Active wallet</div>
+            <div style={{ fontSize:14, fontFamily:"monospace", color:"#0f1419", fontWeight:700 }}>{address?.slice(0,12)}...</div>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:8, marginTop:16, padding:"6px 12px", background:"#0f1419", color:"#ffffff", fontSize:9, fontWeight:700, textTransform:"uppercase", letterSpacing:"0.1em" }}>
+              <div style={{ width:6, height:6, background:"#00c49a" }} />
+              {TARGET_CHAIN.name}
+            </div>
           </div>
-          <button onClick={() => { disconnect(); setOpen(false); }}
-            style={{ width:"100%", padding:"10px 16px", background:"transparent", border:"none", cursor:"pointer", color:"#c0392b", fontSize:11, fontWeight:700, textAlign:"left", letterSpacing:"0.06em", textTransform:"uppercase", transition:"background 0.1s" }}
-            onMouseEnter={e => (e.currentTarget.style.background = "#fde8e8")}
-            onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
-            Disconnect
+          
+          <button 
+            onClick={() => { disconnect(); setOpen(false); }}
+            className="wallet-option" 
+            style={{ color:"#c0392b" }}
+          >
+            <div className="wallet-icon-box" style={{ borderColor:"#ef4444", color:"#ef4444" }}>✕</div>
+            <div style={{ flex:1, fontSize: 13, textTransform: "uppercase", fontWeight:700 }}>Disconnect</div>
           </button>
         </div>
       )}

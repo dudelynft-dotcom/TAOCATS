@@ -1,24 +1,24 @@
-# TAO BEAR 🐻
+# TAO CAT 🐱
 
-**1969 generative bear NFTs on TAO EVM**
-**$3.33 mint | No whitelist | 100% fees → $BEAR liquidity**
+**4,699 pixel cat NFTs on Bittensor EVM**
+**τ 0.03 mint | No whitelist | Built-in Marketplace**
 
 ---
 
 ## Project Structure
 
 ```
-TAO BEAR/
+TAO CAT/
 ├── contracts/          ← Solidity smart contracts (Hardhat)
-│   ├── TaoBearNFT.sol       ERC-721, 1969 supply, $3.33 mint
-│   ├── BearMarketplace.sol  P2P trading, 2.5% fee → $BEAR liquidity
-│   └── BearToken.sol        $BEAR ERC-20, 100% to NFT holders
+│   ├── TaoCatNFT.sol        ERC-721, 4699 supply, 0.03 TAO mint
+│   ├── CatMarketplace.sol   P2P trading, 2.5% fee
+│   └── CatToken.sol         $CAT ERC-20, Community token
 ├── frontend/           ← Next.js 14 dApp
 │   ├── /               Home page
 │   ├── /mint           Mint page
 │   ├── /marketplace    Trade page
 │   └── /dashboard      Portfolio page
-└── art-generator/      ← Python generative art engine
+└── art-generator/      ← Python art engine
 ```
 
 ## Quick Start
@@ -29,7 +29,7 @@ cd contracts
 npm install
 cp .env.example .env   # fill in your keys
 npx hardhat compile
-npx hardhat run scripts/deploy.ts --network taoTestnet
+npx hardhat run scripts/deploy.ts --network subtensor
 ```
 
 ### 2. Frontend
@@ -44,7 +44,7 @@ npm run dev
 ```bash
 cd art-generator
 pip install Pillow
-# Add your trait PNGs to layers/ (see README_ART.md)
+# Add your trait PNGs to layers/
 python generate.py
 # Upload output/ to IPFS via Pinata
 ```
@@ -53,20 +53,17 @@ python generate.py
 
 | Item | Amount |
 |------|--------|
-| NFT Supply | 1,969 |
-| Mint Price | $3.33 (in TAO) |
-| Total Mint Revenue | ~$6,526 |
+| NFT Supply | 4,699 |
+| Mint Price | τ 0.03 |
 | Team Allocation | 0% |
-| $BEAR to NFT Holders | 100% |
-| Marketplace Fee | 2.5% → $BEAR liquidity |
+| Marketplace Fee | 2.5% |
 
 ## Roadmap
 
 1. Art creation & trait design
-2. Deploy contracts to TAO EVM testnet
+2. Deploy contracts to Bittensor EVM
 3. Upload art to IPFS
-4. Launch mint — no whitelist
+4. Launch public mint
 5. Reveal art after sellout
-6. Seed $BEAR/TAO liquidity pool with mint fees
-7. Airdrop $BEAR to all NFT holders
-8. DAO governance for NFT holders
+6. Launch $CAT community token
+7. Marketplace activation

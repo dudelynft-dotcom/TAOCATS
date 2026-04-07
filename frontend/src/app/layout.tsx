@@ -12,11 +12,11 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://taocats.io"),
-  title: "TAO Cats | 4,699 Pixel Cats on Bittensor EVM",
-  description: "4,699 generative pixel art cats on Bittensor EVM. 6.99 TAO mint. No whitelist. No team tokens.",
+  title: "TAO CAT | 4,699 Pixel Cats on Bittensor EVM",
+  description: "4,699 pixel art cats on Bittensor EVM. 0.03 TAO mint. No whitelist. No team tokens.",
   openGraph: {
-    title: "TAO Cats",
-    description: "4,699 generative pixel cats on Bittensor EVM.",
+    title: "TAO CAT",
+    description: "4,699 pixel cats on Bittensor EVM.",
     images: ["/preview.png"],
   },
 };

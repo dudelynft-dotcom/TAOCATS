@@ -14,30 +14,47 @@ const links = [
 export default function Navbar() {
   const pathname = usePathname();
   return (
-    <nav style={{ background: "rgba(255,255,255,0.96)", borderBottom: "1px solid #e0e3ea", backdropFilter: "blur(12px)", position:"fixed", top:0, left:0, right:0, zIndex:50 }}>
-      <div style={{ maxWidth:1400, margin:"0 auto", padding:"0 24px", height:56, display:"flex", alignItems:"center", justifyContent:"space-between" }}>
+    <nav style={{ 
+      background: "rgba(255,255,255,0.9)", 
+      borderBottom: "2px solid #0f1419", 
+      backdropFilter: "blur(8px)", 
+      position:"fixed", 
+      top:0, 
+      left:0, 
+      right:0, 
+      zIndex:50 
+    }}>
+      <div className="container-app" style={{ height:64, display:"flex", alignItems:"center", justifyContent:"space-between", gap:16 }}>
 
-        <Link href="/" style={{ display:"flex", alignItems:"center", gap:10, textDecoration:"none" }}>
-          <div style={{ width:32, height:32, borderRadius:2, background:"#0f1419", display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", flexShrink:0 }}>
-            <Image src="/logo.png" alt="TAO Cats" width={26} height={26} style={{ width:26, height:26, objectFit:"contain" }} />
+        <Link href="/" style={{ display:"flex", alignItems:"center", gap:10, textDecoration:"none", flexShrink:0 }}>
+          <div style={{ width:32, height:32, background:"#0f1419", display:"flex", alignItems:"center", justifyContent:"center", overflow:"hidden", border:"1px solid #0f1419" }}>
+            <Image src="/logo.png" alt="TAO CAT" width={26} height={26} style={{ width:26, height:26, objectFit:"contain" }} />
           </div>
-          <span style={{ fontWeight:700, fontSize:13, letterSpacing:"0.10em", color:"#0f1419", textTransform:"uppercase" }}>
-            TAO<span style={{ color:"#00c49a" }}> CATS</span>
+          <span style={{ fontWeight:800, fontSize:13, letterSpacing:"0.12em", color:"#0f1419", textTransform:"uppercase" }} className="hide-mobile">
+            TAO<span style={{ color:"#5a6478" }}> CAT</span>
           </span>
         </Link>
 
-        <div style={{ display:"flex", alignItems:"center" }}>
+        <div style={{ 
+          display:"flex", 
+          alignItems:"center", 
+          gap:8,
+          flex: 1,
+          justifyContent: "center",
+        }} className="nav-links">
           {links.map((l) => (
             <Link key={l.href} href={l.href}
-              style={{ padding:"6px 14px", fontSize:11, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none", transition:"all 0.15s",
+              style={{ padding:"8px 12px", fontSize:10, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", textDecoration:"none", transition:"all 0.15s", whiteSpace:"nowrap",
                 color: pathname === l.href ? "#0f1419" : "#9aa0ae",
-                borderBottom: pathname === l.href ? "2px solid #00c49a" : "2px solid transparent" }}>
+                borderBottom: pathname === l.href ? "2px solid #0f1419" : "2px solid transparent" }}>
               {l.label}
             </Link>
           ))}
         </div>
 
-        <ConnectButton />
+        <div style={{ flexShrink:0 }}>
+          <ConnectButton />
+        </div>
       </div>
     </nav>
   );

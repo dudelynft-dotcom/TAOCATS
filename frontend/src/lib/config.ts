@@ -50,7 +50,7 @@ export const CONTRACTS = {
 };
 
 // ── Collection constants ──────────────────────────────────────────────────────
-export const COLLECTION_NAME = "TAO Cats";
+export const COLLECTION_NAME = "TAO CAT";
 export const MAX_SUPPLY      = 4699;
 export const MINT_PRICE      = "0.03";
 export const MAX_PER_WALLET  = 20;
@@ -69,11 +69,11 @@ export type Collection = {
 export const KNOWN_COLLECTIONS: Collection[] = [
   {
     address: process.env.NEXT_PUBLIC_NFT_ADDRESS as `0x${string}`,
-    name: "TAO Cats",
-    symbol: "TAOC",
+    name: "TAO CAT",
+    symbol: "TCAT",
     verified: true,
     totalSupply: 4699,
-    mintPrice: "6.99",
+    mintPrice: "0.03",
     imagePrefix: "/samples/",
   },
 ];

@@ -4,118 +4,72 @@ import Image from "next/image";
 
 export default function HypeGraphicPage() {
   return (
-    <div style={{
-      width: "100%",
-      minHeight: "100vh",
-      background: "#05070a",
-      color: "#ffffff",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      fontFamily: "monospace",
-      overflow: "hidden",
-      position: "relative"
+    <div style={{ 
+      width: "100%", minHeight: "100vh", background: "#0a0a0a", color: "#ffffff", padding: "4vw", 
+      boxSizing: "border-box", display: "flex", flexDirection: "column", fontFamily: "monospace" 
     }}>
-      
-      {/* Background Graphic Grid */}
-      <div style={{
-        position: "absolute",
-        top: 0, left: 0, right: 0, bottom: 0,
-        display: "grid",
-        gridTemplateColumns: "repeat(4, 1fr)",
-        gap: 2,
-        opacity: 0.1,
-        pointerEvents: "none"
-      }}>
-        {[1,2,3,4,5,6,7,8,9,10,11,12].map(n => (
-          <div key={n} style={{ position: "relative", width: "100%", height: "100%", aspectRatio: "1/1" }}>
-            <Image src={`/samples/${n}.png`} alt="sneak" fill style={{ objectFit: "cover", filter: "blur(4px) brightness(0.5)" }} />
-          </div>
-        ))}
-      </div>
-
-      <div style={{
-        position: "relative",
-        zIndex: 10,
-        maxWidth: 1000,
-        width: "100%",
-        padding: "60px",
-        border: "1px solid rgba(255,255,255,0.1)",
-        background: "rgba(5, 7, 10, 0.8)",
-        backdropFilter: "blur(20px)",
-        textAlign: "center",
-        boxShadow: "0 20px 50px rgba(0,0,0,0.5)"
+      <div style={{ 
+        flex: 1, border: "2px solid #333", display: "flex", flexDirection: "column", background: "#000",
+        boxShadow: "0 0 100px rgba(255,255,255,0.03)"
       }}>
         
-        <div style={{ display: "inline-flex", gap: 12, marginBottom: 40 }}>
-          <span style={{ padding: "6px 16px", background: "#ffffff", color: "#000", fontWeight: 800, fontSize: 12, letterSpacing: "0.2em", textTransform: "uppercase" }}>
-            Bittensor EVM
-          </span>
-          <span style={{ padding: "6px 16px", border: "1px solid #ffffff", color: "#fff", fontWeight: 800, fontSize: 12, letterSpacing: "0.2em", textTransform: "uppercase" }}>
-            Chain 964
-          </span>
+        {/* HEADER BAR */}
+        <div style={{ 
+          borderBottom: "2px solid #333", display: "flex", justifyContent: "space-between", 
+          padding: "24px 40px", textTransform: "uppercase", letterSpacing: "0.15em", fontWeight: 700, fontSize: 12, color: "#888" 
+        }}>
+          <span>TAO CATS // GENESIS</span>
+          <span>BITTENSOR EVM / CHAIN 964</span>
         </div>
 
-        <h1 style={{
-          fontSize: "clamp(80px, 12vw, 160px)", 
-          fontWeight: 900, 
-          letterSpacing: "-0.04em",
-          lineHeight: 0.9,
-          fontFamily: "Inter, sans-serif",
-          textTransform: "uppercase",
-          marginBottom: "24px",
-          color: "#fff"
-        }}>
-          ?
-        </h1>
-
-        <div style={{ width: 80, height: 4, background: "#ffffff", margin: "0 auto 40px auto" }} />
-
-        {/* Sneak Peek Row */}
-        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 40 }}>
-          {[5,8,3].map(n => (
-            <div key={n} style={{ border: "2px solid #333", overflow: "hidden", background: "#0a0a0a" }}>
-               <Image 
-                 src={`/samples/${n}.png`} 
-                 alt="mystery cat" 
-                 width={160} 
-                 height={160} 
-                 style={{ 
-                   filter: "brightness(0) invert(1)", 
-                   opacity: 0.8 
-                 }} 
-               />
-            </div>
-          ))}
+        {/* HERO BODY */}
+        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", position: "relative", overflow: "hidden", padding: "60px 0" }}>
+          
+          {/* MASSIVE BACKGROUND TEXT */}
+          <div style={{ 
+            position: "absolute", fontSize: "40vw", fontWeight: 900, color: "#0c0c0c", 
+            zIndex: 0, lineHeight: 0.8, letterSpacing: "-0.05em", fontFamily: "Inter, sans-serif" 
+          }}>
+            ?
+          </div>
+          
+          {/* PURE SNEAK PEEK GRID */}
+          <div style={{ zIndex: 10, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2, background: "#333", border: "2px solid #333" }}>
+            {[2, 5, 8, 12].map(n => (
+              <div key={n} style={{ background: "#050505", width: "12vw", height: "12vw", minWidth: 150, minHeight: 150, display: "flex", alignItems: "center", justifyContent: "center", position: "relative" }}>
+                 <Image src={`/samples/${n}.png`} alt="mystery cat" fill style={{ objectFit: "cover", filter: "brightness(0) invert(1)", opacity: 0.9 }} />
+              </div>
+            ))}
+          </div>
         </div>
 
-        <p style={{
-          fontSize: "24px",
-          fontWeight: 300,
-          color: "#a1a1aa",
-          maxWidth: 700,
-          margin: "0 auto 20px auto",
-          lineHeight: 1.6,
-          letterSpacing: "0.02em"
-        }}>
-          4,699 pixel cats. Zero insider allocation. Zero team allocation.
-          A pure permissionless fair launch.
-        </p>
+        {/* FOOTER BAR */}
+        <div style={{ borderTop: "2px solid #333", display: "flex", padding: "2vw 40px", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 40 }}>
+           
+           <div style={{ maxWidth: 600 }}>
+             <h2 style={{ fontSize: "clamp(32px, 4vw, 56px)", fontWeight: 900, fontFamily: "Inter, sans-serif", letterSpacing: "-0.02em", marginBottom: 16, lineHeight: 1 }}>
+               4,699 PIXEL CATS.
+             </h2>
+             <p style={{ fontSize: 14, lineHeight: 1.8, color: "#a1a1aa", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+               ZERO INSIDER ALLOCATION.<br/>
+               ZERO TEAM ALLOCATION.<br/>
+               A PURE PERMISSIONLESS FAIR LAUNCH.
+             </p>
+           </div>
 
-        <div style={{
-          display: "inline-block",
-          marginTop: 20,
-          padding: "24px 48px",
-          border: "2px dashed #ffffff",
-          background: "rgba(255, 255, 255, 0.05)"
-        }}>
-          <h2 style={{ fontSize: "28px", fontWeight: 800, letterSpacing: "0.1em", color: "#fff", textTransform: "uppercase" }}>
-            More details in <span style={{ color: "#ffffff" }}>10 HOURS</span>
-          </h2>
+           <div style={{ textAlign: "right" }}>
+             <div style={{ fontSize: 12, color: "#666", marginBottom: 12, letterSpacing: "0.2em", fontWeight: 700 }}>
+               SYSTEM STATUS: INCOMING
+             </div>
+             <div style={{ border: "2px dashed #fff", padding: "16px 32px", display: "inline-block", background: "rgba(255,255,255,0.02)" }}>
+               <div style={{ fontSize: "clamp(24px, 3vw, 40px)", fontWeight: 900, letterSpacing: "0.05em", fontFamily: "Inter, sans-serif", color: "#fff" }}>
+                 MORE DETAILS IN 10 HOURS
+               </div>
+             </div>
+           </div>
+
         </div>
-
       </div>
-
     </div>
   );
 }

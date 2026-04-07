@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useAccount, useReadContract, useWriteContract } from "wagmi";
@@ -54,6 +54,18 @@ function BannerCats() {
 }
 
 export default function MarketplacePage() {
+  return (
+    <Suspense fallback={
+      <div style={{ background:"#ffffff", minHeight:"100vh", padding:40, textAlign:"center", fontSize:12, color:"#9aa0ae", letterSpacing:"0.1em" }}>
+        LOADING MARKETPLACE...
+      </div>
+    }>
+      <MarketplaceContent />
+    </Suspense>
+  );
+}
+
+function MarketplaceContent() {
   const searchParams = useSearchParams();
   const [tab, setTab] = useState<Tab>(() => {
     const t = searchParams.get("tab");

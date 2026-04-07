@@ -1,6 +1,10 @@
 {
   "name": "tao-bear-root",
   "private": true,
+  "workspaces": [
+    "frontend",
+    "contracts"
+  ],
   "scripts": {
     "dev":   "cd frontend && npm run dev",
     "build": "cd frontend && npm run build",

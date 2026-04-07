@@ -29,7 +29,7 @@ export default function ConnectButton() {
         disabled={isPending} 
         className="btn-primary"
       >
-        {isPending ? "Connecting..." : "Connect Wallet"}
+        {isPending ? "CONNECTING..." : "CONNECT"}
       </button>
       
       {open && (

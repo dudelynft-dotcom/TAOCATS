@@ -8,6 +8,13 @@ import ConnectButton from "@/components/ConnectButton";
 import { CONTRACTS, MAX_SUPPLY, COLLECTION_NAME } from "@/lib/config";
 import { NFT_ABI, MARKETPLACE_ABI, RARITY_ABI } from "@/lib/abis";
 
+const TIER_COLOR: Record<string, string> = {
+  Legendary: "#7c3aed", Epic: "#1d4ed8", Rare: "#0a7a5a", Uncommon: "#a16207", Common: "#475569",
+};
+const TIER_BG: Record<string, string> = {
+  Legendary: "#ede9fe", Epic: "#dbeafe", Rare: "#d4f5e9", Uncommon: "#fef3c7", Common: "#f1f5f9",
+};
+
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
 
@@ -45,13 +52,14 @@ export default function DashboardPage() {
     if (l?.active) activePrices.push(l.price);
   });
   const floorPrice   = activePrices.length > 0 ? activePrices.reduce((m, p) => p < m ? p : m, activePrices[0]) : null;
+  const listed       = activePrices.length;
   const portfolioVal = floorPrice && owned > 0 ? parseFloat(formatEther(floorPrice)) * owned : null;
 
   if (!isConnected) return (
     <div style={{ minHeight:"100vh", paddingTop:64, background:"#ffffff", display:"flex", alignItems:"center", justifyContent:"center" }}>
-      <div className="pixel-border" style={{ maxWidth:440, width:"100%", padding:48, textAlign:"center", background:"#f7f8fa" }}>
-        <h2 style={{ fontSize:24, marginBottom:16 }}>Connect Wallet</h2>
-        <p style={{ color:"#5a6478", fontSize:13, marginBottom:32 }}>View your {COLLECTION_NAME} collection, rarity metrics, and estimated portfolio value.</p>
+      <div style={{ maxWidth:400, width:"100%", padding:"0 24px", textAlign:"center" }}>
+        <h2 style={{ fontSize:22, fontWeight:700, marginBottom:16 }}>Connect Wallet</h2>
+        <p style={{ color:"#5a6478", fontSize:12, marginBottom:32 }}>Connect to view your {COLLECTION_NAME} portfolio.</p>
         <ConnectButton />
       </div>
     </div>
@@ -59,87 +67,82 @@ export default function DashboardPage() {
 
   return (
     <div style={{ minHeight:"100vh", paddingTop:64, background:"#ffffff" }}>
-      <div className="container-app" style={{ padding:"64px 20px" }}>
+      <div className="container-app" style={{ padding:"40px 20px" }}>
 
-        {/* Header Section */}
-        <div style={{ marginBottom:48 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", flexWrap:"wrap", gap:20 }}>
-            <div>
-              <h1 style={{ fontSize:32, marginBottom:8 }}>Dashboard</h1>
-              <div className="tag-outline" style={{ fontFamily:"monospace" }}>{address?.slice(0,14)}...</div>
-            </div>
-            <div style={{ textAlign:"right" }}>
-              <div className="section-label">Balance</div>
-              <div style={{ fontSize:24, fontWeight:800 }}>{taoBalance ? `τ ${parseFloat(formatEther(taoBalance.value)).toFixed(4)}` : "-"}</div>
-            </div>
-          </div>
-          <div style={{ height:4, background:"#0f1419", marginTop:32 }} />
+        <div style={{ marginBottom:32 }}>
+          <h1 style={{ fontSize:28, fontWeight:700, marginBottom:4 }}>Dashboard</h1>
+          <p style={{ color:"#9aa0ae", fontFamily:"monospace", fontSize:11 }}>{address}</p>
         </div>
 
-        {/* Top Stats */}
-        <div className="responsive-grid grid-cols-4" style={{ marginBottom:48 }}>
+        {/* Stats Grid */}
+        <div className="responsive-grid grid-cols-4" style={{ gap:1, background: "#e0e3ea", border: "1px solid #e0e3ea", marginBottom:40 }}>
           {[
-            { l:"Owned", v:owned },
-            { l:"Floor Price", v: floorPrice ? `τ ${parseFloat(formatEther(floorPrice)).toFixed(2)}` : "None" },
-            { l:"Portfolio Est.", v: portfolioVal ? `τ ${portfolioVal.toFixed(2)}` : "-" },
-            { l:"Mint Progress", v: `${Math.round(progress)}%` },
+            { label:"Cats Owned", value: owned.toString() },
+            { label:"Total Minted", value: `${minted.toLocaleString()}/${MAX_SUPPLY.toLocaleString()}` },
+            { label:"Listed Inventory", value: listed.toString() },
+            { label:"Balance", value: taoBalance ? `τ ${parseFloat(formatEther(taoBalance.value)).toFixed(2)}` : "-" },
           ].map(s => (
-            <div key={s.l} className="pixel-border" style={{ padding:24, background:"#fff" }}>
-              <div style={{ fontSize:22, fontWeight:800, marginBottom:4 }}>{s.v}</div>
-              <div className="section-label">{s.l}</div>
+            <div key={s.label} style={{ padding:24, background:"#fff" }}>
+              <div style={{ fontSize:22, fontWeight:700, fontFamily:"monospace" }}>{s.value}</div>
+              <div style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", marginTop:4 }}>{s.label}</div>
             </div>
           ))}
         </div>
 
-        {/* My Collection */}
-        <div style={{ marginBottom:64 }}>
-          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:24 }}>
-            <h2 style={{ fontSize:20 }}>Your Collection ({owned})</h2>
-            <Link href="/marketplace?tab=sell" className="btn-outline" style={{ padding:"8px 16px" }}>Sell Items</Link>
+        {/* Portfolio Value */}
+        {owned > 0 && (
+          <div style={{ border:"1px solid #e0e3ea", padding:24, marginBottom:40, display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:20 }}>
+            <div>
+              <div style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", marginBottom:4 }}>Portfolio Value Estimate</div>
+              <div style={{ fontSize:32, fontWeight:700, fontFamily:"monospace" }}>
+                {portfolioVal !== null ? `τ ${portfolioVal.toFixed(2)}` : "-"}
+              </div>
+            </div>
+            <div style={{ textAlign:"right" }}>
+              <div style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", marginBottom:4 }}>Floor Price</div>
+              <div style={{ fontSize:18, fontWeight:700, fontFamily:"monospace", color:"#00c49a" }}>
+                {floorPrice ? `τ ${parseFloat(formatEther(floorPrice)).toFixed(2)}` : "No Listing"}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Inventory */}
+        <div style={{ marginBottom:40 }}>
+          <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:20 }}>
+            <h2 style={{ fontSize:18, fontWeight:700 }}>My Collection ({owned})</h2>
+            <Link href="/marketplace?tab=sell" style={{ fontSize:11, fontWeight:700, color:"#0f1419", textDecoration:"none", borderBottom:"2px solid #0f1419" }}>List Items →</Link>
           </div>
 
           {owned === 0 ? (
-            <div className="pixel-border" style={{ padding:64, textAlign:"center", background:"#f7f8fa" }}>
-              <p style={{ marginBottom:24, color:"#9aa0ae" }}>You don't own any cats yet.</p>
-              <Link href="/mint" className="btn-primary">MINT A CAT</Link>
+            <div style={{ padding:60, textAlign:"center", border:"1px solid #e0e3ea", background:"#f7f8fa" }}>
+              <p style={{ marginBottom:24, color:"#9aa0ae" }}>No cats found in this wallet.</p>
+              <Link href="/mint" className="btn-primary" style={{ padding:"12px 32px", textDecoration:"none", display:"inline-block" }}>Mint Now</Link>
             </div>
           ) : (
-            <div className="responsive-grid grid-cols-4">
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(140px, 1fr))", gap:4 }}>
               {myTokens?.map((tokenId, i) => {
-                const id   = Number(tokenId);
+                const id = Number(tokenId);
                 const tier = rarityBatch?.[2]?.[i] as string | undefined;
                 return (
-                  <motion.div key={tokenId.toString()} 
-                    initial={{ opacity:0, scale:0.95 }}
-                    animate={{ opacity:1, scale:1 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="pixel-border brutal-shadow-hover">
+                  <div key={tokenId.toString()} style={{ border:"1px solid #e0e3ea" }}>
                     <div style={{ aspectRatio:"1/1", background:"#f7f8fa", position:"relative" }}>
                       <Image src={`/samples/${id % 12 + 1}.png`} alt="" width={300} height={300} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
-                      {tier && <div className="tag-dark" style={{ position:"absolute", top:8, left:8, fontSize:8 }}>{tier}</div>}
+                      {tier && (
+                        <div style={{ position:"absolute", top:5, left:5, padding:"2px 6px", fontSize:8, fontWeight:700, background: TIER_BG[tier], color: TIER_COLOR[tier] }}>
+                          {tier}
+                        </div>
+                      )}
                     </div>
-                    <div style={{ padding:16, borderTop:"2px solid #0f1419" }}>
-                      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:12 }}>
-                        <span style={{ fontWeight:800 }}>#{id}</span>
-                        <span style={{ fontSize:10, color:"#9aa0ae" }}>RANK {rarityBatch?.[1]?.[i]?.toString() ?? "?"}</span>
-                      </div>
-                      <Link href="/marketplace?tab=sell" className="btn-outline" style={{ width:"100%", padding:"6px", fontSize:10 }}>LIST FOR SALE</Link>
+                    <div style={{ padding:10, borderTop:"1px solid #e0e3ea" }}>
+                      <div style={{ fontWeight:700, fontSize:12 }}>#{id}</div>
+                      <Link href="/marketplace?tab=sell" style={{ display:"block", textAlign:"center", marginTop:10, padding:"6px", border:"1px solid #0f1419", fontSize:9, fontWeight:700, textDecoration:"none", color:"#0f1419" }}>LIST</Link>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
           )}
-        </div>
-
-        {/* Holder Benefits */}
-        <div className="pixel-border" style={{ padding:32, background:"#0f1419", color:"#fff" }}>
-          <h2 style={{ color:"#fff", fontSize:20, marginBottom:16 }}>Early Adopter Status</h2>
-          <p style={{ color:"#9aa0ae", fontSize:13, lineHeight:1.8, maxWidth:600 }}>
-            As a holder of {COLLECTION_NAME}, you are part of the genesis NFT movement on Bittensor. 
-            All marketplace fees are redistributed to ecosystem development. Reveal of full art and rarity 
-            metadata occurs after the collection sellout.
-          </p>
         </div>
 
       </div>

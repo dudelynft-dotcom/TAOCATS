@@ -5,54 +5,46 @@ import { useReadContract } from "wagmi";
 import { CONTRACTS, MAX_SUPPLY, MINT_PRICE, COLLECTION_NAME } from "@/lib/config";
 import { NFT_ABI } from "@/lib/abis";
 
-// Selected sample IDs for display
-const HERO_SAMPLES   = [50, 100, 200, 300, 500, 700, 900, 1200];
-const GRID_SAMPLES   = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+const HERO_SAMPLES   = [1, 2, 3, 4, 5, 8, 7, 12];
+const GRID_SAMPLES   = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 1500, 2000, 2500, 3000];
 
 const TIERS = [
-  { name:"Legendary", pct:"~1%",  count:"~47",   color:"#000", bg:"#fff", desc:"Ultra-rare traits, maximum rarity score" },
-  { name:"Epic",      pct:"~5%",  count:"~235",  color:"#000", bg:"#fff", desc:"Exceptional trait combinations" },
-  { name:"Rare",      pct:"~10%", count:"~470",  color:"#000", bg:"#fff", desc:"Distinctive and sought-after cats" },
-  { name:"Uncommon",  pct:"~20%", count:"~940",  color:"#000", bg:"#fff", desc:"Above average rarity score" },
-  { name:"Common",    pct:"~64%", count:"~3,007",color:"#000", bg:"#fff", desc:"The backbone of the collection" },
+  { name:"LEGENDARY", pct:"~1%",  count:"~47",   color:"#7c3aed", bg:"#ede9fe", desc:"Ultra-rare traits, maximum rarity score" },
+  { name:"EPIC",      pct:"~5%",  count:"~235",  color:"#1d4ed8", bg:"#dbeafe", desc:"Exceptional trait combinations" },
+  { name:"RARE",      pct:"~10%", count:"~470",  color:"#0a7a5a", bg:"#d4f5e9", desc:"Distinctive and sought-after cats" },
+  { name:"UNCOMMON",  pct:"~20%", count:"~940",  color:"#a16207", bg:"#fef3c7", desc:"Above average rarity score" },
+  { name:"COMMON",    pct:"~64%", count:"~3,007",color:"#475569", bg:"#f1f5f9", desc:"The backbone of the collection" },
 ];
 
-const HOW_IT_WORKS = [
-  { step:"01", title:"Add Bittensor EVM",  desc:"Add Chain ID 964 to your wallet. Use the bridge to get TAO on EVM." },
-  { step:"02", title:"Mint Your Cats",     desc:`Choose quantity (up to 20 per wallet) at τ ${MINT_PRICE} per cat.` },
-  { step:"03", title:"Art Reveals",        desc:"Art is revealed on-chain after all 4,699 cats are minted." },
-  { step:"04", title:"Trade on Market",    desc:"Buy and sell TAO Cats on the built-in marketplace." },
-];
-
-function PixelCatSilhouette({ size = 220 }: { size?: number }) {
-  const px = Math.round(size / 22);
+function PixelCatSilhouette({ size = 280 }: { size?: number }) {
+  const px = Math.round(size / 24);
   const grid = [
-    [0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0],
-    [0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0],
-    [0,0,1,1,1,1,0,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0],
-    [0,0,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0],
-    [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0],
-    [0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,0,0],
-    [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
-    [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
-    [0,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,0],
-    [0,1,1,1,1,1,1,1,0,0,0,0,1,0,0,0,0,1,1,1,1,1],
-    [0,1,1,1,1,1,1,1,1,0,0,1,1,1,0,0,1,1,1,1,1,0],
-    [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
-    [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
-    [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
-    [0,0,0,0,1,1,1,1,1,0,0,0,0,0,1,1,1,1,0,0,0,0],
-    [0,0,0,0,0,1,1,0,1,1,0,0,0,1,1,0,1,1,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0],
-    [0,1,1,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,1,0,0],
+    [0,0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,1,0],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,1,1],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
+    [0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+    [0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+    [0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+    [0,1,1,1,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1],
+    [0,1,1,1,1,1,1,1,0,0,0,1,1,1,1,1,1,0,0,0,1,1,1,1],
+    [0,1,1,1,1,1,1,1,1,0,0,1,1,1,1,1,1,0,0,1,1,1,1,0],
+    [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+    [0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+    [0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,1,1,1,1,1,0,0,0,0],
+    [0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0],
   ];
   return (
-    <div style={{ display:"inline-block", lineHeight:0 }} className="pixel-cat-container">
+    <div style={{ display:"inline-block", lineHeight:0 }}>
       {grid.map((row, ri) => (
         <div key={ri} style={{ display:"flex" }}>
           {row.map((cell, ci) => (
-            <div key={ci} style={{ width:px, height:px, background: cell ? "#0f1419" : "transparent" }} />
+            <div key={ci} style={{ width:px, height:px, background: cell ? "#000" : "transparent" }} />
           ))}
         </div>
       ))}
@@ -65,177 +57,250 @@ export default function HomePage() {
     address: CONTRACTS.NFT, abi: NFT_ABI, functionName: "totalSupply",
   });
   const minted    = totalSupply ? Number(totalSupply) : 0;
-  const remaining = MAX_SUPPLY - minted;
   const progress  = (minted / MAX_SUPPLY) * 100;
 
   return (
     <div style={{ background:"#ffffff", minHeight:"100vh", paddingTop:64 }}>
 
       {/* ── HERO BANNER ──────────────────────────────────────────────────────── */}
-      <section className="pixel-border" style={{ background:"#ffffff", borderBottomWidth:4 }}>
-        <div className="container-app" style={{ padding:"80px 20px", display:"flex", alignItems:"center", flexWrap:"wrap", gap:64 }}>
+      <section style={{ borderBottom:"1px solid #e0e3ea", padding:"100px 0 80px" }}>
+        <div className="container-app" style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:64, flexWrap:"wrap" }}>
           
           <div style={{ flex: "1 1 500px" }}>
-            <div style={{ display:"flex", gap:10, marginBottom:24 }}>
-              <span className="tag-dark">Bittensor EVM</span>
-              <span className="tag-outline">Chain 964</span>
+            <div style={{ display:"flex", gap:10, marginBottom:32 }}>
+              <span style={{ background:"#000", color:"#fff", padding:"4px 12px", fontSize:10, fontWeight:700, letterSpacing:"0.1em" }}>LIVE ON BITTENSOR EVM</span>
+              <span style={{ border:"1px solid #000", padding:"3px 12px", fontSize:10, fontWeight:700, letterSpacing:"0.1em" }}>CHAIN 964</span>
+              <span style={{ border:"1px solid #000", padding:"3px 12px", fontSize:10, fontWeight:700, letterSpacing:"0.1em" }}>OPEN MINT</span>
             </div>
             
-            <h1 style={{ fontSize:"clamp(48px, 8vw, 84px)", lineHeight:0.9, marginBottom:24 }}>
-              {COLLECTION_NAME}
+            <h1 style={{ fontSize:"clamp(60px, 10vw, 100px)", fontWeight:800, color:"#000", letterSpacing:"-0.04em", lineHeight:0.9, textTransform:"uppercase", marginBottom:32 }}>
+              TAO<br/>CATS
             </h1>
-            <p style={{ fontSize:16, color:"#5a6478", maxWidth:500, marginBottom:40 }}>
-              4,699 pixel cats. The pioneer NFT collection built for the Bittensor ecosystem.
-              Verifiable rarity, built-in trading, and 100% community access.
+            
+            <div style={{ width:64, height:4, background:"#000", marginBottom:32 }} />
+
+            <p style={{ fontSize:16, color:"#5a6478", maxWidth:500, marginBottom:20, lineHeight:1.6, fontFamily:"monospace" }}>
+              4,699 generative pixel cats. The first NFT collection on Bittensor EVM.
+            </p>
+            <p style={{ fontSize:12, color:"#9aa0ae", maxWidth:500, marginBottom:48, lineHeight:1.8 }}>
+              Hand-crafted pixel art layers, on-chain rarity, and the first built-in NFT marketplace on TAO. 
+              No whitelist. No team allocation. Equal access for everyone.
             </p>
 
             <div style={{ display:"flex", gap:16, flexWrap:"wrap", marginBottom:48 }}>
-              <Link href="/mint" className="btn-primary">
-                Mint Now | τ {MINT_PRICE}
+              <Link href="/mint" style={{ padding:"16px 40px", background:"#000", color:"#fff", fontWeight:700, fontSize:12, letterSpacing:"0.1em", textDecoration:"none", border:"2px solid #000" }}>
+                MINT NOW | τ {MINT_PRICE}
               </Link>
-              <Link href="/marketplace" className="btn-outline">
-                View Gallery
+              <Link href="/marketplace" style={{ padding:"16px 40px", background:"#fff", color:"#000", fontWeight:700, fontSize:12, letterSpacing:"0.1em", textDecoration:"none", border:"2px solid #000" }}>
+                VIEW MARKET
               </Link>
             </div>
 
-            <div style={{ maxWidth:400 }}>
-              <div style={{ display:"flex", justifyContent:"space-between", fontSize:11, fontWeight:700, textTransform:"uppercase", marginBottom:8 }}>
-                <span>Minting Progress</span>
+            <div style={{ maxWidth:450 }}>
+              <div style={{ display:"flex", justifyContent:"space-between", fontSize:10, fontWeight:700, textTransform:"uppercase", marginBottom:8, color:"#9aa0ae" }}>
+                <span>{minted.toLocaleString()} / {MAX_SUPPLY.toLocaleString()} MINTED</span>
                 <span>{Math.round(progress)}%</span>
               </div>
-              <div style={{ height:12, background:"#f0f1f4", border:"2px solid #0f1419" }}>
-                <div style={{ width:`${progress}%`, height:"100%", background:"#0f1419", transition:"width 1s cubic-bezier(0.4,0,0.2,1)" }} />
+              <div style={{ height:4, background:"#f0f1f4" }}>
+                <div style={{ width:`${progress}%`, height:"100%", background:"#000", transition:"width 1s ease-in-out" }} />
               </div>
             </div>
           </div>
 
-          <div style={{ flex:"0 0 auto", margin:"0 auto" }} className="hide-mobile">
-            <PixelCatSilhouette size={280} />
+          <div style={{ flex:"0 0 auto", margin:"0 auto", textAlign:"center" }}>
+            <div style={{ marginBottom:32 }}>
+              <PixelCatSilhouette size={280} />
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:4, maxWidth:280 }}>
+              {HERO_SAMPLES.map(n => (
+                <div key={n} style={{ border:"1.5px solid #000", overflow:"hidden", aspectRatio:"1/1" }}>
+                  <Image src={`/samples/${n}.png`} alt="" width={80} height={80} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* ── STATS BAR ────────────────────────────────────────────────────────── */}
-      <section style={{ background:"#0f1419", color:"#fff", borderBottom:"4px solid #0f1419" }}>
+      <section style={{ background:"#000", color:"#fff" }}>
         <div className="container-app" style={{ display:"flex", overflowX:"auto" }}>
           {[
-            { label:"Total Supply", value:MAX_SUPPLY },
-            { label:"Mint Price",  value:`τ ${MINT_PRICE}` },
-            { label:"Minted",      value:minted },
-            { label:"Available",   value:remaining },
-            { label:"Limit",       value:"20 per wal" },
+            { label:"TOTAL SUPPLY", value:MAX_SUPPLY.toLocaleString() },
+            { label:"MINT PRICE",   value:`τ ${MINT_PRICE}` },
+            { label:"MINTED",       value:minted.toLocaleString() },
+            { label:"REMAINING",    value:(MAX_SUPPLY-minted).toLocaleString() },
+            { label:"CHAIN",        value:"Bittensor EVM" },
+            { label:"TEAM TOKENS",  value:"Zero" },
+            { label:"WHITELIST",    value:"None" },
           ].map((s, i) => (
-            <div key={i} style={{ padding:"24px 40px", borderRight:"1px solid #2a3040", flexShrink:0 }}>
-              <div style={{ fontSize:20, fontWeight:700, fontFamily:"monospace" }}>{s.value}</div>
-              <div style={{ fontSize:10, color:"#5a6478", textTransform:"uppercase", letterSpacing:"0.1em", marginTop:4 }}>{s.label}</div>
+            <div key={i} style={{ padding:"24px 40px", borderRight:"1px solid #1a1a1a", flexShrink:0 }}>
+              <div style={{ fontSize:18, fontWeight:700 }}>{s.value}</div>
+              <div style={{ fontSize:9, color:"#5a6478", textTransform:"uppercase", letterSpacing:"0.1em", marginTop:4 }}>{s.label}</div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── PREVIEW GRID ─────────────────────────────────────────────────────── */}
-      <section className="container-app" style={{ padding:"100px 20px" }}>
-        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:48 }}>
+      {/* ── COLLECTION PREVIEW ────────────────────────────────────────────────── */}
+      <section className="container-app" style={{ padding:"80px 20px" }}>
+        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-end", marginBottom:32 }}>
           <div>
-            <div className="tag-outline" style={{ marginBottom:12 }}>The Collection</div>
-            <h2 style={{ fontSize:32 }}>4,699 Unique Variations</h2>
+            <div style={{ fontSize:10, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:8 }}>COLLECTION PREVIEW</div>
+            <h2 style={{ fontSize:36, fontWeight:800, textTransform:"uppercase" }}>4,699 PIXEL CATS</h2>
           </div>
-          <Link href="/marketplace" className="hide-mobile" style={{ textDecoration:"none", fontWeight:700, borderBottom:"2px solid #0f1419" }}>Browse Market →</Link>
+          <Link href="/marketplace" style={{ fontSize:11, fontWeight:700, borderBottom:"2px solid #000", textDecoration:"none" }}>BROWSE ALL →</Link>
         </div>
 
-        <div className="responsive-grid grid-cols-4">
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(130px, 1fr))", gap:4 }}>
           {GRID_SAMPLES.map(n => (
-            <div key={n} className="pixel-border brutal-shadow-hover" style={{ overflow:"hidden" }}>
+            <div key={n} style={{ border:"1px solid #eee", overflow:"hidden" }}>
               <div style={{ aspectRatio:"1/1", background:"#f7f8fa" }}>
-                <Image src={`/samples/${n}.png`} alt={`Cat #${n}`} width={300} height={300} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
+                <Image src={`/samples/${typeof n === 'number' && n > 12 ? (n % 12 + 1) : n}.png`} alt="" width={300} height={300} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
               </div>
-              <div style={{ padding:"12px", display:"flex", justifyContent:"space-between", borderTop:"2px solid #0f1419" }}>
-                <span style={{ fontWeight:700 }}>#{n}</span>
-                <span style={{ fontSize:10, color:"#9aa0ae" }}>RARITY POOL</span>
+              <div style={{ padding:"8px 12px", display:"flex", justifyContent:"space-between", borderTop:"1px solid #eee", background:"#fff" }}>
+                <span style={{ fontWeight:700, fontSize:10 }}>#{n}</span>
+                <span style={{ fontSize:8, color:"#9aa0ae", textTransform:"uppercase" }}>TAO CAT</span>
               </div>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* ── ABOUT SECTION ─────────────────────────────────────────────────────── */}
+      <section style={{ background:"#0a0f14", color:"#fff", borderTop:"4px solid #000" }}>
+        <div className="container-app" style={{ padding:"100px 20px" }}>
+          <div className="responsive-grid grid-cols-2" style={{ gap:80, alignItems:"center" }}>
+            <div>
+              <div style={{ fontSize:10, fontWeight:700, color:"#5a6478", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:16 }}>ABOUT THE COLLECTION</div>
+              <h2 style={{ fontSize:42, fontWeight:800, textTransform:"uppercase", lineHeight:1, marginBottom:32 }}>THE FIRST NFT<br/>ON BITTENSOR EVM</h2>
+              <div style={{ width:40, height:3, background:"#fff", marginBottom:32 }} />
+              <p style={{ color:"#9aa0ae", fontSize:14, lineHeight:1.8, marginBottom:24 }}>
+                TAO Cats is the genesis NFT collection on Bittensor EVM (Chain 964). Built by the community, for the community, with zero insider advantage.
+              </p>
+              <div className="responsive-grid grid-cols-2" style={{ gap:32, borderTop:"1px solid #1a1a1a", paddingTop:32 }}>
+                <div>
+                  <div style={{ fontSize:22, fontWeight:700, marginBottom:4 }}>4,699</div>
+                  <div style={{ fontSize:9, color:"#5a6478", textTransform:"uppercase" }}>UNIQUE CATS</div>
+                </div>
+                <div>
+                  <div style={{ fontSize:22, fontWeight:700, marginBottom:4 }}>6 Types</div>
+                  <div style={{ fontSize:9, color:"#5a6478", textTransform:"uppercase" }}>ART LAYERS</div>
+                </div>
+                <div>
+                  <div style={{ fontSize:22, fontWeight:700, marginBottom:4 }}>5 Tiers</div>
+                  <div style={{ fontSize:9, color:"#5a6478", textTransform:"uppercase" }}>RARITY TIERS</div>
+                </div>
+                <div>
+                  <div style={{ fontSize:22, fontWeight:700, marginBottom:4 }}>Bittensor EVM</div>
+                  <div style={{ fontSize:9, color:"#5a6478", textTransform:"uppercase" }}>BLOCKCHAIN</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:2, background:"#000", border:"2px solid #000" }}>
+              {[100, 500, 900, 1500, 2000, 2500].map(n => (
+                <div key={n} style={{ aspectRatio:"1/1", background:"#000" }}>
+                  <Image src={`/samples/${n % 12 + 1}.png`} alt="" width={300} height={300} />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ── RARITY TIERS ─────────────────────────────────────────────────────── */}
-      <section style={{ background:"#f7f8fa", borderTop:"4px solid #0f1419", borderBottom:"4px solid #0f1419" }}>
-        <div className="container-app" style={{ padding:"100px 20px" }}>
-          <div style={{ textAlign:"center", marginBottom:64 }}>
-            <h2 style={{ fontSize:40 }}>Rarity Distribution</h2>
-            <p style={{ color:"#5a6478" }}>Mathematically proven scarcity tiers enforced on-chain.</p>
-          </div>
-          <div className="responsive-grid grid-cols-4" style={{ gap:16 }}>
-            {TIERS.map(t => (
-              <div key={t.name} className="pixel-border" style={{ padding:"32px 24px", background:"#fff" }}>
-                <h3 style={{ fontSize:16, marginBottom:8 }}>{t.name}</h3>
-                <div style={{ fontSize:28, fontWeight:800, marginBottom:8 }}>{t.pct}</div>
-                <div style={{ fontSize:11, color:"#9aa0ae", textTransform:"uppercase", marginBottom:16 }}>{t.count} Units</div>
-                <p style={{ fontSize:12, color:"#5a6478", lineHeight:1.8 }}>{t.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── HOW IT WORKS ─────────────────────────────────────────────────────── */}
       <section className="container-app" style={{ padding:"100px 20px" }}>
-        <h2 style={{ fontSize:32, marginBottom:48 }}>How to Participate</h2>
-        <div className="responsive-grid grid-cols-4">
-          {HOW_IT_WORKS.map(s => (
-            <div key={s.step} className="pixel-border" style={{ padding:"32px 24px" }}>
-              <div style={{ fontSize:48, fontWeight:800, opacity:0.1, lineHeight:1, marginBottom:-20 }}>{s.step}</div>
-              <h3 style={{ fontSize:14, marginBottom:12, position:"relative" }}>{s.title}</h3>
-              <p style={{ fontSize:13, color:"#5a6478", lineHeight:1.8 }}>{s.desc}</p>
+        <div style={{ marginBottom:48 }}>
+          <div style={{ fontSize:10, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:12 }}>ON-CHAIN RARITY</div>
+          <h2 style={{ fontSize:32, fontWeight:800 }}>5 RARITY TIERS</h2>
+        </div>
+        <div className="responsive-grid grid-cols-5" style={{ gap:1, border:"1px solid #eee", background:"#eee" }}>
+          {TIERS.map(t => (
+            <div key={t.name} style={{ 
+              padding:"20px", 
+              background:t.bg, 
+              display:"flex", 
+              flexDirection:"column", 
+              justifyContent:"space-between",
+              minHeight: "180px"
+            }}>
+              <div>
+                <div style={{ width:10, height:10, background:t.color, marginBottom:16 }} />
+                <h3 style={{ fontSize:10, fontWeight:800, color:t.color, marginBottom:4, letterSpacing:"0.05em" }}>{t.name}</h3>
+                <div style={{ fontSize:22, fontWeight:800, marginBottom:4, color:"#000" }}>{t.pct}</div>
+                <div style={{ fontSize:9, color:"#9aa0ae", fontWeight:700, textTransform:"uppercase", marginBottom:12 }}>{t.count} UNITS</div>
+              </div>
+              <p style={{ fontSize:10, color:"#5a6478", lineHeight:1.5, borderTop:"1px solid rgba(0,0,0,0.05)", paddingTop:12 }}>{t.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── CTA ──────────────────────────────────────────────────────────────── */}
-      <section style={{ background:"#0f1419", color:"#fff", padding:"120px 20px", textAlign:"center" }}>
-        <div className="container-app">
-          <h2 style={{ fontSize:48, color:"#fff", marginBottom:16 }}>Ready to Connect?</h2>
-          <p style={{ color:"#9aa0ae", marginBottom:48 }}>Join the first NFT community on the Bittensor EVM.</p>
-          <Link href="/mint" className="btn-primary" style={{ background:"#fff", color:"#0f1419" }}>
-            Start Minting →
-          </Link>
-        </div>
-      </section>
-
-      {/* ── FOOTER ───────────────────────────────────────────────────────────── */}
-      <footer style={{ borderTop:"4px solid #0f1419", padding:"64px 20px" }}>
-        <div className="container-app" style={{ display:"flex", justifyContent:"space-between", flexWrap:"wrap", gap:40 }}>
-          <div>
-            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:20 }}>
-              <div style={{ width:40, height:40, background:"#0f1419", display:"flex", alignItems:"center", justifyContent:"center" }}>
-                <Image src="/logo.png" alt="TAO CAT" width={32} height={32} />
-              </div>
-              <span style={{ fontWeight:800, letterSpacing:"0.1em" }}>TAO CAT</span>
-            </div>
-            <p style={{ fontSize:12, color:"#9aa0ae", maxWidth:300 }}>
-              The premier NFT collection on Bittensor EVM. 4,699 unique pixel cats.
-            </p>
-          </div>
-          <div style={{ display:"flex", gap:64 }}>
+      {/* ── HOW TO MINT ──────────────────────────────────────────────────────── */}
+      <section style={{ background:"#fdfdfd", borderTop:"1px solid #eee" }}>
+        <div className="container-app" style={{ padding:"100px 20px" }}>
+          <h2 style={{ fontSize:32, fontWeight:800, marginBottom:48 }}>HOW TO MINT</h2>
+          <div className="responsive-grid grid-cols-4" style={{ gap:1 }}>
             {[
-              { t:"Explore", links:[{n:"Mint",h:"/mint"},{n:"Market",h:"/marketplace"},{n:"Portfolio",h:"/dashboard"}] },
-              { t:"Ecosystem", links:[{n:"Bittensor",h:"https://bittensor.com"},{n:"Explorer",h:"https://evm-explorer.tao.network"}] }
-            ].map(col => (
-              <div key={col.t}>
-                <div style={{ fontSize:11, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:16 }}>{col.t}</div>
-                {col.links.map(l => (
-                  <Link key={l.n} href={l.h} style={{ display:"block", color:"#0f1419", textDecoration:"none", fontSize:13, marginBottom:8 }}>{l.n}</Link>
-                ))}
+              { s:"01", t:"ADD BITTENSOR EVM", d:"Add Chain ID 964 to MetaMask or any EVM-compatible wallet. Use the bridge to get TAO on EVM." },
+              { s:"02", t:"MINT YOUR CATS", d:"Click Mint, choose quantity (up to 20 per wallet), confirm at τ 0.03 per cat. Transaction confirms in seconds." },
+              { s:"03", t:"ART REVEALS", d:"All art is hidden until sellout. Once collectors mint 4,699 cats, full artwork reveals via IPFS." },
+              { s:"04", t:"TRADE ON MARKET", d:"Buy and sell TAO Cats on the built-in marketplace natively on Bittensor EVM." },
+            ].map(step => (
+              <div key={step.s} style={{ padding:32, border:"1px solid #eee", background:"#fff" }}>
+                <div style={{ fontSize:10, fontWeight:700, color:"#9aa0ae", marginBottom:16 }}>STEP {step.s}</div>
+                <h3 style={{ fontSize:14, fontWeight:800, marginBottom:16 }}>{step.t}</h3>
+                <p style={{ fontSize:12, color:"#5a6478", lineHeight:1.8 }}>{step.d}</p>
               </div>
             ))}
           </div>
         </div>
-        <div className="container-app" style={{ marginTop:64, paddingTop:32, borderTop:"1px solid #f0f1f4", fontSize:11, color:"#9aa0ae", display:"flex", justifyContent:"space-between" }}>
-          <span>© 2025 TAO CAT COLLECTION</span>
-          <span>CHAIN ID 964</span>
+      </section>
+
+      {/* ── BUILT DIFFERENT ───────────────────────────────────────────────────── */}
+      <section className="container-app" style={{ padding:"100px 20px" }}>
+        <div style={{ marginBottom:48 }}>
+          <div style={{ fontSize:10, fontWeight:700, color:"#9aa0ae", textTransform:"uppercase", letterSpacing:"0.1em", marginBottom:12 }}>WHY TAO CATS</div>
+          <h2 style={{ fontSize:32, fontWeight:800 }}>BUILT DIFFERENT</h2>
         </div>
-      </footer>
+        <div className="responsive-grid grid-cols-3" style={{ gap:1, background: "#eee", border:"1px solid #eee" }}>
+          {[
+            { t:"NO TEAM ALLOCATION", d:"Every cat goes to public mint. Zero insider allocation, zero pre-mines, zero reserved supply. The founders participate as equals." },
+            { t:"PIONEER COLLECTION", d:"TAO Cats is the first NFT collection deployed on Bittensor EVM. Being early in a new ecosystem has historical value." },
+            { t:"ON-CHAIN RARITY", d:"Rarity scores are computed and stored on-chain by a dedicated Rarity contract. Immutable, verifiable, tamper-proof. No one can alter the scores after deployment." },
+            { t:"BUILT-IN MARKETPLACE", d:"A full NFT marketplace ships with the collection. No third-party fees from day one. Buy, sell, and discover TAO Cats natively on the Bittensor EVM." },
+            { t:"OPEN & PERMISSIONLESS", d:"No whitelist. No private sale. No KYC. Any wallet on Bittensor EVM can mint during the public mint window, equal access for everyone." },
+            { t:"EARLY ECOSYSTEM POSITION", d:"Bittensor EVM is a nascent ecosystem. TAO Cats holders are positioned at the very beginning of what may become a thriving on-chain economy." },
+          ].map(item => (
+            <div key={item.t} style={{ padding:40, background:"#fff" }}>
+              <div style={{ width:6, height:6, background:"#000", marginBottom:24 }} />
+              <h3 style={{ fontSize:13, fontWeight:800, marginBottom:20, letterSpacing:"0.05em" }}>{item.t}</h3>
+              <p style={{ fontSize:11, color:"#5a6478", lineHeight:1.8, fontFamily:"monospace" }}>{item.d}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── FOOTER CTA ────────────────────────────────────────────────────────── */}
+      <section style={{ background:"#0a0f14", color:"#fff", padding:"100px 20px", borderTop:"1px solid #1a1a1a" }}>
+        <div className="container-app" style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:40 }}>
+          <div>
+            <h2 style={{ fontSize:32, fontWeight:800, marginBottom:16 }}>READY TO MINT?</h2>
+            <div style={{ fontSize:11, color:"#5a6478", letterSpacing:"0.1em", fontWeight:700 }}>
+              τ {MINT_PRICE} PER CAT - UP TO 20 PER WALLET - {MAX_SUPPLY.toLocaleString()} TOTAL SUPPLY
+            </div>
+          </div>
+          <div style={{ display:"flex", gap:16 }}>
+            <Link href="/mint" style={{ padding:"16px 40px", background:"#fff", color:"#000", fontWeight:800, fontSize:11, letterSpacing:"0.1em", textDecoration:"none" }}>
+              MINT NOW | τ {MINT_PRICE}
+            </Link>
+            <Link href="/marketplace" style={{ padding:"16px 40px", background:"#0a0f14", border:"1px solid #1a1a1a", color:"#fff", fontWeight:800, fontSize:11, letterSpacing:"0.1em", textDecoration:"none" }}>
+              MARKETPLACE
+            </Link>
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }

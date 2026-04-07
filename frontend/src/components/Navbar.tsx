@@ -44,9 +44,9 @@ export default function Navbar() {
         }} className="nav-links">
           {links.map((l) => (
             <Link key={l.href} href={l.href}
-              style={{ padding:"8px 12px", fontSize:10, fontWeight:700, letterSpacing:"0.1em", textTransform:"uppercase", textDecoration:"none", transition:"all 0.15s", whiteSpace:"nowrap",
-                color: pathname === l.href ? "#0f1419" : "#9aa0ae",
-                borderBottom: pathname === l.href ? "2px solid #0f1419" : "2px solid transparent" }}>
+              style={{ padding:"8px 0", margin:"0 12px", fontSize:11, fontWeight:800, letterSpacing:"0.08em", textTransform:"uppercase", textDecoration:"none", transition:"all 0.1s", whiteSpace:"nowrap",
+                color: pathname === l.href ? "#000" : "#9aa0ae",
+                borderBottom: pathname === l.href ? "3px solid #00c49a" : "3px solid transparent" }}>
               {l.label}
             </Link>
           ))}

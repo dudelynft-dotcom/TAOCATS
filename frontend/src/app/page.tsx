@@ -69,7 +69,7 @@ export default function HypeGraphicPage() {
           ?
         </h1>
 
-        <div style={{ width: 80, height: 4, background: "#00c49a", margin: "0 auto 40px auto" }} />
+        <div style={{ width: 80, height: 4, background: "#ffffff", margin: "0 auto 40px auto" }} />
 
         {/* Sneak Peek Row */}
         <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 40 }}>
@@ -106,11 +106,11 @@ export default function HypeGraphicPage() {
           display: "inline-block",
           marginTop: 20,
           padding: "24px 48px",
-          border: "2px dashed #00c49a",
-          background: "rgba(0, 196, 154, 0.05)"
+          border: "2px dashed #ffffff",
+          background: "rgba(255, 255, 255, 0.05)"
         }}>
           <h2 style={{ fontSize: "28px", fontWeight: 800, letterSpacing: "0.1em", color: "#fff", textTransform: "uppercase" }}>
-            More details in <span style={{ color: "#00c49a" }}>10 HOURS</span>
+            More details in <span style={{ color: "#ffffff" }}>10 HOURS</span>
           </h2>
         </div>
 

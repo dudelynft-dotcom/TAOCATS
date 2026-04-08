@@ -6,8 +6,8 @@ import { useState, useEffect } from "react";
 import { MAX_SUPPLY, MINT_PRICE } from "@/lib/config";
 
 // ── Launch countdown ──────────────────────────────────────────────────────────
-// Launch: April 10 2026 11:00 AM UTC
-const LAUNCH_TARGET = new Date("2026-04-10T11:00:00.000Z").getTime();
+// Launch: April 9 2026 1:00 PM UTC
+const LAUNCH_TARGET = new Date("2026-04-09T13:00:00.000Z").getTime();
 
 function useCountdown() {
   const [remaining, setRemaining] = useState(() => Math.max(0, LAUNCH_TARGET - Date.now()));

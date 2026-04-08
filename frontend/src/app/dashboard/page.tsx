@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useBalance } from "wagmi";
@@ -61,6 +61,21 @@ export default function DashboardPage() {
     query: { enabled: tokenIds.length > 0 && !!CONTRACTS.RARITY },
   });
 
+  // Fetch all active listings to know which tokens are currently listed
+  const { data: listingPage, refetch: refetchListings } = useReadContract({
+    address: CONTRACTS.MARKETPLACE as `0x${string}`, abi: MARKETPLACE_ABI,
+    functionName: "getListingsPage",
+    args: [CONTRACTS.NFT as `0x${string}`, BigInt(0), BigInt(500)],
+    query: { enabled: !!CONTRACTS.MARKETPLACE && !!CONTRACTS.NFT },
+  });
+
+  const listedIds = useMemo(() => {
+    const [ids, data] = (listingPage as unknown as [bigint[], { active: boolean }[]]) ?? [[], []];
+    const set = new Set<number>();
+    ids.forEach((id, i) => { if (data[i]?.active) set.add(Number(id)); });
+    return set;
+  }, [listingPage]);
+
   const { writeContract, isPending, data: txHash, reset: resetWrite } = useWriteContract();
   const { isSuccess: txDone } = useWaitForTransactionReceipt({ hash: txHash });
 
@@ -75,6 +90,7 @@ export default function DashboardPage() {
       setListingId(null);
       setListPrice("");
       setDelistId(null);
+      refetchListings();
     }
   }, [txDone]);
 
@@ -292,15 +308,17 @@ export default function DashboardPage() {
                               cursor:"pointer", letterSpacing:"0.06em", textTransform:"uppercase" }}>
                             LIST FOR SALE
                           </button>
-                          <button
-                            onClick={() => handleDelist(id)}
-                            disabled={isPending && delistId === id}
-                            style={{ padding:"7px 10px", background:"transparent",
-                              border:"1.5px solid #e0e3ea", fontSize:8, fontWeight:800,
-                              cursor:"pointer", color:"#9aa0ae", textTransform:"uppercase" }}
-                            title="Cancel listing">
-                            {isPending && delistId === id ? "..." : "DELIST"}
-                          </button>
+                          {listedIds.has(id) && (
+                            <button
+                              onClick={() => handleDelist(id)}
+                              disabled={isPending && delistId === id}
+                              style={{ padding:"7px 10px", background:"transparent",
+                                border:"1.5px solid #e0e3ea", fontSize:8, fontWeight:800,
+                                cursor:"pointer", color:"#9aa0ae", textTransform:"uppercase" }}
+                              title="Cancel listing">
+                              {isPending && delistId === id ? "..." : "DELIST"}
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>

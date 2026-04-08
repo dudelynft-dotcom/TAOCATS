@@ -1,5 +1,5 @@
 import { defineChain } from "viem";
-import { createConfig, http } from "wagmi";
+import { createConfig, http, createStorage, cookieStorage } from "wagmi";
 import { injected } from "wagmi/connectors";
 
 // ── Bittensor EVM chains ───────────────────────────────────────────────────────
@@ -38,6 +38,7 @@ export const wagmiConfig = createConfig({
     [subtensorTestnet.id]: http("https://test.chain.opentensor.ai"),
   },
   connectors: [injected()],
+  storage: createStorage({ storage: cookieStorage }),
   ssr: true,
 });
 

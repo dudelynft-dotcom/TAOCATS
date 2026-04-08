@@ -276,3 +276,36 @@ h1, h2, h3, h4, h5, h6 {
   .marketplace-controls select,
   .marketplace-controls .view-toggle { font-size: 9px !important; }
 }
+
+/* ── Teaser homepage ── */
+.teaser-heading {
+  font-size: clamp(48px, 7vw, 96px);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 0.88;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 28px;
+  font-family: monospace;
+}
+
+.teaser-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: end;
+}
+
+@media (max-width: 768px) {
+  .teaser-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .teaser-grid > div:last-child {
+    align-items: flex-start !important;
+    text-align: left !important;
+  }
+  .teaser-grid > div:last-child > div {
+    text-align: left !important;
+  }
+}

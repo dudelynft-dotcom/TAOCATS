@@ -2,7 +2,8 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, usePublicClient } from "wagmi";
+import { useAccount, useReadContract, useWaitForTransactionReceipt, usePublicClient } from "wagmi";
+import { useContractWrite } from "@/lib/useContractWrite";
 import { parseEther, formatEther } from "viem";
 import ConnectButton from "@/components/ConnectButton";
 import { CONTRACTS, MAX_SUPPLY, MINT_PRICE, COLLECTION_NAME } from "@/lib/config";
@@ -43,7 +44,7 @@ export default function MintPage() {
   const totalCostWei = livePriceWei * BigInt(qty);
   const totalCostDisplay = parseFloat(formatEther(totalCostWei)).toFixed(4).replace(/\.?0+$/, "");
 
-  const { writeContract, data: txHash, isPending, error: writeError, reset } = useWriteContract();
+  const { writeContract, data: txHash, isPending, error: writeError, reset } = useContractWrite();
 
   const { isLoading: isConfirming, isSuccess: txSuccess, data: receipt } =
     useWaitForTransactionReceipt({ hash: txHash });
@@ -80,7 +81,6 @@ export default function MintPage() {
       functionName: "mint",
       args: [BigInt(qty)],
       value: totalCostWei,
-      gas: BigInt(500_000), // explicit gas — skips eth_call simulation on Bittensor RPC
     });
   }
 

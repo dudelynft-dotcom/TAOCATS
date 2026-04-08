@@ -3,7 +3,8 @@ import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useReadContract, useWaitForTransactionReceipt } from "wagmi";
+import { useContractWrite } from "@/lib/useContractWrite";
 import { formatEther, parseEther } from "viem";
 import ConnectButton from "@/components/ConnectButton";
 import NftModal from "@/components/NftModal";
@@ -112,7 +113,7 @@ function MarketplaceContent() {
   });
 
   // ── Write contracts ────────────────────────────────────────────────────────
-  const { writeContract, isPending, error: writeError, reset: resetWrite, data: txHash } = useWriteContract();
+  const { writeContract, isPending, error: writeError, reset: resetWrite, data: txHash } = useContractWrite();
   const { isSuccess: txDone } = useWaitForTransactionReceipt({ hash: txHash });
 
   useEffect(() => { if (txDone) { refetchListings(); resetWrite(); } }, [txDone]);
@@ -148,26 +149,21 @@ function MarketplaceContent() {
   const floorPrice = colInfo?.[4] ? formatEther(colInfo[4]) : null;
   const volume     = colInfo?.[2] ? parseFloat(formatEther(colInfo[2])).toFixed(2) : "0";
 
-  const GAS = BigInt(500_000); // explicit gas — skips eth_call simulation on Bittensor RPC
-
   // ── Handlers ──────────────────────────────────────────────────────────────
   function handleBuy(tokenId: bigint, price: bigint) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "buy",
-      args: [nftCollection, tokenId], value: price, gas: GAS });
+    writeContract({ address: marketAddr, abi: MARKETPLACE_ABI, functionName: "buy",
+      args: [nftCollection, tokenId], value: price });
   }
 
   function handleMakeOffer() {
     if (!offerPrice) return;
     const expiry = BigInt(Math.floor(Date.now() / 1000) + parseInt(offerDays) * 86400);
     if (offerType === "nft" && offerTokenId) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "makeOffer",
-        args: [nftCollection, BigInt(offerTokenId), expiry], value: parseEther(offerPrice), gas: GAS });
+      writeContract({ address: marketAddr, abi: MARKETPLACE_ABI, functionName: "makeOffer",
+        args: [nftCollection, BigInt(offerTokenId), expiry], value: parseEther(offerPrice) });
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "makeCollectionOffer",
-        args: [nftCollection, expiry], value: parseEther(offerPrice), gas: GAS });
+      writeContract({ address: marketAddr, abi: MARKETPLACE_ABI, functionName: "makeCollectionOffer",
+        args: [nftCollection, expiry], value: parseEther(offerPrice) });
     }
   }
 

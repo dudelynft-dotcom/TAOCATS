@@ -2,7 +2,8 @@
 import { useState, useEffect, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useBalance } from "wagmi";
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useBalance } from "wagmi";
+import { useContractWrite } from "@/lib/useContractWrite";
 import { formatEther, parseEther } from "viem";
 import ConnectButton from "@/components/ConnectButton";
 import NftModal from "@/components/NftModal";
@@ -76,7 +77,7 @@ export default function DashboardPage() {
     return set;
   }, [listingPage]);
 
-  const { writeContract, isPending, data: txHash, reset: resetWrite, error: writeError } = useWriteContract();
+  const { writeContract, isPending, data: txHash, reset: resetWrite, error: writeError } = useContractWrite();
   const { isSuccess: txDone, isLoading: isConfirming, isError: txFailed, error: txError } = useWaitForTransactionReceipt({ hash: txHash });
 
   // After approval confirms, auto-submit the pending list
@@ -98,25 +99,19 @@ export default function DashboardPage() {
   const ownedCount   = tokenIds.length;
   const portfolioTao = floorTao * ownedCount;
 
-  const GAS = BigInt(500_000); // explicit gas — skips eth_call simulation on Bittensor RPC
-
   function doList(id: number, price: string) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    writeContract({ address: CONTRACTS.MARKETPLACE as `0x${string}`, abi: MARKETPLACE_ABI as any,
+    writeContract({ address: CONTRACTS.MARKETPLACE as `0x${string}`, abi: MARKETPLACE_ABI,
       functionName: "list",
-      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id), parseEther(price)],
-      gas: GAS });
+      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id), parseEther(price)] });
   }
 
   function handleList(id: number, price: string) {
     if (!price || !id) return;
     if (!isApproved) {
       setPendingList(true);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      writeContract({ address: CONTRACTS.NFT as `0x${string}`, abi: ERC721_ABI as any,
+      writeContract({ address: CONTRACTS.NFT as `0x${string}`, abi: ERC721_ABI,
         functionName: "setApprovalForAll",
-        args: [CONTRACTS.MARKETPLACE as `0x${string}`, true],
-        gas: GAS });
+        args: [CONTRACTS.MARKETPLACE as `0x${string}`, true] });
     } else {
       doList(id, price);
     }
@@ -124,11 +119,9 @@ export default function DashboardPage() {
 
   function handleDelist(id: number) {
     setDelistId(id);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    writeContract({ address: CONTRACTS.MARKETPLACE as `0x${string}`, abi: MARKETPLACE_ABI as any,
+    writeContract({ address: CONTRACTS.MARKETPLACE as `0x${string}`, abi: MARKETPLACE_ABI,
       functionName: "delist",
-      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id)],
-      gas: GAS });
+      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id)] });
   }
 
   if (!isConnected) {

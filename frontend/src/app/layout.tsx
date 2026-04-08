@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import Navbar from "@/components/Navbar";
+import MetaMaskRpcBanner from "@/components/MetaMaskRpcBanner";
 
 export const metadata: Metadata = {
   title: "TAO CAT | 4,699 Pixel Cats on Bittensor EVM",
@@ -19,6 +20,7 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           {children}
+          <MetaMaskRpcBanner />
         </Providers>
       </body>
     </html>

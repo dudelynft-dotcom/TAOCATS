@@ -31,11 +31,17 @@ export const subtensorTestnet = defineChain({
 const IS_TESTNET = process.env.NEXT_PUBLIC_USE_TESTNET === "true";
 export const activeChain = IS_TESTNET ? subtensorTestnet : subtensor;
 
+// RPC proxy URL — routes eth_call/eth_estimateGas failures gracefully
+// so MetaMask simulation works on Bittensor EVM.
+// In production this resolves to https://taocats.fun/api/rpc
+const RPC_PROXY_TESTNET = "https://taocats.fun/api/rpc?net=test";
+const RPC_PROXY_MAINNET = "https://taocats.fun/api/rpc?net=main";
+
 export const wagmiConfig = createConfig({
   chains: [subtensor, subtensorTestnet],
   transports: {
-    [subtensor.id]:        http("https://lite.chain.opentensor.ai"),
-    [subtensorTestnet.id]: http("https://test.chain.opentensor.ai"),
+    [subtensor.id]:        http(RPC_PROXY_MAINNET),
+    [subtensorTestnet.id]: http(RPC_PROXY_TESTNET),
   },
   connectors: [injected()],
   storage: createStorage({ storage: cookieStorage }),

@@ -5,11 +5,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { useAccount, useReadContract, useWaitForTransactionReceipt } from "wagmi";
 import { useContractWrite } from "@/lib/useContractWrite";
-import { formatEther, parseEther } from "viem";
+
+import { formatEther } from "viem";
 import ConnectButton from "@/components/ConnectButton";
 import NftModal from "@/components/NftModal";
 import { CONTRACTS } from "@/lib/config";
-import { MARKETPLACE_ABI, NFT_ABI, RARITY_ABI } from "@/lib/abis";
+import { SIMPLE_MARKET_ABI, RARITY_ABI } from "@/lib/abis";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type Tab      = "listings" | "activity" | "offers";
@@ -89,22 +90,17 @@ function MarketplaceContent() {
   useEffect(() => { setSidebarOpen(window.innerWidth >= 768); }, []);
 
   // ── Contract reads ────────────────────────────────────────────────────────
-  const nftCollection = (CONTRACTS.NFT ?? "") as `0x${string}`;
-  const marketAddr    = (CONTRACTS.MARKETPLACE ?? "") as `0x${string}`;
+  const marketAddr = (CONTRACTS.SIMPLE_MARKET ?? "") as `0x${string}`;
 
-  const { data: listingPage, refetch: refetchListings } = useReadContract({
-    address: marketAddr, abi: MARKETPLACE_ABI,
-    functionName: "getListingsPage",
-    args: [nftCollection, BigInt(0), BigInt(200)],
-    query: { enabled: !!marketAddr && !!nftCollection },
+  const { data: pageData, refetch: refetchListings } = useReadContract({
+    address: marketAddr, abi: SIMPLE_MARKET_ABI,
+    functionName: "getPage",
+    args: [BigInt(0), BigInt(500)],
+    query: { enabled: !!marketAddr },
   });
 
-  const { data: collectionInfo } = useReadContract({
-    address: marketAddr, abi: MARKETPLACE_ABI, functionName: "collections",
-    args: [nftCollection], query: { enabled: !!marketAddr && !!nftCollection },
-  });
-
-  const [tokenIds, listingData] = (listingPage as [bigint[], {seller:`0x${string}`;price:bigint;active:boolean}[]]) ?? [[], []];
+  const [tokenIds, sellers, prices] =
+    (pageData as [bigint[], `0x${string}`[], bigint[]]) ?? [[], [], []];
 
   const { data: rarityBatch } = useReadContract({
     address: CONTRACTS.RARITY as `0x${string}`, abi: RARITY_ABI, functionName: "rarityBatch",
@@ -120,18 +116,16 @@ function MarketplaceContent() {
 
   // ── Listings ──────────────────────────────────────────────────────────────
   const listings = useMemo((): Listing[] => {
-    return (tokenIds as bigint[]).map((tid, i) => {
-      const l = listingData[i] as any;
-      if (!l || !l.active) return null;
-      return {
-        tokenId: tid, id: Number(tid), price: l.price as bigint,
-        seller: l.seller as `0x${string}`,
-        tier:  rarityBatch?.[2]?.[i] as string | undefined,
-        rank:  rarityBatch?.[1]?.[i] ? Number(rarityBatch[1][i]) : undefined,
-        score: rarityBatch?.[0]?.[i] ? Number(rarityBatch[0][i]) : undefined,
-      };
-    }).filter(Boolean) as Listing[];
-  }, [tokenIds, listingData, rarityBatch]);
+    return tokenIds.map((tid, i) => ({
+      tokenId: tid,
+      id:      Number(tid),
+      price:   prices[i] as bigint,
+      seller:  sellers[i] as `0x${string}`,
+      tier:    rarityBatch?.[2]?.[i] as string | undefined,
+      rank:    rarityBatch?.[1]?.[i] ? Number(rarityBatch[1][i]) : undefined,
+      score:   rarityBatch?.[0]?.[i] ? Number(rarityBatch[0][i]) : undefined,
+    }));
+  }, [tokenIds, sellers, prices, rarityBatch]);
 
   const filtered = useMemo(() => {
     let out = [...listings];
@@ -145,26 +139,18 @@ function MarketplaceContent() {
     return out;
   }, [listings, filterTier, sort]);
 
-  const colInfo    = collectionInfo as [boolean,boolean,bigint,bigint,bigint] | undefined;
-  const floorPrice = colInfo?.[4] ? formatEther(colInfo[4]) : null;
-  const volume     = colInfo?.[2] ? parseFloat(formatEther(colInfo[2])).toFixed(2) : "0";
+  const floorPrice = prices.length > 0
+    ? formatEther(prices.reduce((min, p) => p < min ? p : min, prices[0]))
+    : null;
 
   // ── Handlers ──────────────────────────────────────────────────────────────
   function handleBuy(tokenId: bigint, price: bigint) {
-    writeContract({ address: marketAddr, abi: MARKETPLACE_ABI, functionName: "buy",
-      args: [nftCollection, tokenId], value: price });
+    writeContract({ address: marketAddr, abi: SIMPLE_MARKET_ABI,
+      functionName: "buy", args: [tokenId], value: price });
   }
 
   function handleMakeOffer() {
-    if (!offerPrice) return;
-    const expiry = BigInt(Math.floor(Date.now() / 1000) + parseInt(offerDays) * 86400);
-    if (offerType === "nft" && offerTokenId) {
-      writeContract({ address: marketAddr, abi: MARKETPLACE_ABI, functionName: "makeOffer",
-        args: [nftCollection, BigInt(offerTokenId), expiry], value: parseEther(offerPrice) });
-    } else {
-      writeContract({ address: marketAddr, abi: MARKETPLACE_ABI, functionName: "makeCollectionOffer",
-        args: [nftCollection, expiry], value: parseEther(offerPrice) });
-    }
+    // Offers not supported on simple market — no-op
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
@@ -243,7 +229,7 @@ function MarketplaceContent() {
               {[
                 { l:"FLOOR",  v: floorPrice ? `τ ${parseFloat(floorPrice).toFixed(3)}` : "—" },
                 { l:"LISTED", v: listings.length },
-                { l:"VOLUME", v: `τ ${volume}` },
+                { l:"VOLUME", v: "—" },
                 { l:"FEE",    v: "2.5%" },
               ].map(s => (
                 <div key={s.l} style={{ minWidth:60 }}>

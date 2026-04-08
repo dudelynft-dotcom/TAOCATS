@@ -120,6 +120,39 @@ export const RARITY_ABI = [
     outputs: [{ name: "scores", type: "uint256[]" }, { name: "ranks", type: "uint256[]" }, { name: "tiers", type: "string[]" }] },
 ] as const;
 
+// ─── TaoCatsMarket (simple single-collection) ────────────────────────────────
+export const SIMPLE_MARKET_ABI = [
+  { name: "list",     type: "function", stateMutability: "nonpayable",
+    inputs: [{ name: "tokenId", type: "uint256" }, { name: "price", type: "uint256" }], outputs: [] },
+  { name: "cancel",   type: "function", stateMutability: "nonpayable",
+    inputs: [{ name: "tokenId", type: "uint256" }], outputs: [] },
+  { name: "buy",      type: "function", stateMutability: "payable",
+    inputs: [{ name: "tokenId", type: "uint256" }], outputs: [] },
+  { name: "getListing", type: "function", stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "seller", type: "address" }, { name: "price", type: "uint256" }] },
+  { name: "isListed", type: "function", stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }], outputs: [{ type: "bool" }] },
+  { name: "totalListings", type: "function", stateMutability: "view",
+    inputs: [], outputs: [{ type: "uint256" }] },
+  { name: "getPage",  type: "function", stateMutability: "view",
+    inputs: [{ name: "offset", type: "uint256" }, { name: "limit", type: "uint256" }],
+    outputs: [
+      { name: "tokenIds", type: "uint256[]" },
+      { name: "sellers",  type: "address[]" },
+      { name: "prices",   type: "uint256[]" },
+    ]},
+  { name: "listings", type: "function", stateMutability: "view",
+    inputs: [{ name: "tokenId", type: "uint256" }],
+    outputs: [{ name: "seller", type: "address" }, { name: "price", type: "uint256" }] },
+  { name: "Listed",    type: "event",
+    inputs: [{ name: "tokenId", type: "uint256", indexed: true }, { name: "seller", type: "address", indexed: true }, { name: "price", type: "uint256" }] },
+  { name: "Sold",      type: "event",
+    inputs: [{ name: "tokenId", type: "uint256", indexed: true }, { name: "seller", type: "address", indexed: true }, { name: "buyer", type: "address", indexed: true }, { name: "price", type: "uint256" }] },
+  { name: "Cancelled", type: "event",
+    inputs: [{ name: "tokenId", type: "uint256", indexed: true }, { name: "seller", type: "address", indexed: true }] },
+] as const;
+
 // ─── ERC-721 generic ─────────────────────────────────────────────────────────
 export const ERC721_ABI = [
   { name: "name",               type: "function", stateMutability: "view", inputs: [], outputs: [{ type: "string" }] },

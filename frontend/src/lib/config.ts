@@ -50,10 +50,11 @@ export const wagmiConfig = createConfig({
 
 // ── Contract addresses ────────────────────────────────────────────────────────
 export const CONTRACTS = {
-  NFT:         process.env.NEXT_PUBLIC_NFT_ADDRESS         as `0x${string}`,
-  MARKETPLACE: process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS as `0x${string}`,
-  TOKEN:       process.env.NEXT_PUBLIC_BTCAT_TOKEN_ADDRESS as `0x${string}`,
-  RARITY:      process.env.NEXT_PUBLIC_RARITY_ADDRESS      as `0x${string}`,
+  NFT:           process.env.NEXT_PUBLIC_NFT_ADDRESS           as `0x${string}`,
+  MARKETPLACE:   process.env.NEXT_PUBLIC_MARKETPLACE_ADDRESS   as `0x${string}`,
+  SIMPLE_MARKET: process.env.NEXT_PUBLIC_SIMPLE_MARKET_ADDRESS as `0x${string}`,
+  TOKEN:         process.env.NEXT_PUBLIC_BTCAT_TOKEN_ADDRESS   as `0x${string}`,
+  RARITY:        process.env.NEXT_PUBLIC_RARITY_ADDRESS        as `0x${string}`,
 };
 
 // ── Collection constants ──────────────────────────────────────────────────────

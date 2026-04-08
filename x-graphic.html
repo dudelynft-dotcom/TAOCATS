@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* ── CARD — 1200×630 (Twitter optimal size) ── */
+  .card {
+    width: 1200px;
+    height: 630px;
+    background: #000;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid #1a1a1a;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Noise texture overlay */
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Faint grid lines */
+  .card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(#ffffff04 1px, transparent 1px),
+      linear-gradient(90deg, #ffffff04 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+  }
+
+  /* Top bar */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 48px;
+    border-bottom: 1px solid #1c1c1c;
+    position: relative;
+    z-index: 1;
+  }
+  .topbar span {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: #333;
+    text-transform: uppercase;
+  }
+
+  /* Main layout */
+  .main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* LEFT */
+  .left {
+    padding: 44px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid #1c1c1c;
+  }
+
+  .tag-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .tag {
+    padding: 4px 10px;
+    border: 1px solid #222;
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: #444;
+    text-transform: uppercase;
+  }
+  .tag.active {
+    background: #fff;
+    color: #000;
+    border-color: #fff;
+  }
+
+  .heading {
+    font-size: 88px;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 0.85;
+    text-transform: uppercase;
+    color: #fff;
+    margin-bottom: 28px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 32px;
+  }
+  .stat-item {}
+  .stat-val {
+    font-size: 18px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+  .stat-label {
+    font-size: 8px;
+    color: #333;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  /* RIGHT */
+  .right {
+    padding: 44px 48px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* NFT grid */
+  .nft-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    margin-bottom: 28px;
+  }
+  .nft-cell {
+    aspect-ratio: 1/1;
+    background: #111;
+    border: 1px solid #1c1c1c;
+    overflow: hidden;
+  }
+  .nft-cell img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.8) saturate(0.7);
+  }
+
+  /* Bottom right */
+  .right-bottom {}
+
+  .system-status {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    color: #333;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+
+  .countdown-box {
+    border: 1px dashed #252525;
+    padding: 20px 24px;
+    margin-bottom: 18px;
+    display: inline-flex;
+    gap: 24px;
+    align-items: flex-end;
+  }
+  .cd-unit {}
+  .cd-val {
+    font-size: 42px;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .cd-label {
+    font-size: 8px;
+    color: #333;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .cd-sep {
+    font-size: 36px;
+    font-weight: 900;
+    color: #222;
+    line-height: 1;
+    padding-bottom: 4px;
+  }
+
+  .contributors {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: #2e2e2e;
+    text-transform: uppercase;
+    line-height: 1.9;
+  }
+
+  /* Bottom bar */
+  .bottombar {
+    border-top: 1px solid #1c1c1c;
+    padding: 14px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+  .bottombar-left {
+    font-size: 8px;
+    color: #282828;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .bottombar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00c49a;
+    box-shadow: 0 0 8px #00c49a;
+  }
+  .live-text {
+    font-size: 8px;
+    color: #00c49a;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  /* Decorative pixel cat — bottom right corner */
+  .pixel-cat-deco {
+    position: absolute;
+    bottom: 50px;
+    right: 80px;
+    opacity: 0.035;
+    z-index: 0;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Decorative pixel cat -->
+  <svg class="pixel-cat-deco" width="320" height="352"
+    viewBox="0 0 20 22" fill="#fff" shape-rendering="crispEdges">
+    <rect x="3" y="0" width="2" height="2"/><rect x="13" y="0" width="2" height="2"/>
+    <rect x="2" y="1" width="4" height="2"/><rect x="11" y="1" width="5" height="2"/>
+    <rect x="2" y="2" width="4" height="2"/><rect x="11" y="2" width="5" height="2"/>
+    <rect x="2" y="3" width="5" height="2"/><rect x="11" y="3" width="5" height="2"/>
+    <rect x="3" y="4" width="14" height="1"/>
+    <rect x="2" y="5" width="16" height="1"/>
+    <rect x="3" y="6" width="14" height="1"/>
+    <rect x="2" y="7" width="16" height="1"/>
+    <rect x="1" y="8" width="7" height="1"/><rect x="10" y="8" width="7" height="1"/>
+    <rect x="1" y="9" width="6" height="1"/><rect x="11" y="9" width="6" height="1"/>
+    <rect x="1" y="10" width="7" height="1"/><rect x="10" y="10" width="7" height="1"/>
+    <rect x="2" y="11" width="16" height="1"/>
+    <rect x="2" y="12" width="16" height="1"/>
+    <rect x="3" y="13" width="14" height="1"/>
+    <rect x="2" y="14" width="4" height="1"/><rect x="12" y="14" width="4" height="1"/>
+    <rect x="2" y="15" width="2" height="1"/><rect x="13" y="15" width="3" height="1"/>
+    <rect x="4" y="16" width="4" height="1"/><rect x="10" y="16" width="4" height="1"/>
+    <rect x="5" y="17" width="2" height="1"/><rect x="11" y="17" width="2" height="1"/>
+    <rect x="2" y="19" width="2" height="2"/><rect x="14" y="19" width="2" height="2"/>
+    <rect x="1" y="20" width="5" height="1"/><rect x="13" y="20" width="5" height="1"/>
+    <rect x="1" y="21" width="3" height="1"/><rect x="14" y="21" width="3" height="1"/>
+  </svg>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <span>TAO CATS // GENESIS</span>
+    <span>BITTENSOR EVM / CHAIN 964</span>
+  </div>
+
+  <!-- Main -->
+  <div class="main">
+
+    <!-- LEFT -->
+    <div class="left">
+      <div>
+        <div class="tag-row">
+          <div class="tag active">FAIR LAUNCH</div>
+          <div class="tag">NO WHITELIST</div>
+          <div class="tag">NO TEAM ALLOC</div>
+        </div>
+        <div class="heading">4,699<br>PIXEL<br>CATS.</div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-val">τ 0.01</div>
+          <div class="stat-label">Mint Price</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">4,699</div>
+          <div class="stat-label">Total Supply</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">20</div>
+          <div class="stat-label">Max / Wallet</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-val">ZERO</div>
+          <div class="stat-label">Team Tokens</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+      <!-- NFT grid -->
+      <div class="nft-grid">
+        <div class="nft-cell"><img src="frontend/public/samples/1.png" /></div>
+        <div class="nft-cell"><img src="frontend/public/samples/2.png" /></div>
+        <div class="nft-cell"><img src="frontend/public/samples/3.png" /></div>
+        <div class="nft-cell"><img src="frontend/public/samples/4.png" /></div>
+      </div>
+
+      <!-- Countdown + contributors -->
+      <div class="right-bottom">
+        <div class="system-status">SYSTEM STATUS: INCOMING</div>
+        <div class="countdown-box">
+          <div class="cd-unit">
+            <div class="cd-val" id="hh">23</div>
+            <div class="cd-label">HR</div>
+          </div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit">
+            <div class="cd-val" id="mm">00</div>
+            <div class="cd-label">MIN</div>
+          </div>
+          <div class="cd-sep">:</div>
+          <div class="cd-unit">
+            <div class="cd-val" id="ss">00</div>
+            <div class="cd-label">SEC</div>
+          </div>
+        </div>
+        <div class="contributors">
+          EARLY COMMUNITY MEMBERS<br>WILL BE RECOGNIZED AT LAUNCH
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="bottombar">
+    <span class="bottombar-left">taocats.fun · THE FIRST NFT COLLECTION ON BITTENSOR EVM</span>
+    <div class="bottombar-right">
+      <div class="dot"></div>
+      <span class="live-text">LIVE ON CHAIN 964</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const TARGET = new Date("2026-04-09T13:00:00.000Z").getTime();
+  function tick() {
+    const ms = Math.max(0, TARGET - Date.now());
+    const h = Math.floor(ms / 3600000);
+    const m = Math.floor((ms % 3600000) / 60000);
+    const s = Math.floor((ms % 60000) / 1000);
+    const p = n => String(n).padStart(2,'0');
+    document.getElementById('hh').textContent = p(h);
+    document.getElementById('mm').textContent = p(m);
+    document.getElementById('ss').textContent = p(s);
+  }
+  tick();
+  setInterval(tick, 1000);
+</script>
+
+</body>
+</html>

@@ -2,7 +2,25 @@
 import Link from "next/link";
 import Image from "next/image";
 import dynamic from "next/dynamic";
+import { useState, useEffect } from "react";
 import { MAX_SUPPLY, MINT_PRICE } from "@/lib/config";
+
+// ── Launch countdown ──────────────────────────────────────────────────────────
+// 72 hours from April 8 2026 → April 11 2026 20:00 UTC
+const LAUNCH_TARGET = new Date("2026-04-11T20:00:00.000Z").getTime();
+
+function useCountdown() {
+  const [remaining, setRemaining] = useState(() => Math.max(0, LAUNCH_TARGET - Date.now()));
+  useEffect(() => {
+    const id = setInterval(() => setRemaining(Math.max(0, LAUNCH_TARGET - Date.now())), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const h  = Math.floor(remaining / 3_600_000);
+  const m  = Math.floor((remaining % 3_600_000) / 60_000);
+  const s  = Math.floor((remaining % 60_000) / 1000);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return remaining > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : null;
+}
 
 const MintProgress = dynamic(() => import("@/components/MintProgress"), { ssr: false });
 
@@ -65,6 +83,14 @@ function PixelCat({ size = 220, color = "#0f1419" }: { size?: number; color?: st
 }
 
 export default function HomePage() {
+  const countdown = useCountdown();
+  const [toast, setToast] = useState(false);
+
+  function showToast() {
+    setToast(true);
+    setTimeout(() => setToast(false), 2000);
+  }
+
   return (
     <div style={{ background:"#ffffff", minHeight:"100vh", paddingTop:56 }}>
 
@@ -91,13 +117,31 @@ export default function HomePage() {
               No whitelist. No team allocation. Equal access for everyone.
             </p>
 
-            <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:32 }}>
-              <Link href="/mint" style={{ padding:"13px 32px", background:"#0f1419", color:"#ffffff", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block", border:"2px solid #0f1419" }}>
+            <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:16 }}>
+              <button onClick={showToast}
+                style={{ padding:"13px 32px", background:"#0f1419", color:"#ffffff",
+                  fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase",
+                  border:"2px solid #0f1419", cursor:"not-allowed", opacity:0.55 }}>
                 Mint Now | τ {MINT_PRICE}
-              </Link>
-              <Link href="/marketplace" style={{ padding:"13px 32px", background:"transparent", color:"#0f1419", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block", border:"2px solid #0f1419" }}>
+              </button>
+              <button onClick={showToast}
+                style={{ padding:"13px 32px", background:"transparent", color:"#0f1419",
+                  fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase",
+                  border:"2px solid #0f1419", cursor:"not-allowed", opacity:0.55 }}>
                 View Market
-              </Link>
+              </button>
+            </div>
+
+            {/* Countdown */}
+            <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:32 }}>
+              <div style={{ width:6, height:6, borderRadius:"50%", background:"#00c49a",
+                boxShadow:"0 0 6px #00c49a", flexShrink:0 }} />
+              <span style={{ fontSize:10, fontWeight:700, color:"#5a6478", letterSpacing:"0.08em",
+                textTransform:"uppercase" }}>
+                {countdown
+                  ? <>Launching in <span style={{ fontFamily:"monospace", color:"#0f1419", fontWeight:800 }}>{countdown}</span></>
+                  : "Launching soon"}
+              </span>
             </div>
 
             <MintProgress />
@@ -287,10 +331,14 @@ export default function HomePage() {
             <p style={{ color:"#5a6478", fontSize:13 }}>τ {MINT_PRICE} per cat · Up to 20 per wallet · {MAX_SUPPLY.toLocaleString()} total supply</p>
           </div>
           <div style={{ display:"flex", gap:12 }}>
-            <Link href="/mint" style={{ padding:"14px 36px", background:"#ffffff", color:"#0f1419", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
+            <Link
+              href="/mint"
+              style={{ padding:"14px 36px", background:"#ffffff", color:"#0f1419", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
               Mint Now | τ {MINT_PRICE}
             </Link>
-            <Link href="/marketplace" style={{ padding:"14px 36px", background:"transparent", color:"#ffffff", border:"1px solid #2a3040", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
+            <Link
+              href="/marketplace"
+              style={{ padding:"14px 36px", background:"transparent", color:"#ffffff", border:"1px solid #2a3040", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
               Marketplace
             </Link>
           </div>
@@ -322,6 +370,18 @@ export default function HomePage() {
           <p style={{ color:"#2a3040", fontSize:10, letterSpacing:"0.06em" }}>Bittensor EVM · Chain 964 · 4,699 Cats · 2025 TAO CATS</p>
         </div>
       </footer>
+
+      {/* Coming soon toast */}
+      <div style={{
+        position:"fixed", bottom:32, left:"50%", transform:"translate(-50%, 0)",
+        background:"#0f1419", color:"#fff",
+        padding:"10px 24px", fontSize:11, fontWeight:800, letterSpacing:"0.10em",
+        textTransform:"uppercase", zIndex:9998, pointerEvents:"none",
+        opacity: toast ? 1 : 0,
+        transition:"opacity 0.25s ease",
+      }}>
+        Coming Soon
+      </div>
 
     </div>
   );

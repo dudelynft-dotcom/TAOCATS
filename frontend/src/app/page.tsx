@@ -99,12 +99,6 @@ export default function HomePage() {
         <div className="hero-inner" style={{ maxWidth:1400, margin:"0 auto", padding:"64px 40px 48px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:48, flexWrap:"wrap" }}>
 
           <div style={{ maxWidth:560, flex:1, minWidth:280 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:20 }}>
-              <span style={{ padding:"3px 10px", background:"#0f1419", color:"#ffffff", fontSize:9, fontWeight:700, letterSpacing:"0.14em", textTransform:"uppercase" }}>Live on Bittensor EVM</span>
-              <span style={{ padding:"3px 10px", border:"1px solid #0f1419", color:"#0f1419", fontSize:9, fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase" }}>Chain 964</span>
-              <span style={{ padding:"3px 10px", border:"1px solid #0f1419", color:"#0f1419", fontSize:9, fontWeight:700, letterSpacing:"0.12em", textTransform:"uppercase" }}>Open Mint</span>
-            </div>
-
             <h1 style={{ fontSize:"clamp(40px,5vw,72px)", fontWeight:700, color:"#0f1419", letterSpacing:"-0.03em", lineHeight:0.95, textTransform:"uppercase", marginBottom:20 }}>
               TAO<br/>CATS
             </h1>

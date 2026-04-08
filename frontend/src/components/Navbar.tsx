@@ -3,13 +3,18 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useCallback } from "react";
 import { usePathname } from "next/navigation";
+import { useAccount } from "wagmi";
 import ConnectButton from "@/components/ConnectButton";
+
+const ADMIN_OWNER = "0x198c2d42c71e8046f34eca9a0f5c81b9f3db2afb";
 
 // Home is fully active; these three are locked until launch
 const DISABLED = new Set(["/mint", "/marketplace", "/dashboard"]);
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { address } = useAccount();
+  const isOwner = address?.toLowerCase() === ADMIN_OWNER;
   const [toast, setToast] = useState(false);
 
   const showComingSoon = useCallback(() => {
@@ -44,6 +49,23 @@ export default function Navbar() {
           </Link>
 
           <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, justifyContent:"center", overflowX:"auto", scrollbarWidth:"none" }}>
+            {isOwner && (
+              <Link href="/admin"
+                style={{
+                  padding:"8px 0",
+                  margin:"0 clamp(4px, 1.5vw, 12px)",
+                  fontSize:"clamp(9px, 2.5vw, 11px)",
+                  fontWeight:800,
+                  letterSpacing:"0.08em",
+                  textTransform:"uppercase",
+                  textDecoration:"none",
+                  whiteSpace:"nowrap",
+                  color: pathname === "/admin" ? "#000" : "#9aa0ae",
+                  borderBottom: pathname === "/admin" ? "3px solid #00c49a" : "3px solid transparent"
+                }}>
+                Admin
+              </Link>
+            )}
             {links.map((l) => {
               const disabled = DISABLED.has(l.href);
               const active   = pathname === l.href;

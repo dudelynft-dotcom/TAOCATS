@@ -1,14 +1,15 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useAccount, useReadContract, useWriteContract, useBalance } from "wagmi";
+import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt, useBalance } from "wagmi";
 import { formatEther, parseEther } from "viem";
 import ConnectButton from "@/components/ConnectButton";
+import NftModal from "@/components/NftModal";
 import { CONTRACTS } from "@/lib/config";
-import { NFT_ABI, MARKETPLACE_ABI, RARITY_ABI } from "@/lib/abis";
+import { NFT_ABI, MARKETPLACE_ABI, RARITY_ABI, ERC721_ABI } from "@/lib/abis";
 
-const TIER_COLOR: Record<string, { text: string; bg: string }> = {
+const TIER_STYLE: Record<string, { text: string; bg: string }> = {
   Legendary: { text: "#7c3aed", bg: "#ede9fe" },
   Epic:      { text: "#1d4ed8", bg: "#dbeafe" },
   Rare:      { text: "#059669", bg: "#d4f5e9" },
@@ -18,9 +19,12 @@ const TIER_COLOR: Record<string, { text: string; bg: string }> = {
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
-  const [activeTab, setActiveTab] = useState<"owned"|"listed"|"offers">("owned");
-  const [sellId, setSellId]       = useState("");
-  const [sellPrice, setSellPrice] = useState("");
+  const [activeTab, setActiveTab]     = useState<"owned"|"offers">("owned");
+  const [modalNft, setModalNft]       = useState<{ id:number; tier?:string; rank?:number; score?:number } | null>(null);
+  const [listingId, setListingId]     = useState<number | null>(null);
+  const [listPrice, setListPrice]     = useState("");
+  const [delistId, setDelistId]       = useState<number | null>(null);
+  const [pendingList, setPendingList] = useState(false);
 
   const { data: balData } = useBalance({ address, query: { enabled: !!address } });
 
@@ -39,6 +43,13 @@ export default function DashboardPage() {
     query: { enabled: !!CONTRACTS.MARKETPLACE && !!CONTRACTS.NFT },
   });
 
+  const { data: isApproved, refetch: refetchApproval } = useReadContract({
+    address: CONTRACTS.NFT as `0x${string}`, abi: ERC721_ABI,
+    functionName: "isApprovedForAll",
+    args: address && CONTRACTS.MARKETPLACE ? [address, CONTRACTS.MARKETPLACE as `0x${string}`] : undefined,
+    query: { enabled: !!address && !!CONTRACTS.MARKETPLACE },
+  });
+
   const colInfo  = collectionInfo as [boolean,boolean,bigint,bigint,bigint] | undefined;
   const floorWei = colInfo?.[4] ?? BigInt(0);
   const floorTao = parseFloat(formatEther(floorWei));
@@ -50,18 +61,53 @@ export default function DashboardPage() {
     query: { enabled: tokenIds.length > 0 && !!CONTRACTS.RARITY },
   });
 
-  const { writeContract, isPending } = useWriteContract();
+  const { writeContract, isPending, data: txHash, reset: resetWrite } = useWriteContract();
+  const { isSuccess: txDone } = useWaitForTransactionReceipt({ hash: txHash });
+
+  // After approval confirms, auto-submit the pending list
+  useEffect(() => {
+    if (txDone && pendingList && listingId != null && listPrice) {
+      setPendingList(false);
+      refetchApproval();
+      doList(listingId, listPrice);
+    } else if (txDone) {
+      resetWrite();
+      setListingId(null);
+      setListPrice("");
+      setDelistId(null);
+    }
+  }, [txDone]);
 
   const balance      = balData ? parseFloat(formatEther(balData.value)) : 0;
   const ownedCount   = tokenIds.length;
   const portfolioTao = floorTao * ownedCount;
 
-  function handleList() {
-    if (!sellId || !sellPrice) return;
+  function doList(id: number, price: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     writeContract({ address: CONTRACTS.MARKETPLACE as `0x${string}`, abi: MARKETPLACE_ABI as any,
       functionName: "list",
-      args: [CONTRACTS.NFT as `0x${string}`, BigInt(sellId), parseEther(sellPrice)] });
+      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id), parseEther(price)] });
+  }
+
+  function handleList(id: number, price: string) {
+    if (!price || !id) return;
+    if (!isApproved) {
+      setPendingList(true);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      writeContract({ address: CONTRACTS.NFT as `0x${string}`, abi: ERC721_ABI as any,
+        functionName: "setApprovalForAll",
+        args: [CONTRACTS.MARKETPLACE as `0x${string}`, true] });
+    } else {
+      doList(id, price);
+    }
+  }
+
+  function handleDelist(id: number) {
+    setDelistId(id);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    writeContract({ address: CONTRACTS.MARKETPLACE as `0x${string}`, abi: MARKETPLACE_ABI as any,
+      functionName: "delist",
+      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id)] });
   }
 
   if (!isConnected) {
@@ -81,6 +127,18 @@ export default function DashboardPage() {
 
   return (
     <div style={{ background:"#fff", minHeight:"100vh", paddingTop:80, paddingBottom:80 }}>
+
+      {/* NFT Detail Modal */}
+      {modalNft && (
+        <NftModal
+          id={modalNft.id}
+          tier={modalNft.tier}
+          rank={modalNft.rank}
+          score={modalNft.score}
+          onClose={() => setModalNft(null)}
+        />
+      )}
+
       <div className="container-app">
 
         <div style={{ marginBottom:40 }}>
@@ -115,7 +173,7 @@ export default function DashboardPage() {
         {/* Tabs */}
         <div style={{ borderBottom:"2px solid #0f1419", marginBottom:32 }}>
           <div style={{ display:"flex" }}>
-            {(["owned","listed","offers"] as const).map(t => (
+            {(["owned","offers"] as const).map(t => (
               <button key={t} onClick={() => setActiveTab(t)}
                 style={{ padding:"12px 20px", background:"transparent", border:"none",
                   cursor:"pointer", fontSize:10, fontWeight:800, letterSpacing:"0.10em",
@@ -140,120 +198,117 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div style={{ display:"grid",
-              gridTemplateColumns:"repeat(auto-fill, minmax(180px, 1fr))", gap:8 }}>
+              gridTemplateColumns:"repeat(auto-fill, minmax(200px, 1fr))", gap:8 }}>
               {tokenIds.map((tid, i) => {
-                const id   = Number(tid);
-                const tier = rarityBatch?.[2]?.[i] as string | undefined;
-                const rank = rarityBatch?.[1]?.[i] ? Number(rarityBatch[1][i]) : undefined;
-                const tc   = tier ? TIER_COLOR[tier] : TIER_COLOR.Common;
+                const id    = Number(tid);
+                const tier  = rarityBatch?.[2]?.[i] as string | undefined;
+                const rank  = rarityBatch?.[1]?.[i] ? Number(rarityBatch[1][i]) : undefined;
+                const score = rarityBatch?.[0]?.[i] ? Number(rarityBatch[0][i]) : undefined;
+                const ts    = tier ? (TIER_STYLE[tier] ?? TIER_STYLE.Common) : TIER_STYLE.Common;
+                const isListing = listingId === id;
+
                 return (
-                  <div key={id} style={{ border:"1.5px solid #e0e3ea", background:"#fff",
-                    transition:"border-color 0.1s" }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor="#0f1419")}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor="#e0e3ea")}>
-                    <div style={{ aspectRatio:"1/1", background:"#f7f8fa", position:"relative",
-                      overflow:"hidden" }}>
+                  <div key={id} style={{ border:"1.5px solid #e0e3ea", background:"#fff" }}>
+                    {/* Image — click to open rarity modal */}
+                    <div
+                      style={{ aspectRatio:"1/1", background:"#f7f8fa", position:"relative",
+                        overflow:"hidden", cursor:"pointer" }}
+                      onClick={() => setModalNft({ id, tier, rank, score })}>
                       <Image src={`/samples/${id % 12 + 1}.png`} alt={`#${id}`} fill
                         style={{ objectFit:"cover" }} />
+                      {/* Rank badge — top right, always shown */}
+                      {rank ? (
+                        <div style={{ position:"absolute", top:0, right:0, padding:"5px 9px",
+                          background:"#0f1419", color:"#fff", fontSize:9, fontWeight:800,
+                          letterSpacing:"0.04em" }}>
+                          #{rank}
+                        </div>
+                      ) : null}
+                      {/* Tier badge — bottom left */}
                       {tier && (
-                        <div style={{ position:"absolute", bottom:6, left:6, padding:"2px 8px",
-                          background:tc.bg, color:tc.text,
+                        <div style={{ position:"absolute", bottom:6, left:6, padding:"3px 9px",
+                          background:ts.bg, color:ts.text,
                           fontSize:8, fontWeight:800, letterSpacing:"0.06em" }}>
                           {tier.toUpperCase()}
                         </div>
                       )}
-                      {rank && (
-                        <div style={{ position:"absolute", top:6, right:6, padding:"2px 6px",
-                          background:"rgba(0,0,0,0.75)", color:"#fff",
-                          fontSize:8, fontWeight:800 }}>#{rank}</div>
-                      )}
                     </div>
-                    <div style={{ padding:"10px 12px", display:"flex", justifyContent:"space-between",
-                      alignItems:"center", borderTop:"1px solid #f0f1f4" }}>
-                      <span style={{ fontFamily:"monospace", fontSize:12, fontWeight:800 }}>#{id}</span>
-                      <button onClick={() => { setSellId(id.toString()); setActiveTab("listed"); }}
-                        style={{ fontSize:8, fontWeight:800, color:"#5a6478", background:"transparent",
-                          border:"1px solid #e0e3ea", padding:"3px 8px", cursor:"pointer",
-                          textTransform:"uppercase", letterSpacing:"0.06em" }}>
-                        SELL
-                      </button>
+
+                    {/* Card footer */}
+                    <div style={{ padding:"10px 12px", borderTop:"1px solid #f0f1f4" }}>
+                      <div style={{ display:"flex", justifyContent:"space-between",
+                        alignItems:"center", marginBottom: isListing ? 10 : 0 }}>
+                        <span style={{ fontFamily:"monospace", fontSize:12, fontWeight:800 }}>#{id}</span>
+                        {rank && (
+                          <span style={{ fontSize:8, color:"#9aa0ae", fontWeight:700 }}>RANK #{rank}</span>
+                        )}
+                      </div>
+
+                      {/* Inline list form */}
+                      {isListing ? (
+                        <div>
+                          <div style={{ display:"flex", gap:4, marginBottom:6 }}>
+                            <input
+                              value={listPrice}
+                              onChange={e => setListPrice(e.target.value)}
+                              placeholder="Price in TAO"
+                              autoFocus
+                              style={{ flex:1, padding:"7px 10px", border:"1.5px solid #0f1419",
+                                fontSize:12, fontFamily:"monospace", fontWeight:700 }} />
+                          </div>
+                          <div style={{ display:"flex", gap:4 }}>
+                            <button
+                              onClick={() => handleList(id, listPrice)}
+                              disabled={isPending || !listPrice}
+                              style={{ flex:1, padding:"8px 6px", background:"#0f1419",
+                                color:"#fff", border:"none", fontSize:9, fontWeight:800,
+                                cursor: (!listPrice || isPending) ? "not-allowed" : "pointer",
+                                letterSpacing:"0.06em", opacity: !listPrice ? 0.5 : 1,
+                                textTransform:"uppercase" }}>
+                              {isPending
+                                ? (pendingList ? "APPROVING..." : "LISTING...")
+                                : (!isApproved ? "APPROVE & LIST" : "LIST")}
+                            </button>
+                            <button
+                              onClick={() => { setListingId(null); setListPrice(""); }}
+                              style={{ padding:"8px 10px", background:"transparent",
+                                border:"1.5px solid #e0e3ea", fontSize:9, fontWeight:800,
+                                cursor:"pointer", color:"#5a6478" }}>
+                              ✕
+                            </button>
+                          </div>
+                          {floorTao > 0 && (
+                            <div style={{ marginTop:6, fontSize:8, color:"#9aa0ae", fontWeight:700 }}>
+                              FLOOR: τ {floorTao.toFixed(3)}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div style={{ display:"flex", gap:4, marginTop:8 }}>
+                          <button
+                            onClick={() => { setListingId(id); setListPrice(""); }}
+                            style={{ flex:1, padding:"7px 8px", background:"#0f1419",
+                              color:"#fff", border:"none", fontSize:8, fontWeight:800,
+                              cursor:"pointer", letterSpacing:"0.06em", textTransform:"uppercase" }}>
+                            LIST FOR SALE
+                          </button>
+                          <button
+                            onClick={() => handleDelist(id)}
+                            disabled={isPending && delistId === id}
+                            style={{ padding:"7px 10px", background:"transparent",
+                              border:"1.5px solid #e0e3ea", fontSize:8, fontWeight:800,
+                              cursor:"pointer", color:"#9aa0ae", textTransform:"uppercase" }}
+                            title="Cancel listing">
+                            {isPending && delistId === id ? "..." : "DELIST"}
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
           )
-        )}
-
-        {/* LISTED / SELL */}
-        {activeTab === "listed" && (
-          <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:48 }} className="about-grid">
-            <div>
-              <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.10em", marginBottom:16 }}>
-                YOUR TAO CATS
-              </div>
-              {ownedCount === 0 ? (
-                <div style={{ padding:40, border:"2px dashed #eee", textAlign:"center",
-                  fontSize:10, color:"#9aa0ae", fontWeight:700 }}>NO CATS IN WALLET</div>
-              ) : (
-                <div style={{ display:"grid",
-                  gridTemplateColumns:"repeat(auto-fill, minmax(88px, 1fr))", gap:4 }}>
-                  {tokenIds.map(tid => {
-                    const id = Number(tid);
-                    const selected = sellId === id.toString();
-                    return (
-                      <div key={id} onClick={() => setSellId(id.toString())}
-                        style={{ border: selected ? "2.5px solid #000" : "1.5px solid #eee",
-                          cursor:"pointer", aspectRatio:"1/1", position:"relative",
-                          overflow:"hidden" }}>
-                        <Image src={`/samples/${id % 12 + 1}.png`} alt="" fill
-                          style={{ objectFit:"cover" }} />
-                        {selected && (
-                          <div style={{ position:"absolute", inset:0,
-                            background:"rgba(0,0,0,0.35)", display:"flex",
-                            alignItems:"center", justifyContent:"center" }}>
-                            <span style={{ color:"#fff", fontWeight:800, fontSize:16 }}>✓</span>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-            <div style={{ border:"2px solid #0f1419", padding:32 }}>
-              <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.10em", marginBottom:24 }}>
-                LIST FOR SALE
-              </div>
-              <div style={{ marginBottom:16 }}>
-                <label style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", display:"block",
-                  marginBottom:6, textTransform:"uppercase", letterSpacing:"0.08em" }}>Token ID</label>
-                <input value={sellId} onChange={e => setSellId(e.target.value)}
-                  placeholder="Select above or enter ID"
-                  style={{ width:"100%", padding:"10px 12px", border:"2px solid #0f1419",
-                    fontSize:13, fontWeight:700, fontFamily:"monospace" }} />
-              </div>
-              <div style={{ marginBottom:24 }}>
-                <label style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", display:"block",
-                  marginBottom:6, textTransform:"uppercase", letterSpacing:"0.08em" }}>Price (TAO)</label>
-                <input value={sellPrice} onChange={e => setSellPrice(e.target.value)} placeholder="0.00"
-                  style={{ width:"100%", padding:"10px 12px", border:"2px solid #0f1419",
-                    fontSize:13, fontWeight:700, fontFamily:"monospace" }} />
-              </div>
-              {floorTao > 0 && (
-                <div style={{ padding:"8px 12px", background:"#f7f8fa", border:"1px solid #e0e3ea",
-                  fontSize:9, color:"#5a6478", fontWeight:700, marginBottom:16 }}>
-                  CURRENT FLOOR: τ {floorTao.toFixed(3)}
-                </div>
-              )}
-              <button onClick={handleList} disabled={isPending || !sellId || !sellPrice}
-                style={{ width:"100%", padding:14, background:"#0f1419", color:"#fff", border:"none",
-                  fontSize:10, fontWeight:800, letterSpacing:"0.10em", cursor:"pointer",
-                  textTransform:"uppercase", opacity:(!sellId || !sellPrice) ? 0.5 : 1 }}>
-                {isPending ? "CONFIRMING..." : "LIST FOR SALE"}
-              </button>
-            </div>
-          </div>
         )}
 
         {/* OFFERS */}

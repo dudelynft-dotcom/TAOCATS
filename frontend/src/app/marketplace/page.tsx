@@ -1,16 +1,17 @@
 "use client";
-import { useState, useMemo, useEffect, Suspense, useCallback } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { useAccount, useReadContract, useWriteContract, useWaitForTransactionReceipt } from "wagmi";
 import { formatEther, parseEther } from "viem";
 import ConnectButton from "@/components/ConnectButton";
-import { CONTRACTS, INDEXER_URL } from "@/lib/config";
-import { MARKETPLACE_ABI, NFT_ABI, ERC721_ABI, RARITY_ABI } from "@/lib/abis";
+import NftModal from "@/components/NftModal";
+import { CONTRACTS } from "@/lib/config";
+import { MARKETPLACE_ABI, NFT_ABI, RARITY_ABI } from "@/lib/abis";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
-type Tab      = "listings" | "activity" | "sell" | "offers";
+type Tab      = "listings" | "activity" | "offers";
 type SortBy   = "price_asc" | "price_desc" | "id_asc" | "id_desc";
 type ViewMode = "grid" | "list";
 
@@ -21,11 +22,18 @@ interface Listing {
   seller: `0x${string}`;
   tier?: string;
   rank?: number;
+  score?: number;
 }
 
+type ModalNft = { id: number; tier?: string; rank?: number; score?: number; price?: bigint; seller?: string };
+
 const TIER_COLOR: Record<string, string> = {
-  Legendary: "#7c3aed", Epic: "#1d4ed8", Rare: "#0a7a5a",
+  Legendary: "#7c3aed", Epic: "#1d4ed8", Rare: "#059669",
   Uncommon: "#a16207", Common: "#475569",
+};
+const TIER_BG: Record<string, string> = {
+  Legendary: "#ede9fe", Epic: "#dbeafe", Rare: "#d4f5e9",
+  Uncommon: "#fef3c7", Common: "#f1f5f9",
 };
 
 // ── Pixel Cat SVG ──────────────────────────────────────────────────────────────
@@ -59,26 +67,21 @@ export default function MarketplacePage() {
 
 function MarketplaceContent() {
   const searchParams = useSearchParams();
-  const [tab, setTab]           = useState<Tab>(() => {
+  const [tab, setTab] = useState<Tab>(() => {
     const t = searchParams.get("tab");
-    return (t === "sell" || t === "activity" || t === "offers") ? t as Tab : "listings";
+    return (t === "activity" || t === "offers") ? t as Tab : "listings";
   });
-  const [sort, setSort]         = useState<SortBy>("price_asc");
-  const [view, setView]         = useState<ViewMode>("grid");
+  const [sort, setSort]               = useState<SortBy>("price_asc");
+  const [view, setView]               = useState<ViewMode>("grid");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [filterTier, setFilterTier]   = useState("all");
-
-  // Sell form
-  const [sellId, setSellId]     = useState("");
-  const [sellPrice, setSellPrice] = useState("");
-  const [delistId, setDelistId] = useState("");
+  const [modalNft, setModalNft]       = useState<ModalNft | null>(null);
 
   // Offer form
-  const [offerCollection, setOfferCollection] = useState(CONTRACTS.NFT ?? "");
-  const [offerTokenId, setOfferTokenId]       = useState("");
-  const [offerPrice, setOfferPrice]           = useState("");
-  const [offerDays, setOfferDays]             = useState("7");
-  const [offerType, setOfferType]             = useState<"nft"|"collection">("nft");
+  const [offerTokenId, setOfferTokenId] = useState("");
+  const [offerPrice, setOfferPrice]     = useState("");
+  const [offerDays, setOfferDays]       = useState("7");
+  const [offerType, setOfferType]       = useState<"nft"|"collection">("nft");
 
   const { address, isConnected } = useAccount();
 
@@ -93,11 +96,6 @@ function MarketplaceContent() {
     functionName: "getListingsPage",
     args: [nftCollection, BigInt(0), BigInt(200)],
     query: { enabled: !!marketAddr && !!nftCollection },
-  });
-
-  const { data: myTokens } = useReadContract({
-    address: nftCollection, abi: NFT_ABI, functionName: "tokensOfOwner",
-    args: address ? [address] : undefined, query: { enabled: !!address },
   });
 
   const { data: collectionInfo } = useReadContract({
@@ -129,6 +127,7 @@ function MarketplaceContent() {
         seller: l.seller as `0x${string}`,
         tier:  rarityBatch?.[2]?.[i] as string | undefined,
         rank:  rarityBatch?.[1]?.[i] ? Number(rarityBatch[1][i]) : undefined,
+        score: rarityBatch?.[0]?.[i] ? Number(rarityBatch[0][i]) : undefined,
       };
     }).filter(Boolean) as Listing[];
   }, [tokenIds, listingData, rarityBatch]);
@@ -156,37 +155,53 @@ function MarketplaceContent() {
       args: [nftCollection, tokenId], value: price });
   }
 
-  function handleList() {
-    if (!sellId || !sellPrice) return;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "list",
-      args: [nftCollection, BigInt(sellId), parseEther(sellPrice)] });
-  }
-
-  function handleDelist(tokenId: bigint) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "delist",
-      args: [nftCollection, tokenId] });
-  }
-
   function handleMakeOffer() {
     if (!offerPrice) return;
     const expiry = BigInt(Math.floor(Date.now() / 1000) + parseInt(offerDays) * 86400);
-    const col    = offerCollection as `0x${string}`;
     if (offerType === "nft" && offerTokenId) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "makeOffer",
-        args: [col, BigInt(offerTokenId), expiry], value: parseEther(offerPrice) });
+        args: [nftCollection, BigInt(offerTokenId), expiry], value: parseEther(offerPrice) });
     } else {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "makeCollectionOffer",
-        args: [col, expiry], value: parseEther(offerPrice) });
+        args: [nftCollection, expiry], value: parseEther(offerPrice) });
     }
   }
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
     <div style={{ background:"#ffffff", minHeight:"100vh", paddingTop:64 }}>
+
+      {/* NFT Detail Modal */}
+      {modalNft && (
+        <NftModal
+          id={modalNft.id}
+          tier={modalNft.tier}
+          rank={modalNft.rank}
+          score={modalNft.score}
+          onClose={() => setModalNft(null)}
+          action={
+            modalNft.price != null ? (
+              isConnected && modalNft.seller?.toLowerCase() !== address?.toLowerCase() ? (
+                <button
+                  onClick={() => { handleBuy(BigInt(modalNft.id), modalNft.price!); setModalNft(null); }}
+                  disabled={isPending}
+                  style={{ width:"100%", padding:"14px", background:"#0f1419", color:"#fff",
+                    border:"none", fontSize:10, fontWeight:800, cursor:"pointer",
+                    letterSpacing:"0.10em", textTransform:"uppercase" }}>
+                  {isPending ? "CONFIRMING..." : `BUY NOW · τ ${parseFloat(formatEther(modalNft.price)).toFixed(3)}`}
+                </button>
+              ) : !isConnected ? (
+                <ConnectButton />
+              ) : (
+                <div style={{ padding:"10px", background:"#f7f8fa", textAlign:"center",
+                  fontSize:10, fontWeight:700, color:"#5a6478" }}>YOUR LISTING</div>
+              )
+            ) : undefined
+          }
+        />
+      )}
 
       {/* ── BANNER ── */}
       <div style={{ background:"#000", color:"#fff", padding:"28px 20px", position:"relative", overflow:"hidden" }}>
@@ -198,7 +213,7 @@ function MarketplaceContent() {
         </div>
         <div style={{ textAlign:"center", position:"relative", zIndex:1 }}>
           <h2 style={{ fontSize:"clamp(18px,4vw,28px)", fontWeight:800, letterSpacing:"-0.02em", marginBottom:6 }}>
-            TAO CATS TRADING SOON
+            TAO CATS MARKETPLACE
           </h2>
           <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:16, flexWrap:"wrap" }}>
             <span style={{ fontSize:9, fontWeight:700, letterSpacing:"0.2em", color:"#5a6478" }}>GENESIS COLLECTION</span>
@@ -214,11 +229,9 @@ function MarketplaceContent() {
       <div style={{ borderBottom:"2px solid #000" }}>
         <div className="container-app" style={{ padding:"20px 0" }}>
           <div style={{ display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
-            {/* Avatar */}
             <div style={{ width:52, height:52, background:"#000", flexShrink:0, overflow:"hidden" }}>
               <Image src="/samples/1.png" alt="" width={52} height={52} style={{ width:"100%", height:"100%", objectFit:"cover" }} />
             </div>
-            {/* Name */}
             <div style={{ flex:1, minWidth:160 }}>
               <div style={{ display:"flex", alignItems:"center", gap:8 }}>
                 <h1 style={{ fontSize:16, fontWeight:800, textTransform:"uppercase" }}>TAO CAT</h1>
@@ -228,13 +241,12 @@ function MarketplaceContent() {
                 4,699 GENESIS CATS · CHAIN 964
               </div>
             </div>
-            {/* Stats */}
             <div style={{ display:"flex", gap:24, flexWrap:"wrap" }}>
               {[
-                { l:"FLOOR",    v: floorPrice ? `τ ${parseFloat(floorPrice).toFixed(3)}` : "—" },
-                { l:"LISTED",   v: listings.length },
-                { l:"VOLUME",   v: `τ ${volume}` },
-                { l:"FEE",      v: "2.5%" },
+                { l:"FLOOR",  v: floorPrice ? `τ ${parseFloat(floorPrice).toFixed(3)}` : "—" },
+                { l:"LISTED", v: listings.length },
+                { l:"VOLUME", v: `τ ${volume}` },
+                { l:"FEE",    v: "2.5%" },
               ].map(s => (
                 <div key={s.l} style={{ minWidth:60 }}>
                   <div style={{ fontSize:15, fontWeight:800, fontFamily:"monospace" }}>{s.v}</div>
@@ -249,7 +261,7 @@ function MarketplaceContent() {
       {/* ── TABS ── */}
       <div style={{ borderBottom:"2px solid #000" }}>
         <div className="container-app" style={{ display:"flex", overflowX:"auto", scrollbarWidth:"none" }}>
-          {(["listings","activity","sell","offers"] as Tab[]).map(t => (
+          {(["listings","activity","offers"] as Tab[]).map(t => (
             <button key={t} onClick={() => setTab(t)}
               style={{ padding:"14px 20px", background:"transparent", border:"none", cursor:"pointer",
                 fontSize:10, fontWeight:800, letterSpacing:"0.10em", whiteSpace:"nowrap",
@@ -258,6 +270,14 @@ function MarketplaceContent() {
               {t.toUpperCase()}
             </button>
           ))}
+          <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", paddingRight:4 }}>
+            <Link href="/dashboard"
+              style={{ padding:"8px 16px", background:"#0f1419", color:"#fff", fontSize:9,
+                fontWeight:800, letterSpacing:"0.10em", textDecoration:"none",
+                textTransform:"uppercase", whiteSpace:"nowrap" }}>
+              LIST MY CATS →
+            </Link>
+          </div>
         </div>
       </div>
 
@@ -327,39 +347,54 @@ function MarketplaceContent() {
                   <div style={{ marginTop:20, fontSize:11, fontWeight:700, color:"#9aa0ae", letterSpacing:"0.1em" }}>
                     NO LISTINGS YET
                   </div>
+                  <p style={{ fontSize:11, color:"#9aa0ae", marginTop:8 }}>
+                    Own a TAO Cat?{" "}
+                    <Link href="/dashboard" style={{ color:"#0f1419", fontWeight:700 }}>List it from your dashboard →</Link>
+                  </p>
                 </div>
               ) : view === "grid" ? (
                 <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(160px, 1fr))", gap:8 }}>
                   {filtered.map(l => (
-                    <div key={l.id} style={{ border:"1.5px solid #eee", background:"#fff",
-                      transition:"border-color 0.1s", cursor:"pointer" }}
+                    <div key={l.id}
+                      onClick={() => setModalNft({ id:l.id, tier:l.tier, rank:l.rank, score:l.score, price:l.price, seller:l.seller })}
+                      style={{ border:"1.5px solid #eee", background:"#fff",
+                        transition:"border-color 0.1s", cursor:"pointer" }}
                       onMouseEnter={e => (e.currentTarget.style.borderColor="#000")}
                       onMouseLeave={e => (e.currentTarget.style.borderColor="#eee")}>
                       <div style={{ aspectRatio:"1/1", background:"#f7f8fa", position:"relative", overflow:"hidden" }}>
                         <Image src={`/samples/${l.id % 12 + 1}.png`} alt={`#${l.id}`} fill style={{ objectFit:"cover" }} />
+                        {/* Rank badge — top right, prominent */}
+                        {l.rank && (
+                          <div style={{ position:"absolute", top:0, right:0, padding:"5px 8px",
+                            background:"#0f1419", color:"#fff", fontSize:9, fontWeight:800,
+                            letterSpacing:"0.04em" }}>
+                            #{l.rank}
+                          </div>
+                        )}
+                        {/* Tier badge — bottom left */}
                         {l.tier && (
-                          <div style={{ position:"absolute", bottom:6, left:6, padding:"2px 7px",
-                            background:"rgba(0,0,0,0.75)", color: TIER_COLOR[l.tier] ?? "#fff",
+                          <div style={{ position:"absolute", bottom:6, left:6, padding:"3px 8px",
+                            background: TIER_BG[l.tier] ?? "#f1f5f9",
+                            color: TIER_COLOR[l.tier] ?? "#475569",
                             fontSize:8, fontWeight:800, letterSpacing:"0.06em" }}>
                             {l.tier.toUpperCase()}
                           </div>
                         )}
-                        {l.rank && (
-                          <div style={{ position:"absolute", top:6, right:6, padding:"2px 6px",
-                            background:"rgba(0,0,0,0.8)", color:"#fff", fontSize:8, fontWeight:800 }}>
-                            #{l.rank}
-                          </div>
-                        )}
                       </div>
                       <div style={{ padding:"10px 12px" }}>
-                        <div style={{ display:"flex", justifyContent:"space-between", marginBottom:8, alignItems:"center" }}>
+                        <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:6 }}>
                           <span style={{ fontWeight:800, fontSize:12, fontFamily:"monospace" }}>#{l.id}</span>
+                          {l.rank && (
+                            <span style={{ fontSize:8, color:"#9aa0ae", fontWeight:700 }}>RANK #{l.rank}</span>
+                          )}
                         </div>
-                        <div style={{ fontSize:13, fontWeight:800, fontFamily:"monospace", marginBottom:8 }}>
+                        <div style={{ fontSize:14, fontWeight:800, fontFamily:"monospace", marginBottom:8 }}>
                           τ {parseFloat(formatEther(l.price)).toFixed(3)}
                         </div>
                         {isConnected && l.seller.toLowerCase() !== address?.toLowerCase() ? (
-                          <button onClick={() => handleBuy(l.tokenId, l.price)} disabled={isPending}
+                          <button
+                            onClick={e => { e.stopPropagation(); handleBuy(l.tokenId, l.price); }}
+                            disabled={isPending}
                             style={{ width:"100%", padding:"8px", background:"#000", color:"#fff",
                               border:"none", fontSize:9, fontWeight:800, cursor:"pointer",
                               letterSpacing:"0.08em" }}>
@@ -375,22 +410,40 @@ function MarketplaceContent() {
                   ))}
                 </div>
               ) : (
+                /* List view */
                 <div style={{ border:"1.5px solid #eee" }}>
                   {filtered.map((l, i) => (
-                    <div key={l.id} style={{ display:"flex", alignItems:"center", gap:16, padding:"12px 16px",
-                      borderBottom: i < filtered.length-1 ? "1px solid #eee" : "none",
-                      transition:"background 0.1s" }}
+                    <div key={l.id}
+                      onClick={() => setModalNft({ id:l.id, tier:l.tier, rank:l.rank, score:l.score, price:l.price, seller:l.seller })}
+                      style={{ display:"flex", alignItems:"center", gap:16, padding:"12px 16px",
+                        borderBottom: i < filtered.length-1 ? "1px solid #eee" : "none",
+                        cursor:"pointer", transition:"background 0.1s" }}
                       onMouseEnter={e => (e.currentTarget.style.background="#f7f8fa")}
                       onMouseLeave={e => (e.currentTarget.style.background="transparent")}>
                       <div style={{ width:48, height:48, background:"#f7f8fa", position:"relative", flexShrink:0 }}>
                         <Image src={`/samples/${l.id % 12 + 1}.png`} alt="" fill style={{ objectFit:"cover" }} />
                       </div>
                       <span style={{ fontFamily:"monospace", fontWeight:800, fontSize:13, flex:1 }}>#{l.id}</span>
-                      {l.tier && <span style={{ fontSize:9, fontWeight:700, color: TIER_COLOR[l.tier] ?? "#000" }}>{l.tier.toUpperCase()}</span>}
-                      {l.rank && <span style={{ fontSize:9, fontWeight:700, color:"#9aa0ae" }}>RANK #{l.rank}</span>}
-                      <span style={{ fontFamily:"monospace", fontWeight:800, fontSize:14 }}>τ {parseFloat(formatEther(l.price)).toFixed(3)}</span>
+                      {l.tier && (
+                        <span style={{ fontSize:9, fontWeight:800, padding:"2px 8px",
+                          background: TIER_BG[l.tier] ?? "#f1f5f9",
+                          color: TIER_COLOR[l.tier] ?? "#475569" }}>
+                          {l.tier.toUpperCase()}
+                        </span>
+                      )}
+                      {l.rank && (
+                        <span style={{ fontSize:9, fontWeight:800, padding:"2px 8px",
+                          background:"#0f1419", color:"#fff" }}>
+                          #{l.rank}
+                        </span>
+                      )}
+                      <span style={{ fontFamily:"monospace", fontWeight:800, fontSize:14 }}>
+                        τ {parseFloat(formatEther(l.price)).toFixed(3)}
+                      </span>
                       {isConnected && l.seller.toLowerCase() !== address?.toLowerCase() && (
-                        <button onClick={() => handleBuy(l.tokenId, l.price)} disabled={isPending}
+                        <button
+                          onClick={e => { e.stopPropagation(); handleBuy(l.tokenId, l.price); }}
+                          disabled={isPending}
                           style={{ padding:"8px 16px", background:"#000", color:"#fff", border:"none",
                             fontSize:9, fontWeight:800, cursor:"pointer", flexShrink:0 }}>
                           BUY
@@ -411,119 +464,11 @@ function MarketplaceContent() {
               <PixelCatSilhouette size={80} />
             </div>
             <div style={{ fontSize:11, fontWeight:800, letterSpacing:"0.10em", color:"#9aa0ae" }}>
-              ACTIVITY LOG — POWERED BY INDEXER
+              ACTIVITY LOG — COMING SOON
             </div>
             <p style={{ fontSize:11, color:"#9aa0ae", marginTop:8 }}>
-              Deploy the indexer at <code>indexer/</code> to see live trading activity.
+              Live trading activity will appear here once the indexer is deployed.
             </p>
-          </div>
-        )}
-
-        {/* SELL TAB */}
-        {tab === "sell" && (
-          <div style={{ paddingTop:32 }}>
-            {!isConnected ? (
-              <div style={{ textAlign:"center", padding:80, border:"2px dashed #eee" }}>
-                <p style={{ marginBottom:24, fontWeight:700, color:"#5a6478" }}>Connect wallet to list NFTs</p>
-                <ConnectButton />
-              </div>
-            ) : (
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:48 }} className="about-grid">
-                {/* Owned NFTs */}
-                <div>
-                  <div style={{ fontSize:10, fontWeight:800, marginBottom:16, letterSpacing:"0.10em" }}>
-                    YOUR TAO CATS
-                  </div>
-                  {!myTokens || myTokens.length === 0 ? (
-                    <div style={{ padding:40, border:"2px dashed #eee", textAlign:"center",
-                      fontSize:10, color:"#9aa0ae", fontWeight:700 }}>
-                      NO CATS IN WALLET
-                    </div>
-                  ) : (
-                    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(90px, 1fr))", gap:4 }}>
-                      {myTokens.map(tid => {
-                        const id = Number(tid);
-                        const selected = sellId === id.toString();
-                        return (
-                          <div key={id} onClick={() => setSellId(id.toString())}
-                            style={{ border: selected ? "2.5px solid #000" : "1.5px solid #eee",
-                              cursor:"pointer", aspectRatio:"1/1", position:"relative", overflow:"hidden" }}>
-                            <Image src={`/samples/${id % 12 + 1}.png`} alt="" fill style={{ objectFit:"cover" }} />
-                            {selected && (
-                              <div style={{ position:"absolute", inset:0, background:"rgba(0,0,0,0.3)",
-                                display:"flex", alignItems:"center", justifyContent:"center" }}>
-                                <span style={{ color:"#fff", fontWeight:800, fontSize:10 }}>✓</span>
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                {/* List form */}
-                <div style={{ border:"2px solid #000", padding:32 }}>
-                  <div style={{ fontSize:10, fontWeight:800, marginBottom:24, letterSpacing:"0.10em" }}>LIST FOR SALE</div>
-                  <div style={{ marginBottom:16 }}>
-                    <label style={{ fontSize:9, fontWeight:800, color:"#9aa0ae", display:"block",
-                      marginBottom:6, textTransform:"uppercase", letterSpacing:"0.08em" }}>Token ID</label>
-                    <input value={sellId} onChange={e => setSellId(e.target.value)}
-                      placeholder="Enter token ID"
-                      style={{ width:"100%", padding:"10px 12px", border:"2px solid #000",
-                        fontSize:13, fontWeight:700, fontFamily:"monospace" }} />
-                  </div>
-                  <div style={{ marginBottom:24 }}>
-                    <label style={{ fontSize:9, fontWeight:800, color:"#9aa0ae", display:"block",
-                      marginBottom:6, textTransform:"uppercase", letterSpacing:"0.08em" }}>Price (TAO)</label>
-                    <input value={sellPrice} onChange={e => setSellPrice(e.target.value)}
-                      placeholder="0.00"
-                      style={{ width:"100%", padding:"10px 12px", border:"2px solid #000",
-                        fontSize:13, fontWeight:700, fontFamily:"monospace" }} />
-                  </div>
-                  <button onClick={handleList} disabled={isPending || !sellId || !sellPrice}
-                    style={{ width:"100%", padding:14, background:"#000", color:"#fff", border:"none",
-                      fontSize:10, fontWeight:800, letterSpacing:"0.10em", cursor:"pointer",
-                      opacity: (!sellId || !sellPrice) ? 0.5 : 1 }}>
-                    {isPending ? "CONFIRMING..." : "LIST FOR SALE"}
-                  </button>
-
-                  {/* Delist */}
-                  {myTokens && myTokens.length > 0 && (
-                    <div style={{ marginTop:24, paddingTop:24, borderTop:"1px solid #eee" }}>
-                      <div style={{ fontSize:9, fontWeight:800, color:"#9aa0ae", marginBottom:10,
-                        textTransform:"uppercase", letterSpacing:"0.08em" }}>Cancel Listing</div>
-                      <div style={{ display:"flex", gap:8 }}>
-                        <input value={delistId} onChange={e => setDelistId(e.target.value)}
-                          placeholder="Token ID to delist"
-                          style={{ flex:1, padding:"8px 10px", border:"1.5px solid #eee",
-                            fontSize:12, fontFamily:"monospace" }} />
-                        <button onClick={() => delistId && handleDelist(BigInt(delistId))}
-                          disabled={isPending || !delistId}
-                          style={{ padding:"8px 16px", background:"transparent",
-                            border:"1.5px solid #ef4444", color:"#ef4444",
-                            fontSize:9, fontWeight:800, cursor:"pointer" }}>
-                          DELIST
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {writeError && (
-                    <div style={{ marginTop:12, padding:"8px 12px", background:"#fff0f0",
-                      border:"1px solid #ef4444", fontSize:9, color:"#b91c1c", fontWeight:700 }}>
-                      {(writeError as Error).message?.slice(0, 150)}
-                    </div>
-                  )}
-                  {txDone && (
-                    <div style={{ marginTop:12, padding:"8px 12px", background:"#f0fdf4",
-                      border:"1px solid #16a34a", fontSize:9, color:"#166534", fontWeight:700 }}>
-                      Transaction confirmed.
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
@@ -554,14 +499,6 @@ function MarketplaceContent() {
                         fontSize:9, fontWeight:800 }}>
                       COLLECTION OFFER
                     </button>
-                  </div>
-
-                  <div style={{ marginBottom:14 }}>
-                    <label style={{ fontSize:9, fontWeight:800, color:"#9aa0ae", display:"block",
-                      marginBottom:6, textTransform:"uppercase", letterSpacing:"0.08em" }}>Collection Address</label>
-                    <input value={offerCollection} onChange={e => setOfferCollection(e.target.value)}
-                      style={{ width:"100%", padding:"8px 10px", border:"1.5px solid #eee",
-                        fontSize:11, fontFamily:"monospace" }} />
                   </div>
 
                   {offerType === "nft" && (
@@ -611,6 +548,12 @@ function MarketplaceContent() {
                       {(writeError as Error).message?.slice(0, 150)}
                     </div>
                   )}
+                  {txDone && (
+                    <div style={{ marginTop:12, padding:"8px 12px", background:"#f0fdf4",
+                      border:"1px solid #16a34a", fontSize:9, color:"#166534", fontWeight:700 }}>
+                      Offer submitted successfully.
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -619,8 +562,8 @@ function MarketplaceContent() {
                   </div>
                   {[
                     { t:"NFT Offer", d:"Offer a specific price for a single token. Funds are locked in the contract until accepted or cancelled." },
-                    { t:"Collection Offer", d:"Offer to buy any NFT from a collection at your price. The first seller to accept gets the deal." },
-                    { t:"Accept Offer", d:"NFT owners can accept any active offer on their token. Go to the SELL tab and look for incoming offers." },
+                    { t:"Collection Offer", d:"Offer to buy any TAO Cat at your price. The first seller to accept gets the deal." },
+                    { t:"Accept Offer", d:"NFT owners can accept any active offer on their token from the dashboard." },
                     { t:"Cancel Anytime", d:"Cancel your offer before expiry to get your TAO back instantly." },
                   ].map(item => (
                     <div key={item.t} style={{ marginBottom:16, paddingBottom:16, borderBottom:"1px solid #f0f1f4" }}>

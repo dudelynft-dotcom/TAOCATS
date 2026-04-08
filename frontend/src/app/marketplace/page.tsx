@@ -650,11 +650,12 @@ function MarketplaceContent() {
                               {/* OFFER */}
                               <button
                                 onClick={e => { e.stopPropagation(); setOfferCardId(isOfferOpen ? null : l.id); }}
-                                style={{ flex:1, padding:"7px 4px", background:"transparent",
-                                  color:"#0f1419", border:"1.5px solid #0f1419",
+                                style={{ flex:1, padding:"7px 4px",
+                                  background: isOfferOpen ? "#0f1419" : "transparent",
+                                  color: isOfferOpen ? "#fff" : "#0f1419",
+                                  border:"1.5px solid #0f1419",
                                   fontSize:8, fontWeight:800, cursor:"pointer",
-                                  letterSpacing:"0.06em", background: isOfferOpen ? "#0f1419" : "transparent",
-                                  color: isOfferOpen ? "#fff" : "#0f1419" } as React.CSSProperties}>
+                                  letterSpacing:"0.06em" } as React.CSSProperties}>
                                 OFFER
                               </button>
                             </div>

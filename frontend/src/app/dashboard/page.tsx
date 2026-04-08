@@ -298,13 +298,19 @@ export default function DashboardPage() {
                               FLOOR: τ {floorTao.toFixed(3)}
                             </div>
                           )}
-                          {(writeError || (txFailed && txError)) && listingId === id && (
-                            <div style={{ marginTop:6, padding:"6px 8px", background:"#fff0f0",
-                              border:"1px solid #ef4444", fontSize:8, color:"#b91c1c", fontWeight:700,
-                              wordBreak:"break-word" }}>
-                              {((writeError || txError) as Error)?.message?.slice(0, 120) ?? "Transaction failed"}
-                            </div>
-                          )}
+                          {(writeError || (txFailed && txError)) && listingId === id && (() => {
+                            const msg = ((writeError || txError) as Error)?.message ?? "";
+                            const isSimErr = msg.includes("eth_call") || msg.includes("internal error") || msg.includes("Internal error") || msg.includes("Gas estimation") || msg.includes("estimation");
+                            return (
+                              <div style={{ marginTop:6, padding:"6px 8px", background:"#fff0f0",
+                                border:"1px solid #ef4444", fontSize:8, color:"#b91c1c", fontWeight:700,
+                                wordBreak:"break-word", lineHeight:1.5 }}>
+                                {isSimErr
+                                  ? "Wallet simulation failed (Bittensor RPC limitation). If using Talisman/SubWallet: check your wallet popup and click Approve. MetaMask is not supported on testnet — use Talisman or SubWallet."
+                                  : msg.slice(0, 150) || "Transaction failed"}
+                              </div>
+                            );
+                          })()}
                         </div>
                       ) : (
                         <div style={{ display:"flex", gap:4, marginTop:8 }}>

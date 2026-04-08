@@ -298,14 +298,19 @@ export default function MintPage() {
                   )}
 
                   {/* Error */}
-                  {writeError && !isBusy && (
-                    <div style={{ marginTop:12, padding:"10px 14px", background:"#fff0f0",
-                      border:"1px solid #ef4444", fontSize:10, color:"#b91c1c",
-                      fontWeight:700, wordBreak:"break-all" }}>
-                      {(writeError as Error).message?.slice(0, 200) ??
-                        "Transaction failed. Check wallet and network."}
-                    </div>
-                  )}
+                  {writeError && !isBusy && (() => {
+                    const msg = (writeError as Error).message ?? "";
+                    const isSimErr = msg.includes("eth_call") || msg.includes("internal error") || msg.includes("Internal error");
+                    return (
+                      <div style={{ marginTop:12, padding:"10px 14px", background:"#fff0f0",
+                        border:"1px solid #ef4444", fontSize:10, color:"#b91c1c",
+                        fontWeight:700, wordBreak:"break-word", lineHeight:1.5 }}>
+                        {isSimErr
+                          ? "Wallet simulation failed (Bittensor RPC). If using Talisman/SubWallet: check your wallet popup and click Approve. MetaMask is not supported on testnet — use Talisman or SubWallet instead."
+                          : msg.slice(0, 200) || "Transaction failed. Check wallet and network."}
+                      </div>
+                    );
+                  })()}
                 </>
               )}
             </div>

@@ -52,8 +52,9 @@ export const CONTRACTS = {
 // ── Collection constants ──────────────────────────────────────────────────────
 export const COLLECTION_NAME = "TAO CAT";
 export const MAX_SUPPLY      = 4699;
-export const MINT_PRICE      = "0.015";
+export const MINT_PRICE      = "0.01";
 export const MAX_PER_WALLET  = 20;
+export const INDEXER_URL     = process.env.NEXT_PUBLIC_INDEXER_URL ?? "http://localhost:3001";
 
 // ── Known verified collections on Bittensor EVM ───────────────────────────────
 export type Collection = {
@@ -73,7 +74,7 @@ export const KNOWN_COLLECTIONS: Collection[] = [
     symbol: "TCAT",
     verified: true,
     totalSupply: 4699,
-    mintPrice: "0.015",
+    mintPrice: "0.01",
     imagePrefix: "/samples/",
   },
 ];

@@ -22,7 +22,7 @@ contract BittensorCatNFT is ERC721Enumerable, Ownable, ReentrancyGuard {
     uint256 public constant MAX_SUPPLY     = 4699;
     uint256 public constant MAX_PER_WALLET = 20;
 
-    uint256 public mintPrice = 0.015 ether; // 0.015 TAO — owner can update
+    uint256 public mintPrice = 0.01 ether;  // 0.01 TAO — owner can update
 
     string private _baseTokenURI;
     string public  unrevealedURI;

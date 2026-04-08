@@ -24,7 +24,7 @@ const ABI = [
 // Unrevealed metadata — points to the single JSON for all tokens pre-reveal
 // Update UNREVEALED_URI in contracts/.env after uploading unrevealed.json to IPFS
 const UNREVEALED_URI = process.env.UNREVEALED_URI ?? "ipfs://PLACEHOLDER/unrevealed.json";
-const MINT_PRICE_TAO = "0.015"; // 0.015 TAO
+const MINT_PRICE_TAO = "0.01"; // 0.01 TAO
 
 async function main() {
   if (!NFT_ADDRESS) {

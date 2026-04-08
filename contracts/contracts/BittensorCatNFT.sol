@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
  * @title TaoCatNFT
  * @dev 4,699 generative pixel cats on Bittensor EVM
  *
- * - Mint price: 0.015 TAO per cat (owner can update)
+ * - Mint price: 0.01 TAO per cat (owner can update)
  * - 100% of mint fees forwarded to liquidity receiver
  * - No team allocation. No whitelist. Open to all.
  *

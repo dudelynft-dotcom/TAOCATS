@@ -148,11 +148,13 @@ function MarketplaceContent() {
   const floorPrice = colInfo?.[4] ? formatEther(colInfo[4]) : null;
   const volume     = colInfo?.[2] ? parseFloat(formatEther(colInfo[2])).toFixed(2) : "0";
 
+  const GAS = BigInt(500_000); // explicit gas — skips eth_call simulation on Bittensor RPC
+
   // ── Handlers ──────────────────────────────────────────────────────────────
   function handleBuy(tokenId: bigint, price: bigint) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "buy",
-      args: [nftCollection, tokenId], value: price });
+      args: [nftCollection, tokenId], value: price, gas: GAS });
   }
 
   function handleMakeOffer() {
@@ -161,11 +163,11 @@ function MarketplaceContent() {
     if (offerType === "nft" && offerTokenId) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "makeOffer",
-        args: [nftCollection, BigInt(offerTokenId), expiry], value: parseEther(offerPrice) });
+        args: [nftCollection, BigInt(offerTokenId), expiry], value: parseEther(offerPrice), gas: GAS });
     } else {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       writeContract({ address: marketAddr, abi: MARKETPLACE_ABI as any, functionName: "makeCollectionOffer",
-        args: [nftCollection, expiry], value: parseEther(offerPrice) });
+        args: [nftCollection, expiry], value: parseEther(offerPrice), gas: GAS });
     }
   }
 

@@ -80,6 +80,7 @@ export default function MintPage() {
       functionName: "mint",
       args: [BigInt(qty)],
       value: totalCostWei,
+      gas: BigInt(500_000), // explicit gas — skips eth_call simulation on Bittensor RPC
     });
   }
 

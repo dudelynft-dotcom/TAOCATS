@@ -98,11 +98,14 @@ export default function DashboardPage() {
   const ownedCount   = tokenIds.length;
   const portfolioTao = floorTao * ownedCount;
 
+  const GAS = BigInt(500_000); // explicit gas — skips eth_call simulation on Bittensor RPC
+
   function doList(id: number, price: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     writeContract({ address: CONTRACTS.MARKETPLACE as `0x${string}`, abi: MARKETPLACE_ABI as any,
       functionName: "list",
-      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id), parseEther(price)] });
+      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id), parseEther(price)],
+      gas: GAS });
   }
 
   function handleList(id: number, price: string) {
@@ -112,7 +115,8 @@ export default function DashboardPage() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       writeContract({ address: CONTRACTS.NFT as `0x${string}`, abi: ERC721_ABI as any,
         functionName: "setApprovalForAll",
-        args: [CONTRACTS.MARKETPLACE as `0x${string}`, true] });
+        args: [CONTRACTS.MARKETPLACE as `0x${string}`, true],
+        gas: GAS });
     } else {
       doList(id, price);
     }
@@ -123,7 +127,8 @@ export default function DashboardPage() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     writeContract({ address: CONTRACTS.MARKETPLACE as `0x${string}`, abi: MARKETPLACE_ABI as any,
       functionName: "delist",
-      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id)] });
+      args: [CONTRACTS.NFT as `0x${string}`, BigInt(id)],
+      gas: GAS });
   }
 
   if (!isConnected) {

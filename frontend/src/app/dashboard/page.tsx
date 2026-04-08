@@ -76,8 +76,8 @@ export default function DashboardPage() {
     return set;
   }, [listingPage]);
 
-  const { writeContract, isPending, data: txHash, reset: resetWrite } = useWriteContract();
-  const { isSuccess: txDone } = useWaitForTransactionReceipt({ hash: txHash });
+  const { writeContract, isPending, data: txHash, reset: resetWrite, error: writeError } = useWriteContract();
+  const { isSuccess: txDone, isLoading: isConfirming, isError: txFailed, error: txError } = useWaitForTransactionReceipt({ hash: txHash });
 
   // After approval confirms, auto-submit the pending list
   useEffect(() => {
@@ -275,15 +275,17 @@ export default function DashboardPage() {
                           <div style={{ display:"flex", gap:4 }}>
                             <button
                               onClick={() => handleList(id, listPrice)}
-                              disabled={isPending || !listPrice}
+                              disabled={isPending || isConfirming || !listPrice}
                               style={{ flex:1, padding:"8px 6px", background:"#0f1419",
                                 color:"#fff", border:"none", fontSize:9, fontWeight:800,
-                                cursor: (!listPrice || isPending) ? "not-allowed" : "pointer",
+                                cursor: (!listPrice || isPending || isConfirming) ? "not-allowed" : "pointer",
                                 letterSpacing:"0.06em", opacity: !listPrice ? 0.5 : 1,
                                 textTransform:"uppercase" }}>
-                              {isPending
-                                ? (pendingList ? "APPROVING..." : "LISTING...")
-                                : (!isApproved ? "APPROVE & LIST" : "LIST")}
+                              {isConfirming
+                                ? "CONFIRMING..."
+                                : isPending
+                                  ? (pendingList ? "APPROVING..." : "LISTING...")
+                                  : (!isApproved ? "APPROVE & LIST" : "LIST")}
                             </button>
                             <button
                               onClick={() => { setListingId(null); setListPrice(""); }}
@@ -296,6 +298,13 @@ export default function DashboardPage() {
                           {floorTao > 0 && (
                             <div style={{ marginTop:6, fontSize:8, color:"#9aa0ae", fontWeight:700 }}>
                               FLOOR: τ {floorTao.toFixed(3)}
+                            </div>
+                          )}
+                          {(writeError || (txFailed && txError)) && listingId === id && (
+                            <div style={{ marginTop:6, padding:"6px 8px", background:"#fff0f0",
+                              border:"1px solid #ef4444", fontSize:8, color:"#b91c1c", fontWeight:700,
+                              wordBreak:"break-word" }}>
+                              {((writeError || txError) as Error)?.message?.slice(0, 120) ?? "Transaction failed"}
                             </div>
                           )}
                         </div>

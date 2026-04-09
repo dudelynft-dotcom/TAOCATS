@@ -104,12 +104,6 @@ export default function HomePage() {
                   border:"2px solid #0f1419", textDecoration:"none", display:"inline-block" }}>
                 View Market
               </Link>
-              <a href="/whitepaper.html"
-                style={{ padding:"13px 20px", background:"transparent", color:"#9aa0ae",
-                  fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase",
-                  border:"2px solid #e0e3ea", textDecoration:"none", display:"inline-flex", alignItems:"center", gap:6 }}>
-                Whitepaper →
-              </a>
             </div>
 
             {/* Countdown or Live indicator */}
@@ -310,15 +304,28 @@ export default function HomePage() {
             <h2 style={{ fontSize:32, fontWeight:700, color:"#ffffff", textTransform:"uppercase", letterSpacing:"-0.02em", marginBottom:8 }}>Ready to Mint?</h2>
             <p style={{ color:"#5a6478", fontSize:13 }}>τ {MINT_PRICE} per cat · Up to 20 per wallet · {MAX_SUPPLY.toLocaleString()} total supply</p>
           </div>
-          <div style={{ display:"flex", gap:12 }}>
-            <Link href="/mint"
-              style={{ padding:"14px 36px", background:"#ffffff", color:"#0f1419", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
-              Mint Now | τ {MINT_PRICE}
-            </Link>
-            <Link href="/marketplace"
-              style={{ padding:"14px 36px", background:"transparent", color:"#ffffff", border:"1px solid #2a3040", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
-              Marketplace
-            </Link>
+          <div style={{ display:"flex", flexDirection:"column", gap:10, alignItems:"flex-end" }}>
+            <div style={{ display:"flex", gap:12 }}>
+              <Link href="/mint"
+                style={{ padding:"14px 36px", background:"#ffffff", color:"#0f1419", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
+                Mint Now | τ {MINT_PRICE}
+              </Link>
+              <Link href="/marketplace"
+                style={{ padding:"14px 36px", background:"transparent", color:"#ffffff", border:"1px solid #2a3040", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
+                Marketplace
+              </Link>
+            </div>
+            <div style={{ display:"flex", gap:12 }}>
+              <a href="https://staking.taocats.fun"
+                style={{ padding:"10px 24px", background:"transparent", color:"#00c49a", border:"1px solid rgba(0,196,154,0.4)", fontWeight:700, fontSize:10, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-flex", alignItems:"center", gap:6 }}>
+                <span style={{ width:6, height:6, borderRadius:"50%", background:"#00c49a", display:"inline-block" }} />
+                Staking — Earn $BITCAT
+              </a>
+              <a href="/whitepaper.html"
+                style={{ padding:"10px 24px", background:"transparent", color:"#5a6478", border:"1px solid #2a3040", fontWeight:700, fontSize:10, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
+                Whitepaper →
+              </a>
+            </div>
           </div>
         </div>
       </div>

@@ -65,6 +65,29 @@ function verifyJWT(token: string): { userId: number; chatId: number } | null {
   return { userId: data.userId, chatId: data.chatId };
 }
 
+// ── Generate single-use invite link ───────────────────────────────────────────
+async function createSingleUseInviteLink(): Promise<string | null> {
+  const botToken = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId   = process.env.TG_CHAT_ID; // numeric chat ID of the private group
+  if (!botToken || !chatId) return null;
+
+  const expireDate = Math.floor(Date.now() / 1000) + 86_400; // 24h from now
+  const res = await fetch(
+    `https://api.telegram.org/bot${botToken}/createChatInviteLink`,
+    {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id:      chatId,
+        expire_date:  expireDate,
+        member_limit: 1, // single-use — can't be forwarded
+      }),
+    }
+  );
+  const json = await res.json();
+  return json.ok ? json.result.invite_link : null;
+}
+
 // ── Unrestrict user in Telegram group ─────────────────────────────────────────
 async function unrestrictUser(userId: number, chatId: number): Promise<boolean> {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -184,9 +207,13 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // 5. Generate single-use invite link (falls back to static link if not configured)
+  const singleUseLink = await createSingleUseInviteLink();
+  const groupLink = singleUseLink ?? process.env.TG_GROUP_LINK ?? "";
+
   return NextResponse.json({
     ok: true,
     balance: totalOwned.toString(),
-    groupLink: process.env.TG_GROUP_LINK ?? "",
+    groupLink,
   });
 }

@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
   const { userId, chatId } = decoded ?? { userId: 0, chatId: 0 };
 
   // 2. Verify wallet signature
-  const message = `Verify TAO Cat NFT ownership\n\nWallet: ${address}\nToken: ${token}`;
+  const message = `Verify TAO Cat NFT ownership\n\nWallet: ${address}\nToken: ${token ?? ""}`;
   let valid = false;
   try {
     valid = await verifyMessage({ address: address as `0x${string}`, message, signature });

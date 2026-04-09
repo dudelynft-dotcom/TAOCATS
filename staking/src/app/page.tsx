@@ -347,25 +347,25 @@ export default function StakingPage() {
     if (!await ensureChain()) return;
     lastTxType.current = "approve";
     setTxError(""); setTxStatus("Confirm in wallet…");
-    await writeContract({ address: NFT_ADDR, abi: NFT_ABI as any, functionName: "setApprovalForAll", args: [STAKING_ADDR, true] });
+    await writeContract({ address: NFT_ADDR, abi: NFT_ABI as any, functionName: "setApprovalForAll", args: [STAKING_ADDR, true], gas: BigInt(60_000) });
   }
   async function handleStake() {
     if (!sel.size || !await ensureChain()) return;
     lastTxType.current = "stake";
     setTxError(""); setTxStatus(`Staking ${sel.size} cat${sel.size > 1 ? "s" : ""}…`);
-    await writeContract({ address: STAKING_ADDR, abi: STAKING_ABI as any, functionName: "stake", args: [Array.from(sel).map(BigInt), lockOpt] });
+    await writeContract({ address: STAKING_ADDR, abi: STAKING_ABI as any, functionName: "stake", args: [Array.from(sel).map(BigInt), lockOpt], gas: BigInt(80_000 + sel.size * 120_000) });
   }
   async function handleUnstake(id: bigint) {
     if (!await ensureChain()) return;
     lastTxType.current = "unstake";
     setTxError(""); setTxStatus(`Unstaking #${id}…`);
-    await writeContract({ address: STAKING_ADDR, abi: STAKING_ABI as any, functionName: "unstake", args: [[id]] });
+    await writeContract({ address: STAKING_ADDR, abi: STAKING_ABI as any, functionName: "unstake", args: [[id]], gas: BigInt(120_000) });
   }
   async function handleClaim() {
     if (!await ensureChain()) return;
     lastTxType.current = "claim";
     setTxError(""); setTxStatus("Claiming $BITCAT…");
-    await writeContract({ address: STAKING_ADDR, abi: STAKING_ABI as any, functionName: "claim", args: [] });
+    await writeContract({ address: STAKING_ADDR, abi: STAKING_ABI as any, functionName: "claim", args: [], gas: BigInt(100_000) });
   }
 
   const lockOptions = [

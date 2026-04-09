@@ -22,7 +22,7 @@ export function useContractWrite() {
         functionName: params.functionName,
         args:         params.args,
         value:        params.value,
-        gas:          params.gas ?? BigInt(500_000),
+        gas:          params.gas ?? BigInt(200_000),
         chainId:      subtensor.id,
       });
     } catch (e) {

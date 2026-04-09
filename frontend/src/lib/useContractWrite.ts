@@ -41,7 +41,7 @@ export function useContractWrite() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const hash = await (walletClient as any).writeContract({
         ...params,
-        gas:     params.gas ?? BigInt(500_000),
+        gas:     params.gas ?? BigInt(200_000),
         account: walletClient.account,
         chain:   walletClient.chain,
       });

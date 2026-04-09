@@ -375,7 +375,8 @@ function MarketplaceContent() {
     const l = listings.find(x => x.id === id);
     if (!l) return;
     writeContract({ address: marketAddr, abi: SIMPLE_MARKET_ABI,
-      functionName: "buy", args: [tokenId], value: l.price });
+      functionName: "buy", args: [tokenId], value: l.price,
+      gas: BigInt(120_000) });
   }
 
   function handleSweep() {
@@ -386,7 +387,8 @@ function MarketplaceContent() {
     }).filter(Boolean) as bigint[];
     setIsSweeping(true); setTxMode("sweep");
     writeContract({ address: marketAddr, abi: SIMPLE_MARKET_ABI,
-      functionName: "sweepFloor", args: [ids], value: sweepTotal });
+      functionName: "sweepFloor", args: [ids], value: sweepTotal,
+      gas: BigInt(80_000 + ids.length * 100_000) }); // 100k per NFT swept
   }
 
   function handleInlineOffer(listing: Listing, offerPriceStr: string, days: number) {
@@ -396,7 +398,8 @@ function MarketplaceContent() {
     writeContract({ address: oldMarketAddr, abi: MARKETPLACE_ABI,
       functionName: "makeOffer",
       args: [nftAddr, listing.tokenId, expiry],
-      value: parseEther(offerPriceStr) });
+      value: parseEther(offerPriceStr),
+      gas: BigInt(100_000) });
   }
 
   function handleMakeNftOffer() {
@@ -406,7 +409,8 @@ function MarketplaceContent() {
     writeContract({ address: oldMarketAddr, abi: MARKETPLACE_ABI,
       functionName: "makeOffer",
       args: [nftAddr, BigInt(offerTokenId), expiry],
-      value: parseEther(offerPrice) });
+      value: parseEther(offerPrice),
+      gas: BigInt(100_000) });
   }
 
   function handleMakeCollectionOffer() {
@@ -416,7 +420,8 @@ function MarketplaceContent() {
     writeContract({ address: oldMarketAddr, abi: MARKETPLACE_ABI,
       functionName: "makeCollectionOffer",
       args: [nftAddr, expiry],
-      value: parseEther(offerPrice) });
+      value: parseEther(offerPrice),
+      gas: BigInt(100_000) });
   }
 
   // ── Render ────────────────────────────────────────────────────────────────

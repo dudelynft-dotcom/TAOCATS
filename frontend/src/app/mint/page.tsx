@@ -100,6 +100,7 @@ export default function MintPage() {
       functionName: "mint",
       args: [BigInt(qty)],
       value: totalCostWei,
+      gas: BigInt(80_000 + qty * 70_000), // ~80k base + 70k per NFT
     });
   }
 

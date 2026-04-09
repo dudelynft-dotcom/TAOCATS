@@ -13,8 +13,9 @@ function VerifyInner() {
   const { connect }               = useConnect();
   const { signMessageAsync }      = useSignMessage();
 
-  const [step,    setStep]    = useState<"connect" | "sign" | "loading" | "success" | "error">("connect");
-  const [errMsg,  setErrMsg]  = useState("");
+  const [step,     setStep]    = useState<"connect" | "sign" | "loading" | "success" | "error">("connect");
+  const [errMsg,   setErrMsg]  = useState("");
+  const [groupLink, setGroupLink] = useState("");
 
   // Advance to sign step once wallet is connected
   useEffect(() => {
@@ -33,11 +34,12 @@ function VerifyInner() {
       const res  = await fetch("/api/verify", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ token, address, signature }),
+        body:    JSON.stringify({ token: token || undefined, address, signature }),
       });
       const json = await res.json();
 
       if (res.ok) {
+        if (json.groupLink) setGroupLink(json.groupLink);
         setStep("success");
       } else {
         setErrMsg(json.error ?? "Verification failed.");
@@ -95,12 +97,22 @@ function VerifyInner() {
 
   if (step === "success") {
     return (
-      <Card title="Verified! 🐱" sub="You hold a TAO Cat NFT. You now have full access to the Telegram group."
-        accent>
-        <div style={{ marginTop: 20, padding: "12px 20px", background: "#f0fdf4",
-          border: "1.5px solid #bbf7d0", fontSize: 12, color: "#065f46", fontWeight: 700, lineHeight: 1.8 }}>
-          You can close this tab and return to Telegram.
-        </div>
+      <Card title="Verified! 🐱" sub="You hold a TAO Cat NFT. Welcome to the holders group." accent>
+        {groupLink ? (
+          <a href={groupLink} target="_blank" rel="noopener noreferrer"
+            style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+              marginTop: 24, padding: "16px 28px", background: "#0f1419", color: "#fff",
+              textDecoration: "none", fontFamily: "IBM Plex Mono, monospace",
+              fontSize: 12, fontWeight: 800, letterSpacing: "0.10em", textTransform: "uppercase",
+              border: "2px solid #0f1419" }}>
+            Join TAO CAT Holders →
+          </a>
+        ) : (
+          <div style={{ marginTop: 20, padding: "12px 20px", background: "#f0fdf4",
+            border: "1.5px solid #bbf7d0", fontSize: 12, color: "#065f46", fontWeight: 700, lineHeight: 1.8 }}>
+            Verified! Return to Telegram to access the group.
+          </div>
+        )}
       </Card>
     );
   }

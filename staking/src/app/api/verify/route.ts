@@ -155,5 +155,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  return NextResponse.json({ ok: true, balance: balance.toString() });
+  return NextResponse.json({
+    ok: true,
+    balance: balance.toString(),
+    groupLink: process.env.TG_GROUP_LINK ?? "",
+  });
 }

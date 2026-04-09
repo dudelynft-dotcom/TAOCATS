@@ -79,13 +79,27 @@ function CatImg({ id, size = 130 }: { id: number; size?: number }) {
   );
 }
 
-// ── Connect wallet button ──────────────────────────────────────────────────────
+// ── Connect / wallet modal button ─────────────────────────────────────────────
 function ConnectBtn({ large }: { large?: boolean }) {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, connector } = useAccount();
+  const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  function copy() {
+    if (!address) return;
+    navigator.clipboard.writeText(address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+
+  function disconnect() {
+    connector?.disconnect?.();
+    setOpen(false);
+  }
+
   if (!isConnected) {
     return (
-      <button
-        className={large ? "btn-black" : "btn-black"}
+      <button className="btn-black"
         style={large ? { padding: "14px 32px", fontSize: 12 } : {}}
         onClick={() => {
           if (typeof window !== "undefined" && (window as any).ethereum)
@@ -95,11 +109,88 @@ function ConnectBtn({ large }: { large?: boolean }) {
       </button>
     );
   }
+
   return (
-    <div className="wallet-btn">
-      <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#00c49a", flexShrink: 0 }}
-        className="pulse-dot" />
-      <span>{address?.slice(0, 6)}…{address?.slice(-4)}</span>
+    <div style={{ position: "relative" }}>
+      {/* Trigger */}
+      <button onClick={() => setOpen(o => !o)}
+        style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 14px",
+          border: "1.5px solid #e8eaed", background: open ? "#0f1419" : "#fff",
+          cursor: "pointer", fontFamily: "inherit", transition: "all 0.12s" }}>
+        <div style={{ width: 7, height: 7, borderRadius: "50%", background: "#00c49a", flexShrink: 0 }}
+          className="pulse-dot" />
+        <span style={{ fontSize: 11, fontWeight: 700, color: open ? "#fff" : "#0f1419",
+          letterSpacing: "0.06em" }}>
+          {address?.slice(0, 6)}…{address?.slice(-4)}
+        </span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
+          style={{ transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}>
+          <path d="M2 3.5L5 6.5L8 3.5" stroke={open ? "#fff" : "#9aa0ae"} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </button>
+
+      {/* Dropdown */}
+      {open && (
+        <>
+          {/* Backdrop */}
+          <div style={{ position: "fixed", inset: 0, zIndex: 99 }} onClick={() => setOpen(false)} />
+          <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 100,
+            background: "#fff", border: "2px solid #0f1419", minWidth: 260,
+            boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}>
+
+            {/* Address */}
+            <div style={{ padding: "14px 16px", borderBottom: "1px solid #e8eaed" }}>
+              <div style={{ fontSize: 9, color: "#9aa0ae", fontWeight: 700, letterSpacing: "0.12em",
+                textTransform: "uppercase", marginBottom: 6 }}>Connected Wallet</div>
+              <div style={{ fontFamily: "monospace", fontSize: 11, color: "#0f1419", fontWeight: 700,
+                wordBreak: "break-all", lineHeight: 1.6 }}>{address}</div>
+            </div>
+
+            {/* Actions */}
+            <div style={{ padding: "8px" }}>
+              <button onClick={copy}
+                style={{ display: "flex", alignItems: "center", gap: 10, width: "100%",
+                  padding: "10px 12px", background: "transparent", border: "none",
+                  cursor: "pointer", fontFamily: "inherit", borderRadius: 0,
+                  transition: "background 0.1s" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "#f7f8fa")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <rect x="9" y="9" width="13" height="13" rx="1" stroke="#0f1419" strokeWidth="2"/>
+                  <path d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" stroke="#0f1419" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#0f1419", letterSpacing: "0.06em" }}>
+                  {copied ? "Copied!" : "Copy Address"}
+                </span>
+                {copied && <span style={{ marginLeft: "auto", fontSize: 10, color: "#00c49a", fontWeight: 700 }}>✓</span>}
+              </button>
+
+              <button onClick={disconnect}
+                style={{ display: "flex", alignItems: "center", gap: 10, width: "100%",
+                  padding: "10px 12px", background: "transparent", border: "none",
+                  cursor: "pointer", fontFamily: "inherit", borderRadius: 0,
+                  transition: "background 0.1s" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "#fff5f5")}
+                onMouseLeave={e => (e.currentTarget.style.background = "transparent")}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"/>
+                  <polyline points="16,17 21,12 16,7" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <line x1="21" y1="12" x2="9" y2="12" stroke="#dc2626" strokeWidth="2" strokeLinecap="round"/>
+                </svg>
+                <span style={{ fontSize: 11, fontWeight: 700, color: "#dc2626", letterSpacing: "0.06em" }}>Disconnect</span>
+              </button>
+            </div>
+
+            {/* Network */}
+            <div style={{ padding: "10px 16px", borderTop: "1px solid #f0f0f0",
+              display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "#00c49a" }} />
+              <span style={{ fontSize: 9, color: "#9aa0ae", fontWeight: 700, letterSpacing: "0.10em",
+                textTransform: "uppercase" }}>Bittensor EVM · Chain 964</span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

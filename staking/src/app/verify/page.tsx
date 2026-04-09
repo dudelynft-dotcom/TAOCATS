@@ -55,7 +55,8 @@ function VerifyInner() {
     { id: "loading", label: "Verify"  },
     { id: "success", label: "Access"  },
   ];
-  const stepIdx = steps.findIndex(s => s.id === step);
+  const currentStep: string = step;
+  const stepIdx = steps.findIndex(s => s.id === currentStep);
 
   return (
     <div style={{
@@ -94,7 +95,7 @@ function VerifyInner() {
           {step !== "error" && (
             <div style={{ display: "flex", alignItems: "center", marginBottom: 40 }}>
               {steps.map((s, i) => {
-                const done    = i < stepIdx || step === "success";
+                const done    = i < stepIdx || currentStep === "success";
                 const active  = i === stepIdx && step !== "success";
                 const future  = i > stepIdx && step !== "success";
                 return (
@@ -103,24 +104,24 @@ function VerifyInner() {
                       <div style={{
                         width: 28, height: 28, borderRadius: "50%", flexShrink: 0,
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        background: done || step === "success" ? "#0f1419" : active ? "#0f1419" : "#f1f5f9",
-                        border: `2px solid ${done || step === "success" ? "#0f1419" : active ? "#0f1419" : "#e2e8f0"}`,
+                        background: done || currentStep === "success" ? "#0f1419" : active ? "#0f1419" : "#f1f5f9",
+                        border: `2px solid ${done || currentStep === "success" ? "#0f1419" : active ? "#0f1419" : "#e2e8f0"}`,
                         transition: "all 0.3s",
                       }}>
-                        {done || step === "success"
+                        {done || currentStep === "success"
                           ? <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
                           : <span style={{ fontSize: 9, fontWeight: 800, color: active ? "#fff" : "#94a3b8" }}>{i + 1}</span>
                         }
                       </div>
                       <span style={{ fontSize: 8, fontWeight: 700, letterSpacing: "0.10em",
                         textTransform: "uppercase",
-                        color: done || active || step === "success" ? "#0f1419" : "#94a3b8" }}>
+                        color: done || active || currentStep === "success" ? "#0f1419" : "#94a3b8" }}>
                         {s.label}
                       </span>
                     </div>
                     {i < steps.length - 1 && (
                       <div style={{ flex: 1, height: 2, margin: "0 6px", marginBottom: 22,
-                        background: done || step === "success" ? "#0f1419" : "#e2e8f0",
+                        background: done || currentStep === "success" ? "#0f1419" : "#e2e8f0",
                         transition: "background 0.3s" }} />
                     )}
                   </div>
@@ -225,7 +226,7 @@ function VerifyInner() {
           )}
 
           {/* ── SUCCESS ── */}
-          {step === "success" && (
+          {currentStep === "success" && (
             <div style={{ border: "2px solid #0f1419", boxShadow: "4px 4px 0 #0f1419", overflow: "hidden" }}>
               {/* Green header */}
               <div style={{ background: "#0f1419", padding: "32px 40px" }}>

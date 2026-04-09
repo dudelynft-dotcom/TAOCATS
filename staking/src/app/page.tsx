@@ -206,7 +206,7 @@ export default function StakingPage() {
   const { address, isConnected } = useAccount();
   const { connect } = useConnect();
   const chainId = useChainId();
-  const { switchChain } = useSwitchChain();
+  const { switchChainAsync } = useSwitchChain();
 
   const NFT_ADDR     = CONTRACTS.NFT;
   const STAKING_ADDR = CONTRACTS.STAKING;
@@ -269,6 +269,12 @@ export default function StakingPage() {
       setTxError("Transaction rejected.");
     } else if (msg.includes("Wallet not connected") || msg.includes("wallet not connected")) {
       setTxError("Wallet not authorized — please reconnect.");
+    } else if (msg.includes("does not match the target chain") || msg.includes("chain") && msg.includes("id:")) {
+      // Auto-switch and clear error so user can retry
+      switchChainAsync({ chainId: subtensor.id })
+        .then(() => setTxError("Switched to Bittensor EVM — click Approve again."))
+        .catch(() => setTxError("Switch to Bittensor EVM (chain 964) in your wallet."));
+      return;
     } else {
       setTxError(msg.slice(0, 80));
     }
@@ -304,11 +310,13 @@ export default function StakingPage() {
   const clearSel  = () => setSel(new Set());
 
   async function ensureChain() {
-    if (wrongChain) {
-      switchChain({ chainId: subtensor.id });
+    try {
+      await switchChainAsync({ chainId: subtensor.id });
+      return true;
+    } catch {
+      setTxError("Switch to Bittensor EVM (chain 964) in your wallet and try again.");
       return false;
     }
-    return true;
   }
 
   async function handleApprove() {
@@ -380,7 +388,7 @@ export default function StakingPage() {
           <span style={{ fontSize: 11, fontWeight: 700, color: "#92400e", letterSpacing: "0.04em" }}>
             Wrong network detected. Switch to Bittensor EVM (Chain 964) to stake.
           </span>
-          <button onClick={() => switchChain({ chainId: subtensor.id })}
+          <button onClick={() => switchChainAsync({ chainId: subtensor.id }).catch(() => {})}
             style={{ padding: "6px 16px", background: "#f59e0b", border: "none", cursor: "pointer",
               fontSize: 10, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase",
               fontFamily: "inherit", color: "#000" }}>

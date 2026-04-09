@@ -173,13 +173,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 4. Unrestrict in Telegram
-  const ok = await unrestrictUser(userId, chatId);
-  if (!ok) {
-    return NextResponse.json(
-      { error: "NFT verified but Telegram unrestrict failed. Contact an admin." },
-      { status: 500 }
-    );
+  // 4. Unrestrict in Telegram (only when coming from bot link with valid userId/chatId)
+  if (userId && chatId) {
+    const ok = await unrestrictUser(userId, chatId);
+    if (!ok) {
+      return NextResponse.json(
+        { error: "NFT verified but Telegram unrestrict failed. Contact an admin." },
+        { status: 500 }
+      );
+    }
   }
 
   return NextResponse.json({

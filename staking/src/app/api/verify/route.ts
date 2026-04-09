@@ -26,6 +26,16 @@ const NFT_ABI = [
   },
 ] as const;
 
+const STAKING_ABI = [
+  {
+    name: "stakedTokensOf",
+    type: "function",
+    stateMutability: "view",
+    inputs:  [{ name: "owner", type: "address" }],
+    outputs: [{ name: "", type: "uint256[]" }],
+  },
+] as const;
+
 // ── JWT verify (no external dep — pure Node crypto) ───────────────────────────
 function verifyJWT(token: string): { userId: number; chatId: number } | null {
   const secret = process.env.JWT_SECRET;
@@ -98,16 +108,19 @@ export async function POST(req: NextRequest) {
   }
 
   const { token, address, signature } = body ?? {};
-  if (!token || !address || !signature) {
-    return NextResponse.json({ error: "Missing token, address or signature." }, { status: 400 });
+  if (!address || !signature) {
+    return NextResponse.json({ error: "Missing address or signature." }, { status: 400 });
   }
 
-  // 1. Verify JWT
-  const decoded = verifyJWT(token);
-  if (!decoded) {
-    return NextResponse.json({ error: "Verification link expired or invalid. Request a new one in Telegram." }, { status: 401 });
+  // 1. Verify JWT (optional — only needed for bot flow)
+  let decoded: { userId: number; chatId: number } | null = null;
+  if (token) {
+    decoded = verifyJWT(token);
+    if (!decoded) {
+      return NextResponse.json({ error: "Verification link expired. Request a new one in Telegram." }, { status: 401 });
+    }
   }
-  const { userId, chatId } = decoded;
+  const { userId, chatId } = decoded ?? { userId: 0, chatId: 0 };
 
   // 2. Verify wallet signature
   const message = `Verify TAO Cat NFT ownership\n\nWallet: ${address}\nToken: ${token}`;
@@ -121,27 +134,41 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Signature does not match wallet address." }, { status: 401 });
   }
 
-  // 3. Check NFT balance on chain 964
-  const nftAddress = process.env.NEXT_PUBLIC_NFT_ADDRESS as `0x${string}`;
+  // 3. Check NFT balance — wallet holdings + staked NFTs both count
+  const nftAddress     = process.env.NEXT_PUBLIC_NFT_ADDRESS     as `0x${string}`;
+  const stakingAddress = process.env.NEXT_PUBLIC_STAKING_ADDRESS as `0x${string}`;
   if (!nftAddress) {
     return NextResponse.json({ error: "Server misconfiguration." }, { status: 500 });
   }
 
-  let balance: bigint;
+  let walletBalance: bigint = 0n;
+  let stakedCount:   bigint = 0n;
+
   try {
-    balance = await publicClient.readContract({
-      address:      nftAddress,
-      abi:          NFT_ABI,
-      functionName: "balanceOf",
-      args:         [address as `0x${string}`],
+    walletBalance = await publicClient.readContract({
+      address: nftAddress, abi: NFT_ABI,
+      functionName: "balanceOf", args: [address as `0x${string}`],
     });
   } catch {
     return NextResponse.json({ error: "Could not read NFT balance. Try again." }, { status: 502 });
   }
 
-  if (balance === 0n) {
+  // Also check staked count if staking contract is configured
+  if (stakingAddress) {
+    try {
+      const staked = await publicClient.readContract({
+        address: stakingAddress, abi: STAKING_ABI,
+        functionName: "stakedTokensOf", args: [address as `0x${string}`],
+      });
+      stakedCount = BigInt((staked as any[]).length);
+    } catch { /* staking check is best-effort */ }
+  }
+
+  const totalOwned = walletBalance + stakedCount;
+
+  if (totalOwned === 0n) {
     return NextResponse.json(
-      { error: "No TAO Cat NFTs found in this wallet. Buy or mint one at taocats.fun/mint" },
+      { error: "No TAO Cat NFTs found in this wallet (held or staked). Buy or mint one at taocats.fun/mint" },
       { status: 403 }
     );
   }
@@ -157,7 +184,7 @@ export async function POST(req: NextRequest) {
 
   return NextResponse.json({
     ok: true,
-    balance: balance.toString(),
+    balance: totalOwned.toString(),
     groupLink: process.env.TG_GROUP_LINK ?? "",
   });
 }

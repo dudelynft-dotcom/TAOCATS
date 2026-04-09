@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "TAO CAT Whitepaper — Bittensor EVM NFT Collection",
@@ -6,151 +7,155 @@ export const metadata: Metadata = {
     "Technical whitepaper for TAO CAT: 4,699 generative NFTs on Bittensor EVM with on-chain marketplace and rarity registry.",
   openGraph: {
     title: "TAO CAT Whitepaper",
-    description:
-      "4,699 generative pixel cats on Bittensor EVM. Zero team allocation. 100% mint revenue to liquidity.",
+    description: "4,699 generative pixel cats on Bittensor EVM. Zero team allocation. 100% mint revenue to liquidity.",
     url: "https://taocats.fun/whitepaper",
   },
 };
 
+const SECTIONS = [
+  "Abstract",
+  "Background: Bittensor and Its EVM Layer",
+  "Collection Overview",
+  "Artwork and Trait System",
+  "Rarity Architecture",
+  "Smart Contract Architecture",
+  "Marketplace",
+  "Economics and Value Flow",
+  "Technical Infrastructure",
+  "Fairness Guarantees",
+  "Roadmap",
+  "Contract Addresses",
+  "Disclaimer",
+];
+
 export default function WhitepaperPage() {
   return (
-    <main className="min-h-screen bg-white text-gray-900">
-      {/* Top bar */}
-      <div className="border-b border-gray-200 bg-white sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
-          <a href="/" className="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
-            ← taocats.fun
-          </a>
-          <span className="text-xs text-gray-400 font-mono">v1.0 | Chain ID: 964</span>
-        </div>
-      </div>
+    <div style={{ background: "#ffffff", minHeight: "100vh", paddingTop: 56 }}>
 
-      {/* Cover */}
-      <div className="bg-gradient-to-b from-gray-50 to-white border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-6 py-20 text-center">
-          <div className="text-6xl mb-6">🐱</div>
-          <h1 className="text-5xl font-black tracking-tight text-gray-900 mb-4">TAO CAT</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            A Generative NFT Collection with On-Chain Marketplace and Rarity Registry on Bittensor EVM
+      {/* ── HERO ── */}
+      <div style={{ background: "#ffffff", borderBottom: "3px solid #0f1419" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "64px 40px 48px" }}>
+          <div style={{ fontSize: 9, fontWeight: 700, color: "#9aa0ae", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 12 }}>
+            Official Documentation
+          </div>
+          <h1 style={{ fontSize: "clamp(40px,5vw,72px)", fontWeight: 700, color: "#0f1419", letterSpacing: "-0.03em", lineHeight: 0.95, textTransform: "uppercase", marginBottom: 20 }}>
+            TAO CAT<br />Whitepaper
+          </h1>
+          <div style={{ width: 48, height: 4, background: "#0f1419", marginBottom: 20 }} />
+          <p style={{ color: "#5a6478", fontSize: 14, lineHeight: 1.8, marginBottom: 4, fontWeight: 500, maxWidth: 560 }}>
+            A Generative NFT Collection with On-Chain Marketplace and Rarity Registry on Bittensor EVM.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-6 text-sm text-gray-500">
-            <span>Version 1.0</span>
-            <span className="w-1 h-1 rounded-full bg-gray-300" />
-            <span>Bittensor EVM Mainnet</span>
-            <span className="w-1 h-1 rounded-full bg-gray-300" />
-            <span>April 2026</span>
-          </div>
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
-            {[
-              { label: "Total Supply", value: "4,699" },
-              { label: "Mint Price", value: "0.01 TAO" },
-              { label: "Team Allocation", value: "0%" },
-              { label: "Liquidity from Mint", value: "100%" },
-            ].map((s) => (
-              <div key={s.label} className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
-                <div className="text-2xl font-black text-gray-900">{s.value}</div>
-                <div className="text-xs text-gray-500 mt-1">{s.label}</div>
-              </div>
-            ))}
-          </div>
+          <p style={{ color: "#9aa0ae", fontSize: 11, letterSpacing: "0.08em", fontWeight: 700, textTransform: "uppercase" }}>
+            Version 1.0 &nbsp;·&nbsp; Bittensor EVM Mainnet &nbsp;·&nbsp; April 2026
+          </p>
         </div>
       </div>
 
-      {/* Table of Contents */}
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        <nav className="bg-gray-50 rounded-2xl p-8 border border-gray-100">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4">Contents</h2>
-          <ol className="space-y-2 text-sm">
-            {[
-              "Abstract",
-              "Background: Bittensor and Its EVM Layer",
-              "Collection Overview",
-              "Artwork and Trait System",
-              "Rarity Architecture",
-              "Smart Contract Architecture",
-              "Marketplace",
-              "Economics and Value Flow",
-              "Technical Infrastructure",
-              "Fairness Guarantees",
-              "Roadmap",
-              "Contract Addresses",
-              "Disclaimer",
-            ].map((title, i) => (
+      {/* ── STATS BAR ── */}
+      <div style={{ borderBottom: "1px solid #0f1419", background: "#0f1419" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px", display: "flex", overflowX: "auto" }}>
+          {[
+            { label: "Total Supply", value: "4,699" },
+            { label: "Mint Price",   value: "τ 0.01" },
+            { label: "Chain",        value: "Bittensor EVM" },
+            { label: "Chain ID",     value: "964" },
+            { label: "Team Tokens",  value: "Zero" },
+            { label: "Market Fee",   value: "1%" },
+            { label: "Royalty",      value: "5.5%" },
+          ].map((s, idx, arr) => (
+            <div key={s.label} style={{ padding: "16px 28px", borderRight: idx < arr.length - 1 ? "1px solid #2a3040" : "none", flexShrink: 0, whiteSpace: "nowrap" }}>
+              <div style={{ fontSize: 16, fontWeight: 700, color: "#ffffff", fontFamily: "monospace", letterSpacing: "-0.01em" }}>{s.value}</div>
+              <div style={{ fontSize: 9, fontWeight: 700, color: "#5a6478", textTransform: "uppercase", letterSpacing: "0.12em", marginTop: 3 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── BODY ── */}
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "56px 40px 80px", display: "grid", gridTemplateColumns: "220px 1fr", gap: 48, alignItems: "start" }}>
+
+        {/* SIDEBAR */}
+        <aside style={{ position: "sticky", top: 80, borderRight: "2px solid #e0e3ea", paddingRight: 32 }}>
+          <div style={{ fontSize: 9, fontWeight: 700, color: "#9aa0ae", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 16 }}>Contents</div>
+          <ol style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 2 }}>
+            {SECTIONS.map((title, i) => (
               <li key={i}>
                 <a
-                  href={`#section-${i + 1}`}
-                  className="flex items-baseline gap-3 hover:text-gray-900 text-gray-600 transition-colors"
+                  href={`#s${i + 1}`}
+                  style={{ display: "flex", gap: 10, alignItems: "baseline", padding: "6px 0", textDecoration: "none", color: "#5a6478", fontSize: 10, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", borderBottom: "none" }}
+                  onMouseEnter={e => (e.currentTarget.style.color = "#0f1419")}
+                  onMouseLeave={e => (e.currentTarget.style.color = "#5a6478")}
                 >
-                  <span className="font-mono text-xs text-gray-400 w-5 shrink-0">{i + 1}.</span>
+                  <span style={{ fontFamily: "monospace", color: "#d0d5de", minWidth: 16 }}>{i + 1}.</span>
                   <span>{title}</span>
                 </a>
               </li>
             ))}
           </ol>
-        </nav>
-      </div>
+          <div style={{ marginTop: 32, borderTop: "1px solid #e0e3ea", paddingTop: 20 }}>
+            <Link href="/"
+              style={{ display: "inline-block", padding: "9px 16px", background: "#0f1419", color: "#ffffff", fontSize: 9, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none" }}>
+              ← Back to Site
+            </Link>
+          </div>
+        </aside>
 
-      {/* Content */}
-      <div className="max-w-4xl mx-auto px-6 pb-24 space-y-20">
+        {/* MAIN CONTENT */}
+        <main style={{ minWidth: 0 }}>
 
-        <Section id="section-1" number="01" title="Abstract">
-          <p>
-            TAO CAT is a collection of 4,699 generative pixel cats deployed on <b>Bittensor EVM</b> (Chain ID: 964),
-            the Ethereum-compatible execution layer of the Bittensor decentralized AI network. Each token is unique,
-            algorithmically generated from a layered trait system, and carries an on-chain rarity score stored in a
-            dedicated registry contract.
-          </p>
-          <p className="mt-4">
-            The project is built around a single principle: <b>every value unit flows to the community</b>. The mint
-            contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist. One hundred percent
-            of mint revenue is forwarded on-chain to a liquidity receiver at the moment of each mint.
-          </p>
-          <p className="mt-4">
-            Beyond the collection, TAO CAT ships a complete on-chain ecosystem: a native marketplace with batch
-            listing and floor-sweep capabilities, and a permanent on-chain rarity registry queryable by any contract.
-          </p>
-          <p className="mt-4">All contracts are immutable, non-upgradeable, and deployed on Bittensor EVM mainnet.</p>
-        </Section>
+          {/* 1. Abstract */}
+          <Section id="s1" num="01" title="Abstract">
+            <P>
+              TAO CAT is a collection of 4,699 generative pixel cats deployed on <B>Bittensor EVM</B> (Chain ID: 964),
+              the Ethereum-compatible execution layer of the Bittensor decentralized AI network. Each token is unique,
+              algorithmically generated from a layered trait system, and carries an on-chain rarity score stored in a
+              dedicated registry contract.
+            </P>
+            <P mt>
+              The project is built around a single principle: <B>every value unit flows to the community</B>. The mint
+              contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist. One hundred percent
+              of mint revenue is forwarded on-chain to a liquidity receiver at the moment of each mint.
+            </P>
+            <P mt>
+              Beyond the collection, TAO CAT ships a complete on-chain ecosystem: a native marketplace with batch
+              listing and floor-sweep capabilities, and a permanent on-chain rarity registry queryable by any contract.
+            </P>
+            <P mt>All contracts are immutable, non-upgradeable, and deployed on Bittensor EVM mainnet.</P>
+          </Section>
 
-        <Section id="section-2" number="02" title="Background: Bittensor and Its EVM Layer">
-          <SubSection title="2.1 Bittensor Protocol">
-            <p>
-              Bittensor ($TAO) is a decentralized machine intelligence network. Participants called miners compete to
-              provide the best outputs for computational tasks. Validators assess the quality of miner outputs and
-              distribute $TAO emissions accordingly. The system creates a self-organizing, incentive-compatible
-              marketplace for intelligence that operates without a central authority.
-            </p>
-          </SubSection>
-          <SubSection title="2.2 Bittensor EVM">
-            <p className="mb-4">
-              Bittensor EVM (Chain ID: 964) is the Ethereum-compatible smart contract layer of Bittensor. It shares
-              $TAO as its native currency and inherits Bittensor&apos;s validator security model.
-            </p>
-            <Table
-              headers={["Property", "Value"]}
-              rows={[
+          {/* 2. Background */}
+          <Section id="s2" num="02" title="Background: Bittensor and Its EVM Layer">
+            <Sub title="2.1  Bittensor Protocol">
+              <P>
+                Bittensor ($TAO) is a decentralized machine intelligence network. Miners compete to provide the best
+                outputs for computational tasks. Validators assess quality and distribute $TAO emissions. The system
+                creates a self-organizing, incentive-compatible marketplace for intelligence without a central authority.
+              </P>
+            </Sub>
+            <Sub title="2.2  Bittensor EVM">
+              <P mb>Bittensor EVM (Chain ID: 964) is the Ethereum-compatible smart contract layer. Key properties:</P>
+              <Table headers={["Property", "Value"]} rows={[
                 ["Chain ID", "964"],
                 ["Native Token", "$TAO (18 decimals)"],
                 ["EVM Version", "Cancun"],
                 ["RPC", "https://lite.chain.opentensor.ai"],
                 ["Block Explorer", "https://evm-explorer.tao.network"],
                 ["Tooling", "Hardhat, ethers.js, wagmi, MetaMask"],
-              ]}
-            />
-          </SubSection>
-          <SubSection title="2.3 The NFT Landscape on Bittensor EVM">
-            <p>
-              The Bittensor EVM ecosystem is young. TAO CAT is an early generative NFT project on this chain,
-              focused on bringing high-quality, community-owned NFT infrastructure: a fully on-chain marketplace
-              and a permanent rarity system.
-            </p>
-          </SubSection>
-        </Section>
+              ]} />
+              <P mt>Gas fees are denominated in $TAO and are significantly cheaper than Ethereum mainnet.</P>
+            </Sub>
+            <Sub title="2.3  The NFT Landscape on Bittensor EVM">
+              <P>
+                The Bittensor EVM ecosystem is young. TAO CAT is an early generative NFT project on this chain,
+                bringing high-quality, community-owned infrastructure: a fully on-chain marketplace and a permanent
+                rarity system.
+              </P>
+            </Sub>
+          </Section>
 
-        <Section id="section-3" number="03" title="Collection Overview">
-          <Table
-            headers={["Parameter", "Value"]}
-            rows={[
+          {/* 3. Collection Overview */}
+          <Section id="s3" num="03" title="Collection Overview">
+            <Table headers={["Parameter", "Value"]} rows={[
               ["Collection Name", "TAO CAT"],
               ["Token Symbol", "TCAT"],
               ["Token Standard", "ERC-721 with ERC721Enumerable"],
@@ -161,109 +166,97 @@ export default function WhitepaperPage() {
               ["Team Allocation", "0%"],
               ["Mint Revenue Distribution", "100% forwarded to liquidity at mint time"],
               ["Website", "taocats.fun"],
-            ]}
-          />
-          <SubSection title="Supply Rationale">
-            <p>
-              A supply of 4,699 creates genuine scarcity while supporting a meaningful community size. Small enough
-              that holding multiple tokens is accessible to early participants; large enough to sustain active
-              secondary market trading.
-            </p>
-          </SubSection>
-          <SubSection title="Pricing Rationale">
-            <p>
-              At 0.01 TAO per token, the mint is priced for accessibility. Total mint revenue of 46.99 TAO flows
-              entirely to liquidity, not to any team wallet.
-            </p>
-          </SubSection>
-        </Section>
+            ]} />
+            <Sub title="Supply Rationale">
+              <P>
+                4,699 creates genuine scarcity while supporting a meaningful community size — small enough for
+                accessibility, large enough to sustain active secondary trading.
+              </P>
+            </Sub>
+            <Sub title="Pricing Rationale">
+              <P>
+                At 0.01 TAO per token, the mint is priced for maximum participation. Total mint revenue of 46.99 TAO
+                flows entirely to liquidity, not to any team wallet.
+              </P>
+            </Sub>
+          </Section>
 
-        <Section id="section-4" number="04" title="Artwork and Trait System">
-          <SubSection title="4.1 Aesthetic Approach">
-            <p className="mb-4">
-              TAO CAT uses pixel art as its visual language. Each image is rendered at 1000x1000 pixels.
-              Every cat is composed of six independent visual layers:
-            </p>
-            <Table
-              headers={["Layer", "Description"]}
-              rows={[
+          {/* 4. Artwork */}
+          <Section id="s4" num="04" title="Artwork and Trait System">
+            <Sub title="4.1  Aesthetic Approach">
+              <P mb>Each image is rendered at 1000×1000px pixel art. Six independent visual layers:</P>
+              <Table headers={["Layer", "Description"]} rows={[
                 ["Background", "Color field or environment behind the cat"],
                 ["Body", "Base fur color and physical form"],
-                ["Head", "Headwear including hats, helmets, and accessories"],
+                ["Head", "Headwear: hats, helmets, accessories"],
                 ["Expression", "Facial expression and emotional character"],
                 ["Outfit", "Clothing and worn items"],
-                ["Eyewear", "Glasses, goggles, visors, and eye accessories"],
-              ]}
-            />
-          </SubSection>
-          <SubSection title="4.2 Generation Process">
-            <ol className="list-decimal list-inside space-y-2 text-gray-700">
-              <li>Assigns trait values to each layer according to a weighted probability distribution</li>
-              <li>Ensures no two tokens share an identical combination across all six layers</li>
-              <li>Produces a deterministic output for each token ID, making generation fully reproducible and auditable</li>
-            </ol>
-          </SubSection>
-          <SubSection title="4.3 Metadata Format">
-            <p className="mb-4">Each token&apos;s metadata follows the ERC-721 standard and is served at:</p>
-            <Code>{`https://taocats.fun/api/metadata/{tokenId}`}</Code>
-            <Code className="mt-3">{`{
+                ["Eyewear", "Glasses, goggles, visors, eye accessories"],
+              ]} />
+            </Sub>
+            <Sub title="4.2  Generation Process">
+              <OL items={[
+                "Assigns trait values per layer from a weighted probability distribution",
+                "Ensures no two tokens share an identical six-layer combination",
+                "Produces a deterministic output per token ID — fully reproducible and auditable",
+              ]} />
+            </Sub>
+            <Sub title="4.3  Metadata Format">
+              <P mb>Each token follows the ERC-721 metadata standard, served at:</P>
+              <Code>{`https://taocats.fun/api/metadata/{tokenId}`}</Code>
+              <Code mt>{`{
   "name": "TAO CAT #{tokenId}",
   "image": "https://taocats.fun/nft-images/{tokenId}.jpg",
   "attributes": [
-    { "trait_type": "Background", "value": "..." },
-    { "trait_type": "Body",       "value": "..." },
-    { "trait_type": "Head",       "value": "..." },
-    { "trait_type": "Expression", "value": "..." },
-    { "trait_type": "Outfit",     "value": "..." },
-    { "trait_type": "Eyewear",    "value": "..." },
-    { "trait_type": "Rarity Tier","value": "..." },
-    { "trait_type": "Rarity Score","value": 0, "display_type": "number" },
-    { "trait_type": "Rank",       "value": 0, "display_type": "number" }
+    { "trait_type": "Background",   "value": "..." },
+    { "trait_type": "Body",         "value": "..." },
+    { "trait_type": "Head",         "value": "..." },
+    { "trait_type": "Expression",   "value": "..." },
+    { "trait_type": "Outfit",       "value": "..." },
+    { "trait_type": "Eyewear",      "value": "..." },
+    { "trait_type": "Rarity Tier",  "value": "..." },
+    { "trait_type": "Rarity Score", "value": 0, "display_type": "number" },
+    { "trait_type": "Rank",         "value": 0, "display_type": "number" }
   ]
 }`}</Code>
-          </SubSection>
-        </Section>
+            </Sub>
+          </Section>
 
-        <Section id="section-5" number="05" title="Rarity Architecture">
-          <SubSection title="5.1 Scoring Methodology">
-            <p className="mb-4">
-              Each token&apos;s rarity score uses the statistical rarity method. For each trait layer,
-              the frequency of that trait value across the entire 4,699-token collection is calculated:
-            </p>
-            <Code>{`RarityScore(token) = sum over all layers of (1 / frequency(trait_value_in_layer))`}</Code>
-          </SubSection>
-          <SubSection title="5.2 Rarity Tiers">
-            <Table
-              headers={["Tier", "Score Percentile", "Approx. Count"]}
-              rows={[
-                ["Common", "0th to 40th", "~1,880 tokens"],
-                ["Uncommon", "40th to 70th", "~1,410 tokens"],
-                ["Rare", "70th to 90th", "~940 tokens"],
-                ["Epic", "90th to 98th", "~376 tokens"],
-                ["Legendary", "98th to 100th", "~93 tokens"],
-              ]}
-            />
-          </SubSection>
-          <SubSection title="5.3 On-Chain Rarity Registry">
-            <p>
-              Rarity data is written permanently to the <code className="bg-gray-100 px-1 rounded text-sm">BittensorCatRarity</code> contract
-              at <Addr>0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9</Addr>. For each token the contract stores:
-              rarity score, global rank (1 = rarest), and rarity tier. Data is written once and cannot be modified.
-              Any smart contract or wallet on Bittensor EVM can query rarity trustlessly.
-            </p>
-          </SubSection>
-        </Section>
+          {/* 5. Rarity */}
+          <Section id="s5" num="05" title="Rarity Architecture">
+            <Sub title="5.1  Scoring Methodology">
+              <P mb>Statistical rarity method. For each trait layer, frequency is computed across all 4,699 tokens:</P>
+              <Code>{`RarityScore(token) = Σ ( 1 / frequency(trait_value_in_layer) )`}</Code>
+              <P mt>A token with many low-frequency traits scores higher. Method consistent with rarity.tools standard.</P>
+            </Sub>
+            <Sub title="5.2  Rarity Tiers">
+              <Table headers={["Tier", "Score Percentile", "Approx. Count"]} rows={[
+                ["Common",    "0th – 40th",    "~1,880 tokens"],
+                ["Uncommon",  "40th – 70th",   "~1,410 tokens"],
+                ["Rare",      "70th – 90th",   "~940 tokens"],
+                ["Epic",      "90th – 98th",   "~376 tokens"],
+                ["Legendary", "98th – 100th",  "~93 tokens"],
+              ]} />
+            </Sub>
+            <Sub title="5.3  On-Chain Rarity Registry">
+              <P>
+                Rarity data is written permanently to the <Mono>BittensorCatRarity</Mono> contract
+                at <Mono>0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9</Mono>. Stores score, global rank (1 = rarest),
+                and tier per token. Written once after mint — cannot be modified. Queryable by any contract or wallet.
+              </P>
+            </Sub>
+          </Section>
 
-        <Section id="section-6" number="06" title="Smart Contract Architecture">
-          <p className="text-gray-600 mb-6">
-            All contracts: Solidity 0.8.24, Cancun EVM, 200-run optimizer, OpenZeppelin 5.x. No upgradeable proxy patterns.
-          </p>
+          {/* 6. Smart Contracts */}
+          <Section id="s6" num="06" title="Smart Contract Architecture">
+            <P mb>All contracts: Solidity 0.8.24 · Cancun EVM · 200-run optimizer · OpenZeppelin 5.x · No proxy patterns.</P>
 
-          <SubSection title="6.1 BittensorCatNFT">
-            <p className="mb-2 text-sm text-gray-500">Address: <Addr>0x2797341aaceAA2cE87D226E41B2fb8800FEE5184</Addr></p>
-            <p className="mb-4">Core ERC-721 contract extending <code className="bg-gray-100 px-1 rounded text-sm">ERC721Enumerable</code> and <code className="bg-gray-100 px-1 rounded text-sm">ReentrancyGuard</code>.</p>
-            <p className="font-semibold mb-2 text-sm">Zero fund retention:</p>
-            <Code>{`function _forwardToLiquidity() private {
+            <Sub title="6.1  BittensorCatNFT">
+              <Label>Address</Label>
+              <Mono block>0x2797341aaceAA2cE87D226E41B2fb8800FEE5184</Mono>
+              <P mt mb>Core ERC-721 contract. Extends <Mono>ERC721Enumerable</Mono> and <Mono>ReentrancyGuard</Mono>.</P>
+              <Label>Zero fund retention</Label>
+              <Code mt>{`function _forwardToLiquidity() private {
     uint256 balance = address(this).balance;
     if (balance > 0) {
         (bool ok,) = payable(liquidityReceiver).call{value: balance}("");
@@ -271,101 +264,102 @@ export default function WhitepaperPage() {
         emit FundsForwardedToLiquidity(balance);
     }
 }`}</Code>
-            <p className="font-semibold mb-2 mt-4 text-sm">Automatic overpayment refund:</p>
-            <Code>{`uint256 paid   = mintPrice * quantity;
+              <Label mt>Automatic overpayment refund</Label>
+              <Code mt>{`uint256 paid   = mintPrice * quantity;
 uint256 excess = msg.value - paid;
 if (excess > 0) {
     (bool refunded,) = payable(msg.sender).call{value: excess}("");
     require(refunded, "Refund failed");
 }`}</Code>
-            <p className="font-semibold mb-2 mt-4 text-sm">One-way reveal:</p>
-            <Code>{`function reveal(string calldata baseURI) external onlyOwner {
+              <Label mt>One-way reveal</Label>
+              <Code mt>{`function reveal(string calldata baseURI) external onlyOwner {
     require(!revealed, "Already revealed");
     _baseTokenURI = baseURI;
     revealed = true;
     emit Revealed(baseURI);
 }`}</Code>
-          </SubSection>
+            </Sub>
 
-          <SubSection title="6.2 BittensorCatRarity">
-            <p className="mb-2 text-sm text-gray-500">Address: <Addr>0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9</Addr></p>
-            <p>On-chain rarity registry. Stores score, rank, and tier for all 4,699 tokens. Read functions are public and callable by any address or contract.</p>
-          </SubSection>
+            <Sub title="6.2  BittensorCatRarity">
+              <Label>Address</Label>
+              <Mono block>0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9</Mono>
+              <P mt>On-chain rarity registry. Stores score, rank, and tier for all 4,699 tokens. Read functions public.</P>
+            </Sub>
 
-          <SubSection title="6.3 TaoCatsMarketV2">
-            <p className="mb-2 text-sm text-gray-500">Address: <Addr>0xa6B87FA663D8DF0Cc8caA0347431d8599Dc8D475</Addr></p>
-            <p className="mb-4">Fully on-chain marketplace. No off-chain order books, no signed messages, no trusted relay.</p>
-            <Table
-              headers={["Component", "Rate", "Recipient"]}
-              rows={[
+            <Sub title="6.3  TaoCatsMarketV2">
+              <Label>Address</Label>
+              <Mono block>0xa6B87FA663D8DF0Cc8caA0347431d8599Dc8D475</Mono>
+              <P mt mb>Fully on-chain marketplace. No off-chain order books, no signed messages, no trusted relay.</P>
+              <Table headers={["Component", "Rate", "Recipient"]} rows={[
                 ["Marketplace fee", "1.0%", "Treasury"],
                 ["Creator royalty", "5.5%", "Treasury"],
-                ["Total deducted", "6.5%", ""],
+                ["Total deducted", "6.5%", "—"],
                 ["Seller receives", "93.5%", "Seller wallet"],
-              ]}
-            />
-            <Code className="mt-4">{`uint256 public constant MARKET_FEE_BPS  = 100;   // 1.0%
+              ]} />
+              <Code mt>{`uint256 public constant MARKET_FEE_BPS  = 100;   // 1.0%
 uint256 public constant ROYALTY_BPS     = 550;   // 5.5%
 uint256 public constant TOTAL_FEE_BPS   = 650;   // 6.5%
 uint256 public constant BPS_DENOMINATOR = 10_000;`}</Code>
-          </SubSection>
-        </Section>
+            </Sub>
+          </Section>
 
-        <Section id="section-7" number="07" title="Marketplace">
-          <SubSection title="7.1 Trade Execution Flow">
-            <Code>{`1. Seller calls approve(marketplaceAddress, tokenId)
-2. Seller calls list(tokenId, priceInTAO)
+          {/* 7. Marketplace */}
+          <Section id="s7" num="07" title="Marketplace">
+            <Sub title="7.1  Trade Execution Flow">
+              <Code>{`1. Seller → approve(marketplaceAddress, tokenId)
+2. Seller → list(tokenId, priceInTAO)
 3. Contract stores: Listing{ seller, price }
-4. Buyer calls buy(tokenId) with msg.value >= listing.price
-5. Contract: sellerAmount = price * 0.935, fee = price * 0.065
-6. Contract transfers: TAO to seller, TAO to treasury, NFT to buyer
-7. Listing is deleted`}</Code>
-            <p className="mt-4 text-sm text-gray-600">Steps 5 to 7 occur atomically. Any failure reverts the entire transaction.</p>
-          </SubSection>
-          <SubSection title="7.2 sweepFloor">
-            <Code>{`function sweepFloor(uint256[] calldata tokenIds) external payable nonReentrant`}</Code>
-            <p className="mt-3 text-gray-700">Purchases multiple floor listings in one transaction. Each seller is paid individually. Excess TAO refunded automatically.</p>
-          </SubSection>
-          <SubSection title="7.3 listBatch">
-            <Code>{`function listBatch(uint256[] calldata tokenIds, uint256[] calldata prices) external`}</Code>
-            <p className="mt-3 text-gray-700">Lists multiple tokens simultaneously with a single transaction. Requires prior approval.</p>
-          </SubSection>
-        </Section>
+4. Buyer  → buy(tokenId) with msg.value >= listing.price
+5. Contract: sellerAmount = price × 0.935  |  fee = price × 0.065
+6. Transfers: TAO → seller  |  TAO → treasury  |  NFT → buyer
+7. Listing deleted`}</Code>
+              <P mt>Steps 5–7 occur atomically. Any failure reverts the entire transaction.</P>
+            </Sub>
+            <Sub title="7.2  sweepFloor">
+              <Code>{`function sweepFloor(uint256[] calldata tokenIds) external payable nonReentrant`}</Code>
+              <P mt>Purchases multiple floor listings in one transaction. Each seller paid individually. Excess TAO refunded.</P>
+            </Sub>
+            <Sub title="7.3  listBatch">
+              <Code>{`function listBatch(uint256[] calldata tokenIds, uint256[] calldata prices) external`}</Code>
+              <P mt>Lists multiple tokens simultaneously. Requires prior approval.</P>
+            </Sub>
+          </Section>
 
-        <Section id="section-8" number="08" title="Economics and Value Flow">
-          <SubSection title="8.1 Value Flow">
-            <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 font-mono text-sm text-gray-700 leading-loose">
-              <div className="text-center space-y-1">
-                <div className="font-bold text-gray-900">MINT (0.01 TAO x 4,699 tokens = 46.99 TAO)</div>
-                <div className="text-gray-400">↓ 100% forwarded at mint time (same transaction)</div>
-                <div className="font-bold text-gray-900">Liquidity Receiver Wallet</div>
-                <div className="text-gray-400">↓ Seeds on-chain liquidity pool</div>
-                <div className="font-bold text-gray-900">On-Chain Liquidity Pool</div>
-                <div className="text-gray-400">↓ Secondary trading generates</div>
-                <div className="font-bold text-gray-900">Marketplace Fees (6.5% per sale)</div>
-                <div className="text-gray-400">↓ Funds treasury for</div>
-                <div className="font-bold text-gray-900">Ongoing Ecosystem Development</div>
+          {/* 8. Economics */}
+          <Section id="s8" num="08" title="Economics and Value Flow">
+            <Sub title="8.1  Value Flow">
+              <div style={{ background: "#0f1419", border: "2px solid #0f1419", padding: "28px 32px", fontFamily: "monospace", fontSize: 12, color: "#9aa0ae", lineHeight: 2.2 }}>
+                {[
+                  { label: "MINT (0.01 TAO × 4,699 = 46.99 TAO)", accent: true },
+                  { label: "↓  100% forwarded in same transaction", indent: true },
+                  { label: "LIQUIDITY RECEIVER WALLET", accent: true },
+                  { label: "↓  seeds on-chain liquidity pool", indent: true },
+                  { label: "ON-CHAIN LIQUIDITY POOL", accent: true },
+                  { label: "↓  secondary trading generates", indent: true },
+                  { label: "MARKETPLACE FEES  (6.5% per sale)", accent: true },
+                  { label: "↓  funds treasury for", indent: true },
+                  { label: "ONGOING ECOSYSTEM DEVELOPMENT", accent: true },
+                ].map((row, i) => (
+                  <div key={i} style={{ color: row.accent ? "#ffffff" : "#5a6478", paddingLeft: row.indent ? 20 : 0, fontWeight: row.accent ? 700 : 500 }}>
+                    {row.label}
+                  </div>
+                ))}
               </div>
-            </div>
-          </SubSection>
-          <SubSection title="8.2 Zero-Extraction Design">
-            <Table
-              headers={["Excluded Feature", "Reason"]}
-              rows={[
+            </Sub>
+            <Sub title="8.2  Zero-Extraction Design">
+              <Table headers={["Excluded Feature", "Reason"]} rows={[
                 ["Team NFT allocation", "Team receives no reserved allocation"],
-                ["Pre-mine or reserve supply", "All tokens publicly minted at the same price"],
+                ["Pre-mine or reserve supply", "All tokens publicly minted at same price"],
                 ["`withdraw()` in NFT contract", "Mint funds cannot be redirected"],
                 ["Upgradeable proxy contracts", "Eliminates post-deploy logic changes"],
                 ["Whitelist or guaranteed allocations", "Equal access for all participants"],
-              ]}
-            />
-          </SubSection>
-        </Section>
+              ]} />
+            </Sub>
+          </Section>
 
-        <Section id="section-9" number="09" title="Technical Infrastructure">
-          <Table
-            headers={["Component", "Technology"]}
-            rows={[
+          {/* 9. Technical */}
+          <Section id="s9" num="09" title="Technical Infrastructure">
+            <Table headers={["Component", "Technology"]} rows={[
               ["Framework", "Next.js 14 (App Router)"],
               ["Web3 Interaction", "wagmi v2 + viem"],
               ["Data Fetching", "TanStack Query v5"],
@@ -376,208 +370,221 @@ uint256 public constant BPS_DENOMINATOR = 10_000;`}</Code>
               ["Build Framework", "Hardhat"],
               ["Base Libraries", "OpenZeppelin 5.x"],
               ["Optimizer", "Enabled, 200 runs"],
-            ]}
-          />
-          <SubSection title="9.1 Metadata System">
-            <p>
-              Token metadata is served by a Next.js API route that reads pre-generated JSON files for each token ID
-              and constructs a fully resolved response with an absolute image URL. Images are served from
-              Vercel&apos;s CDN with{" "}
-              <code className="bg-gray-100 px-1 rounded text-sm">Cache-Control: public, max-age=31536000, immutable</code>.
-            </p>
-          </SubSection>
-          <SubSection title="9.2 RPC Proxy">
-            <p>
-              A custom JSON-RPC proxy at <code className="bg-gray-100 px-1 rounded text-sm">taocats.fun/api/rpc</code> handles
-              Bittensor EVM gas estimation edge cases, ensuring mint and marketplace transactions simulate correctly
-              across all wallets.
-            </p>
-          </SubSection>
-        </Section>
+            ]} />
+            <Sub title="9.1  Metadata System">
+              <P>
+                Token metadata served by a Next.js API route. Reads pre-generated JSON per token ID, constructs
+                absolute image URL from request host. Images cached at Vercel CDN edge with{" "}
+                <Mono>Cache-Control: public, max-age=31536000, immutable</Mono>.
+              </P>
+            </Sub>
+            <Sub title="9.2  RPC Proxy">
+              <P>
+                Custom JSON-RPC proxy at <Mono>taocats.fun/api/rpc</Mono> handles Bittensor EVM gas estimation
+                edge cases. Ensures mint and marketplace transactions simulate correctly across all wallets.
+              </P>
+            </Sub>
+          </Section>
 
-        <Section id="section-10" number="10" title="Fairness Guarantees">
-          <div className="space-y-4">
-            {[
-              {
-                title: "Mint Funds Cannot Be Diverted",
-                body: "BittensorCatNFT has no withdraw() function. _forwardToLiquidity() is called unconditionally at the end of every mint. The liquidityReceiver address is set at construction with no setter. Verify: inspect contract ABI for absence of any withdraw or setLiquidityReceiver function.",
-              },
-              {
-                title: "No Post-Deploy Logic Changes",
-                body: "None of the contracts use TransparentUpgradeableProxy, UUPSUpgradeable, or any proxy pattern. The bytecode at each address is final. Verify: confirm absence of proxy patterns on block explorer.",
-              },
-              {
-                title: "Equal Access to Mint",
-                body: "There is no whitelist check in the mint() function. The only criteria are: mint is active, quantity between 1 and 20, wallet under 20-token cap, supply not reached, sufficient TAO attached. These apply identically to every address.",
-              },
-              {
-                title: "On-Chain Rarity Immutability",
-                body: "The rarity registry has no update function. Once scores, ranks, and tiers are written, they are permanent. Verify: inspect the rarity contract for absence of setter functions callable after initial population.",
-              },
-            ].map((g) => (
-              <div key={g.title} className="border border-gray-200 rounded-xl p-6">
-                <h3 className="font-bold text-gray-900 mb-2">{g.title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{g.body}</p>
-              </div>
-            ))}
-          </div>
-        </Section>
-
-        <Section id="section-11" number="11" title="Roadmap">
-          <div className="space-y-6">
-            {[
-              {
-                phase: "Phase 1", title: "Deployment", status: "completed",
-                items: [
-                  { done: true, text: "Deploy BittensorCatNFT on Bittensor EVM mainnet" },
-                  { done: true, text: "Deploy BittensorCatRarity" },
-                  { done: true, text: "Deploy TaoCatsMarketV2 and TaoCatsMarket" },
-                  { done: true, text: "Launch taocats.fun with mint, marketplace, and activity UI" },
-                  { done: true, text: "Open public mint at 0.01 TAO" },
-                ],
-              },
-              {
-                phase: "Phase 2", title: "Reveal", status: "in-progress",
-                items: [
-                  { done: false, text: "Execute collection reveal (set baseURI in NFT contract)" },
-                  { done: false, text: "Write rarity scores and ranks to BittensorCatRarity" },
-                  { done: false, text: "Enable marketplace trading on taocats.fun" },
-                ],
-              },
-              {
-                phase: "Phase 3", title: "Marketplace Enhancement", status: "upcoming",
-                items: [
-                  { done: false, text: "Surface on-chain rarity in marketplace listings" },
-                  { done: false, text: "Real-time on-chain activity feed" },
-                  { done: false, text: "Trait-based search and filtering" },
-                  { done: false, text: "Volume, floor history, and wallet analytics" },
-                ],
-              },
-              {
-                phase: "Phase 4", title: "Ecosystem Integration", status: "upcoming",
-                items: [
-                  { done: false, text: "Integration with Bittensor EVM wallets and explorers" },
-                  { done: false, text: "Collaborations with Bittensor subnet projects" },
-                  { done: false, text: "Cross-subnet utility exploration for TAO CAT holders" },
-                ],
-              },
-            ].map((phase) => (
-              <div key={phase.phase} className="border border-gray-200 rounded-xl overflow-hidden">
-                <div className={`px-6 py-3 flex items-center justify-between ${
-                  phase.status === "completed" ? "bg-green-50 border-b border-green-100" :
-                  phase.status === "in-progress" ? "bg-blue-50 border-b border-blue-100" :
-                  "bg-gray-50 border-b border-gray-100"
-                }`}>
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-mono font-bold text-gray-400">{phase.phase}</span>
-                    <span className="font-semibold text-gray-900">{phase.title}</span>
+          {/* 10. Fairness */}
+          <Section id="s10" num="10" title="Fairness Guarantees">
+            <div style={{ display: "grid", gap: 2, background: "#e0e3ea" }}>
+              {[
+                {
+                  title: "Mint Funds Cannot Be Diverted",
+                  body: "BittensorCatNFT has no withdraw() function. _forwardToLiquidity() runs unconditionally at end of every mint. liquidityReceiver is set at construction with no setter. Verify: inspect ABI for absence of withdraw or setLiquidityReceiver.",
+                },
+                {
+                  title: "No Post-Deploy Logic Changes",
+                  body: "None of the contracts use TransparentUpgradeableProxy, UUPSUpgradeable, or any proxy pattern. Bytecode at each address is final. Verify: confirm absence of proxy patterns on block explorer.",
+                },
+                {
+                  title: "Equal Access to Mint",
+                  body: "No whitelist check in mint(). Admission criteria apply identically to all addresses: mint active, quantity 1–20, wallet under 20-token cap, supply not reached, sufficient TAO attached.",
+                },
+                {
+                  title: "On-Chain Rarity Immutability",
+                  body: "Rarity registry has no update function. Once scores, ranks, and tiers are written they are permanent. Verify: inspect rarity contract for absence of setter functions after initial population.",
+                },
+              ].map((g) => (
+                <div key={g.title} style={{ background: "#ffffff", padding: "24px 28px" }}>
+                  <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+                    <div style={{ width: 8, height: 8, background: "#00c49a", flexShrink: 0, marginTop: 5 }} />
+                    <div>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: "#0f1419", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 8 }}>{g.title}</div>
+                      <p style={{ fontSize: 12, color: "#5a6478", lineHeight: 1.8 }}>{g.body}</p>
+                    </div>
                   </div>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    phase.status === "completed" ? "bg-green-100 text-green-700" :
-                    phase.status === "in-progress" ? "bg-blue-100 text-blue-700" :
-                    "bg-gray-100 text-gray-500"
-                  }`}>
-                    {phase.status === "completed" ? "Completed" :
-                     phase.status === "in-progress" ? "In Progress" : "Upcoming"}
-                  </span>
                 </div>
-                <ul className="px-6 py-4 space-y-2">
-                  {phase.items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-3 text-sm text-gray-600">
-                      <span className={`mt-0.5 shrink-0 ${item.done ? "text-green-500" : "text-gray-300"}`}>
-                        {item.done ? "✓" : "○"}
-                      </span>
-                      <span className={item.done ? "line-through text-gray-400" : ""}>{item.text}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </Section>
+              ))}
+            </div>
+          </Section>
 
-        <Section id="section-12" number="12" title="Contract Addresses">
-          <p className="text-sm text-gray-500 mb-4">All contracts deployed on <b>Bittensor EVM (Chain ID: 964)</b>.</p>
-          <Table
-            headers={["Contract", "Address"]}
-            rows={[
+          {/* 11. Roadmap */}
+          <Section id="s11" num="11" title="Roadmap">
+            <div style={{ display: "grid", gap: 2, background: "#e0e3ea" }}>
+              {[
+                {
+                  phase: "Phase 1", title: "Deployment", status: "COMPLETED",
+                  items: [
+                    [true,  "Deploy BittensorCatNFT on Bittensor EVM mainnet"],
+                    [true,  "Deploy BittensorCatRarity"],
+                    [true,  "Deploy TaoCatsMarketV2 and TaoCatsMarket"],
+                    [true,  "Launch taocats.fun with mint, marketplace, and activity UI"],
+                    [true,  "Open public mint at 0.01 TAO"],
+                  ],
+                },
+                {
+                  phase: "Phase 2", title: "Reveal", status: "IN PROGRESS",
+                  items: [
+                    [false, "Execute collection reveal (set baseURI in NFT contract)"],
+                    [false, "Write rarity scores and ranks to BittensorCatRarity"],
+                    [false, "Enable marketplace trading on taocats.fun"],
+                  ],
+                },
+                {
+                  phase: "Phase 3", title: "Marketplace Enhancement", status: "UPCOMING",
+                  items: [
+                    [false, "Surface on-chain rarity in marketplace listings"],
+                    [false, "Real-time on-chain activity feed"],
+                    [false, "Trait-based search and filtering"],
+                    [false, "Volume, floor history, and wallet analytics"],
+                  ],
+                },
+                {
+                  phase: "Phase 4", title: "Ecosystem Integration", status: "UPCOMING",
+                  items: [
+                    [false, "Integration with Bittensor EVM wallets and explorers"],
+                    [false, "Collaborations with Bittensor subnet projects"],
+                    [false, "Cross-subnet utility exploration for TAO CAT holders"],
+                  ],
+                },
+              ].map((ph) => (
+                <div key={ph.phase} style={{ background: "#ffffff" }}>
+                  <div style={{ background: "#f7f8fa", borderBottom: "1px solid #e0e3ea", padding: "12px 24px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
+                      <span style={{ fontFamily: "monospace", fontSize: 10, fontWeight: 700, color: "#9aa0ae" }}>{ph.phase}</span>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "#0f1419", textTransform: "uppercase", letterSpacing: "0.08em" }}>{ph.title}</span>
+                    </div>
+                    <span style={{
+                      fontSize: 9, fontWeight: 700, letterSpacing: "0.10em", padding: "3px 10px",
+                      background: ph.status === "COMPLETED" ? "#0f1419" : ph.status === "IN PROGRESS" ? "#00c49a" : "#f7f8fa",
+                      color: ph.status === "COMPLETED" ? "#ffffff" : ph.status === "IN PROGRESS" ? "#0f1419" : "#9aa0ae",
+                      border: "1px solid " + (ph.status === "UPCOMING" ? "#e0e3ea" : "transparent"),
+                    }}>{ph.status}</span>
+                  </div>
+                  <ul style={{ padding: "16px 24px", display: "flex", flexDirection: "column", gap: 8 }}>
+                    {(ph.items as [boolean, string][]).map(([done, text], i) => (
+                      <li key={i} style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
+                        <span style={{ fontFamily: "monospace", fontSize: 10, color: done ? "#00c49a" : "#d0d5de", flexShrink: 0 }}>{done ? "✓" : "○"}</span>
+                        <span style={{ fontSize: 12, color: done ? "#9aa0ae" : "#5a6478", textDecoration: done ? "line-through" : "none" }}>{text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </Section>
+
+          {/* 12. Contract Addresses */}
+          <Section id="s12" num="12" title="Contract Addresses">
+            <P mb>All contracts deployed on <B>Bittensor EVM (Chain ID: 964)</B>.</P>
+            <Table headers={["Contract", "Address"]} rows={[
               ["TAO CAT NFT (TCAT)", "0x2797341aaceAA2cE87D226E41B2fb8800FEE5184"],
-              ["Rarity Registry", "0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9"],
-              ["MarketV2", "0xa6B87FA663D8DF0Cc8caA0347431d8599Dc8D475"],
-              ["Simple Market", "0xfFF9F5eD81f805da27c022290C188eb6Fa3Ac7dE"],
-            ]}
-          />
-          <div className="mt-4 flex flex-col gap-1 text-sm">
-            <a href="https://evm-explorer.tao.network" target="_blank" rel="noopener noreferrer"
-               className="text-gray-500 hover:text-gray-900 underline">
-              Block Explorer: evm-explorer.tao.network
-            </a>
-            <a href="https://taocats.fun" className="text-gray-500 hover:text-gray-900 underline">
-              Website: taocats.fun
-            </a>
-          </div>
-        </Section>
+              ["Rarity Registry",    "0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9"],
+              ["MarketV2",           "0xa6B87FA663D8DF0Cc8caA0347431d8599Dc8D475"],
+              ["Simple Market",      "0xfFF9F5eD81f805da27c022290C188eb6Fa3Ac7dE"],
+            ]} />
+            <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 4 }}>
+              <a href="https://evm-explorer.tao.network" target="_blank" rel="noopener noreferrer"
+                style={{ fontSize: 11, color: "#5a6478", fontWeight: 700, letterSpacing: "0.06em" }}>
+                Block Explorer → evm-explorer.tao.network
+              </a>
+              <a href="https://taocats.fun" style={{ fontSize: 11, color: "#5a6478", fontWeight: 700, letterSpacing: "0.06em" }}>
+                Website → taocats.fun
+              </a>
+            </div>
+          </Section>
 
-        <Section id="section-13" number="13" title="Disclaimer">
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-sm text-amber-900 leading-relaxed space-y-3">
-            <p>
-              TAO CAT is an experimental digital collectible project. The NFTs described in this document are not
-              financial instruments, securities, or investment contracts. Holding a TAO CAT token does not represent
-              ownership in any company or legal entity.
-            </p>
-            <p>
-              The smart contracts extend OpenZeppelin 5.x and follow established Solidity security practices.
-              However, these contracts have not undergone a formal third-party security audit. Users interact with
-              them at their own risk.
-            </p>
-            <p>
-              Nothing in this document constitutes financial advice. Participants should conduct independent research
-              before minting, trading, or holding any asset described herein.
-            </p>
-          </div>
-        </Section>
+          {/* 13. Disclaimer */}
+          <Section id="s13" num="13" title="Disclaimer">
+            <div style={{ background: "#f7f8fa", border: "2px solid #e0e3ea", padding: "24px 28px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                <P>TAO CAT is an experimental digital collectible project. The NFTs described in this document are not financial instruments, securities, or investment contracts. Holding a TAO CAT token does not represent ownership in any company or legal entity.</P>
+                <P>The smart contracts extend OpenZeppelin 5.x and follow established Solidity security practices. However, these contracts have not undergone a formal third-party security audit. Users interact with them at their own risk.</P>
+                <P>Nothing in this document constitutes financial advice. Participants should conduct independent research before minting, trading, or holding any asset described herein.</P>
+              </div>
+            </div>
+          </Section>
 
+        </main>
       </div>
 
-      {/* Footer */}
-      <div className="border-t border-gray-200 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="text-sm text-gray-500">
-            <span className="font-bold text-gray-900">TAO CAT</span> — Bittensor EVM (Chain ID: 964)
-          </div>
-          <a href="https://taocats.fun" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
-            taocats.fun
-          </a>
+      {/* ── FOOTER ── */}
+      <footer style={{ borderTop: "1px solid #1e2640", padding: "24px 40px", background: "#0f1419" }}>
+        <div style={{ maxWidth: 1400, margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+          <span style={{ fontWeight: 700, letterSpacing: "0.12em", fontSize: 11, textTransform: "uppercase", color: "#ffffff" }}>TAO CATS — Whitepaper v1.0</span>
+          <p style={{ color: "#2a3040", fontSize: 10, letterSpacing: "0.06em" }}>Bittensor EVM · Chain 964 · 4,699 Cats</p>
         </div>
-      </div>
-    </main>
+      </footer>
+
+    </div>
   );
 }
 
-function Section({ id, number, title, children }: { id: string; number: string; title: string; children: React.ReactNode }) {
+/* ── Helper components ── */
+
+function Section({ id, num, title, children }: { id: string; num: string; title: string; children: React.ReactNode }) {
   return (
-    <section id={id} className="scroll-mt-20">
-      <div className="flex items-baseline gap-4 mb-6 pb-4 border-b border-gray-100">
-        <span className="font-mono text-xs text-gray-300 select-none">{number}</span>
-        <h2 className="text-2xl font-black text-gray-900">{title}</h2>
+    <section id={id} style={{ marginBottom: 64, scrollMarginTop: 80 }}>
+      <div style={{ borderBottom: "2px solid #0f1419", marginBottom: 28, paddingBottom: 12, display: "flex", alignItems: "baseline", gap: 16 }}>
+        <span style={{ fontFamily: "monospace", fontSize: 10, fontWeight: 700, color: "#d0d5de" }}>{num}</span>
+        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#0f1419", textTransform: "uppercase", letterSpacing: "-0.01em" }}>{title}</h2>
       </div>
-      <div className="text-gray-700 leading-relaxed">{children}</div>
+      {children}
     </section>
   );
 }
 
-function SubSection({ title, children }: { title: string; children: React.ReactNode }) {
+function Sub({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="mt-6">
-      <h3 className="font-semibold text-gray-900 mb-3">{title}</h3>
+    <div style={{ marginTop: 28 }}>
+      <div style={{ fontSize: 9, fontWeight: 700, color: "#9aa0ae", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 12 }}>{title}</div>
       {children}
     </div>
   );
 }
 
-function Code({ children, className = "" }: { children: string; className?: string }) {
+function P({ children, mt, mb }: { children: React.ReactNode; mt?: boolean; mb?: boolean }) {
+  return <p style={{ fontSize: 13, color: "#5a6478", lineHeight: 1.9, marginTop: mt ? 12 : 0, marginBottom: mb ? 12 : 0 }}>{children}</p>;
+}
+
+function B({ children }: { children: React.ReactNode }) {
+  return <strong style={{ color: "#0f1419", fontWeight: 700 }}>{children}</strong>;
+}
+
+function Mono({ children, block }: { children: React.ReactNode; block?: boolean }) {
   return (
-    <pre className={`bg-gray-950 text-green-400 rounded-xl px-5 py-4 text-sm overflow-x-auto font-mono leading-relaxed ${className}`}>
+    <span style={{
+      fontFamily: "monospace", fontSize: 11, color: "#0f1419", background: "#f2f4f7",
+      padding: "2px 6px", display: block ? "block" : "inline", marginTop: block ? 6 : 0, wordBreak: "break-all",
+    }}>
+      {children}
+    </span>
+  );
+}
+
+function Label({ children, mt }: { children: React.ReactNode; mt?: boolean }) {
+  return (
+    <div style={{ fontSize: 9, fontWeight: 700, color: "#9aa0ae", textTransform: "uppercase", letterSpacing: "0.14em", marginTop: mt ? 16 : 0 }}>
+      {children}
+    </div>
+  );
+}
+
+function Code({ children, mt }: { children: string; mt?: boolean }) {
+  return (
+    <pre style={{ background: "#0f1419", color: "#00c49a", padding: "20px 24px", fontSize: 12, overflowX: "auto", fontFamily: "monospace", lineHeight: 1.8, marginTop: mt ? 12 : 0 }}>
       <code>{children}</code>
     </pre>
   );
@@ -585,20 +592,20 @@ function Code({ children, className = "" }: { children: string; className?: stri
 
 function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
   return (
-    <div className="overflow-x-auto rounded-xl border border-gray-200">
-      <table className="w-full text-sm">
+    <div style={{ overflowX: "auto", border: "1px solid #e0e3ea" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
         <thead>
-          <tr className="bg-gray-50 border-b border-gray-200">
-            {headers.map((h) => (
-              <th key={h} className="text-left px-4 py-3 font-semibold text-gray-700 whitespace-nowrap">{h}</th>
+          <tr style={{ background: "#f7f8fa", borderBottom: "2px solid #0f1419" }}>
+            {headers.map(h => (
+              <th key={h} style={{ textAlign: "left", padding: "10px 16px", fontSize: 9, fontWeight: 700, color: "#0f1419", textTransform: "uppercase", letterSpacing: "0.12em", whiteSpace: "nowrap" }}>{h}</th>
             ))}
           </tr>
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}>
+            <tr key={i} style={{ borderBottom: "1px solid #e0e3ea", background: i % 2 === 0 ? "#ffffff" : "#fafafa" }}>
               {row.map((cell, j) => (
-                <td key={j} className="px-4 py-3 text-gray-700 font-mono text-xs align-top">{cell}</td>
+                <td key={j} style={{ padding: "10px 16px", color: "#5a6478", fontFamily: "monospace", fontSize: 11, verticalAlign: "top" }}>{cell}</td>
               ))}
             </tr>
           ))}
@@ -608,8 +615,15 @@ function Table({ headers, rows }: { headers: string[]; rows: string[][] }) {
   );
 }
 
-function Addr({ children }: { children: string }) {
+function OL({ items }: { items: string[] }) {
   return (
-    <span className="font-mono text-xs bg-gray-100 text-gray-700 px-1.5 py-0.5 rounded">{children}</span>
+    <ol style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 8, paddingLeft: 0 }}>
+      {items.map((item, i) => (
+        <li key={i} style={{ display: "flex", gap: 12, alignItems: "baseline" }}>
+          <span style={{ fontFamily: "monospace", fontSize: 9, fontWeight: 700, color: "#9aa0ae", flexShrink: 0 }}>{String(i + 1).padStart(2, "0")}.</span>
+          <span style={{ fontSize: 13, color: "#5a6478", lineHeight: 1.8 }}>{item}</span>
+        </li>
+      ))}
+    </ol>
   );
 }

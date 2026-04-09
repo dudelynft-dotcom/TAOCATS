@@ -42,7 +42,7 @@ const nextConfig = {
 
   // Ensure metadata JSON files are included in the serverless function bundle
   outputFileTracingIncludes: {
-    "/api/metadata/\\[id\\]": ["./public/metadata/**"],
+    "/api/**": ["./public/metadata/**"],
   },
 
   experimental: {

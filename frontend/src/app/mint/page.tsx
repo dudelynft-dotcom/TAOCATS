@@ -9,8 +9,27 @@ import ConnectButton from "@/components/ConnectButton";
 import { CONTRACTS, MAX_SUPPLY, MINT_PRICE, COLLECTION_NAME } from "@/lib/config";
 import { NFT_ABI } from "@/lib/abis";
 
+const LAUNCH_TARGET = new Date("2026-04-09T15:00:00.000Z").getTime();
+
+function useCountdown() {
+  const [remaining, setRemaining] = useState(() => Math.max(0, LAUNCH_TARGET - Date.now()));
+  useEffect(() => {
+    const id = setInterval(() => setRemaining(Math.max(0, LAUNCH_TARGET - Date.now())), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const days = Math.floor(remaining / 86_400_000);
+  const h    = Math.floor((remaining % 86_400_000) / 3_600_000);
+  const m    = Math.floor((remaining % 3_600_000) / 60_000);
+  const s    = Math.floor((remaining % 60_000) / 1000);
+  const pad  = (n: number) => String(n).padStart(2, "0");
+  if (remaining <= 0) return null;
+  if (days > 0) return `${days}d ${pad(h)}:${pad(m)}:${pad(s)}`;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
+}
+
 export default function MintPage() {
   const [qty, setQty]               = useState(1);
+  const countdown = useCountdown();
   const [mintedIds, setMintedIds]   = useState<number[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
 
@@ -219,11 +238,20 @@ export default function MintPage() {
                 </div>
 
               ) : mintActive === false ? (
-                <div style={{ padding:"24px", background:"#fff9f0", border:"2px solid #f59e0b", textAlign:"center" }}>
-                  <div style={{ fontSize:13, fontWeight:700, color:"#92400e", textTransform:"uppercase" }}>
-                    Mint Paused
+                <div style={{ padding:"28px 24px", background:"#f7f8fa", border:"2px solid #0f1419", textAlign:"center" }}>
+                  <div style={{ fontSize:9, fontWeight:700, color:"#9aa0ae", letterSpacing:"0.14em", textTransform:"uppercase", marginBottom:12 }}>
+                    {countdown ? "Mint opens in" : "Mint starting soon"}
                   </div>
-                  <div style={{ fontSize:11, color:"#a16207", marginTop:6 }}>Check back soon.</div>
+                  {countdown ? (
+                    <div style={{ fontFamily:"monospace", fontSize:36, fontWeight:800, color:"#0f1419", letterSpacing:"0.04em" }}>
+                      {countdown}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize:13, fontWeight:700, color:"#0f1419" }}>Launching shortly…</div>
+                  )}
+                  <div style={{ marginTop:14, fontSize:10, color:"#9aa0ae", fontWeight:700, letterSpacing:"0.08em" }}>
+                    τ {MINT_PRICE} · UP TO 20 PER WALLET
+                  </div>
                 </div>
 
               ) : maxCanMint === 0 ? (

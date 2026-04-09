@@ -104,6 +104,12 @@ export default function HomePage() {
                   border:"2px solid #0f1419", textDecoration:"none", display:"inline-block" }}>
                 View Market
               </Link>
+              <a href="/whitepaper.html"
+                style={{ padding:"13px 20px", background:"transparent", color:"#9aa0ae",
+                  fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase",
+                  border:"2px solid #e0e3ea", textDecoration:"none", display:"inline-flex", alignItems:"center", gap:6 }}>
+                Whitepaper →
+              </a>
             </div>
 
             {/* Countdown or Live indicator */}
@@ -330,6 +336,7 @@ export default function HomePage() {
             <Link href="/mint"        style={{ color:"#5a6478", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none" }}>Mint</Link>
             <Link href="/marketplace" style={{ color:"#5a6478", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none" }}>Market</Link>
             <Link href="/dashboard"   style={{ color:"#5a6478", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none" }}>Dashboard</Link>
+            <a href="/whitepaper.html" style={{ color:"#5a6478", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none" }}>Whitepaper</a>
             <a href="https://x.com/CatsonTao" target="_blank" rel="noopener noreferrer"
               style={{ display:"flex", alignItems:"center", gap:6, color:"#fff", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none",
                 padding:"5px 12px", border:"1px solid #2a3040", background:"#1a1a2e" }}

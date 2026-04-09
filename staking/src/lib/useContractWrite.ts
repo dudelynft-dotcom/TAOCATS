@@ -1,34 +1,36 @@
 "use client";
 import { useState } from "react";
-import { useWalletClient } from "wagmi";
+import { useWriteContract } from "wagmi";
 import type { Abi } from "viem";
 
+// Thin wrapper around wagmi's useWriteContract so the rest of the app
+// doesn't need changing. The key difference from the old walletClient approach:
+// wagmi's useWriteContract handles connector/walletClient lifecycle internally,
+// so it works correctly after cookie-based reconnect on refresh.
 export function useContractWrite() {
-  const { data: walletClient } = useWalletClient();
-  const [isPending, setIsPending] = useState(false);
-  const [data, setData]           = useState<`0x${string}` | undefined>();
-  const [error, setError]         = useState<Error | null>(null);
-
-  function reset() { setData(undefined); setError(null); setIsPending(false); }
+  const { writeContractAsync, isPending, data, reset: wagmiReset } = useWriteContract();
+  const [error, setError] = useState<Error | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function writeContract(params: { address: `0x${string}`; abi: Abi | readonly any[]; functionName: string; args?: readonly any[]; value?: bigint; gas?: bigint }) {
-    if (!walletClient) { setError(new Error("Wallet not connected")); return; }
+    setError(null);
     try {
-      setIsPending(true); setError(null); setData(undefined);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const hash = await (walletClient as any).writeContract({
-        ...params,
-        gas:     params.gas ?? BigInt(500_000),
-        account: walletClient.account,
-        chain:   walletClient.chain,
+      await writeContractAsync({
+        address:      params.address,
+        abi:          params.abi as Abi,
+        functionName: params.functionName,
+        args:         params.args,
+        value:        params.value,
+        gas:          params.gas ?? BigInt(500_000),
       });
-      setData(hash as `0x${string}`);
     } catch (e) {
       setError(e as Error);
-    } finally {
-      setIsPending(false);
     }
+  }
+
+  function reset() {
+    wagmiReset();
+    setError(null);
   }
 
   return { writeContract, isPending, data, error, reset };

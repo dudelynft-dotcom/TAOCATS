@@ -1,24 +1,9 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; overflow-x: hidden; }
 
-:root {
-  --bg:           #0a0d12;
-  --surface:      #0f1419;
-  --card:         #141920;
-  --card2:        #1a2030;
-  --border:       #2a3040;
-  --teal:         #00c49a;
-  --teal-dim:     rgba(0, 196, 154, 0.12);
-  --teal-border:  rgba(0, 196, 154, 0.30);
-  --text:         #ffffff;
-  --text-sub:     #9aa0ae;
-  --text-muted:   #5a6478;
-  --white:        #ffffff;
-}
-
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: #ffffff;
+  color: #0f1419;
   font-family: "IBM Plex Mono", "Courier New", Courier, monospace;
   -webkit-font-smoothing: antialiased;
   font-size: 14px;
@@ -26,14 +11,14 @@ body {
   overflow-x: hidden;
 }
 
-::-webkit-scrollbar { width: 5px; }
-::-webkit-scrollbar-track { background: var(--surface); }
-::-webkit-scrollbar-thumb { background: var(--border); }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #f7f8fa; }
+::-webkit-scrollbar-thumb { background: #d0d4dc; }
 
 h1, h2, h3, h4 {
   text-transform: uppercase;
   letter-spacing: -0.02em;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 /* ── Layout ── */
@@ -42,97 +27,133 @@ h1, h2, h3, h4 {
   margin: 0 auto;
   padding: 0 40px;
 }
-
 @media (max-width: 768px) { .page-inner { padding: 0 16px; } }
 
-/* ── Teal glow on active elements ── */
-.teal-glow { box-shadow: 0 0 12px rgba(0, 196, 154, 0.25); }
-
-/* ── Checkbox cat card ── */
+/* ── Cat cards ── */
 .cat-card {
-  border: 2px solid var(--border);
-  background: var(--card);
+  border: 1.5px solid #e0e3ea;
+  background: #fff;
   cursor: pointer;
-  transition: border-color 0.1s, transform 0.1s;
+  transition: border-color 0.1s;
   user-select: none;
 }
-.cat-card:hover { border-color: var(--text-sub); }
+.cat-card:hover { border-color: #0f1419; }
 .cat-card.selected {
-  border-color: var(--teal);
-  background: var(--teal-dim);
+  border-color: #0f1419;
+  outline: 2px solid #0f1419;
+  outline-offset: -1px;
 }
-.cat-card.locked { opacity: 0.7; cursor: default; }
+.cat-card.locked { opacity: 0.6; cursor: default; }
 
-/* ── Buttons ── */
+/* ── Primary button (black) ── */
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 28px;
+  background: #0f1419;
+  color: #ffffff;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
+  border: 2px solid #0f1419;
+  cursor: pointer;
+  transition: opacity 0.1s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.btn-primary:hover { opacity: 0.85; }
+.btn-primary:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Teal CTA button ── */
 .btn-teal {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 12px 28px;
-  background: var(--teal);
+  background: #00c49a;
   color: #000000;
   font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
-  border: 2px solid var(--teal);
+  border: 2px solid #00c49a;
   cursor: pointer;
-  transition: opacity 0.1s, transform 0.1s;
+  transition: opacity 0.1s;
   font-family: inherit;
+  white-space: nowrap;
 }
 .btn-teal:hover { opacity: 0.88; }
-.btn-teal:active { transform: translateY(1px); }
 .btn-teal:disabled { opacity: 0.35; cursor: not-allowed; }
 
+/* ── Outline button ── */
 .btn-outline {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 10px 20px;
   background: transparent;
-  color: var(--text-sub);
-  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
-  border: 1px solid var(--border);
+  color: #0f1419;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase;
+  border: 1.5px solid #0f1419;
+  cursor: pointer;
+  transition: background 0.1s, color 0.1s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+.btn-outline:hover { background: #0f1419; color: #fff; }
+.btn-outline:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── Ghost button ── */
+.btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 8px 14px;
+  background: transparent;
+  color: #9aa0ae;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase;
+  border: 1.5px solid #e0e3ea;
   cursor: pointer;
   transition: border-color 0.1s, color 0.1s;
   font-family: inherit;
 }
-.btn-outline:hover { border-color: var(--text-sub); color: var(--white); }
-.btn-outline:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-ghost:hover { border-color: #0f1419; color: #0f1419; }
 
+/* ── Danger ── */
 .btn-danger {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 8px 16px;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 7px 14px;
   background: transparent;
-  color: #ef4444;
-  font-size: 10px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase;
-  border: 1px solid #3a1212;
+  color: #dc2626;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1.5px solid #fecaca;
   cursor: pointer;
   transition: border-color 0.1s;
   font-family: inherit;
 }
-.btn-danger:hover { border-color: #ef4444; }
+.btn-danger:hover { border-color: #dc2626; }
 .btn-danger:disabled { opacity: 0.35; cursor: not-allowed; }
 
 /* ── Lock option radio ── */
 .lock-option {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  border: 1px solid var(--border);
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1.5px solid #e0e3ea;
   cursor: pointer;
   transition: border-color 0.1s, background 0.1s;
+  background: #fff;
 }
-.lock-option:hover { border-color: var(--text-muted); }
-.lock-option.active { border-color: var(--teal); background: var(--teal-dim); }
+.lock-option:hover { border-color: #0f1419; }
+.lock-option.active {
+  border-color: #0f1419;
+  background: #0f1419;
+}
+.lock-option.active .lock-label { color: #fff; }
+.lock-option.active .lock-sub   { color: #9aa0ae; }
+.lock-option.active .lock-bonus { color: #00c49a; }
 
-/* ── Rarity badges ── */
-.tier-legendary { color: #a855f7; }
-.tier-epic      { color: #3b82f6; }
-.tier-rare      { color: #10b981; }
-.tier-uncommon  { color: #f59e0b; }
-.tier-common    { color: var(--text-muted); }
+/* ── Rarity badge colors ── */
+.tier-legendary { color: #7c3aed; }
+.tier-epic      { color: #1d4ed8; }
+.tier-rare      { color: #059669; }
+.tier-uncommon  { color: #a16207; }
+.tier-common    { color: #64748b; }
 
-/* ── Staking grid ── */
+/* ── Main grid ── */
 .staking-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px;
-  align-items: start;
+  min-height: calc(100vh - 130px);
 }
 @media (max-width: 900px) {
   .staking-grid { grid-template-columns: 1fr; }
@@ -141,57 +162,79 @@ h1, h2, h3, h4 {
 /* ── Cats grid ── */
 .cats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 3px;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 4px;
 }
 @media (max-width: 480px) {
   .cats-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
-/* ── Scrollable panel ── */
+/* ── Scroll panel ── */
 .scroll-panel {
   overflow-y: auto;
-  max-height: 560px;
+  max-height: 520px;
   scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
+  scrollbar-color: #e0e3ea transparent;
 }
 
-/* ── Stat block ── */
+/* ── Stat strip ── */
 .stat-block {
-  padding: 20px 28px;
-  border-right: 1px solid var(--border);
+  padding: 18px 28px;
+  border-right: 1px solid #e0e3ea;
   flex-shrink: 0;
 }
 .stat-block:last-child { border-right: none; }
 
-/* ── Progress bar ── */
+/* ── Season progress bar ── */
 .progress-track {
   width: 100%;
-  height: 3px;
-  background: var(--border);
+  height: 2px;
+  background: #e0e3ea;
 }
 .progress-fill {
   height: 100%;
-  background: var(--teal);
+  background: #0f1419;
   transition: width 0.4s;
 }
 
-/* ── Responsive ── */
-@media (max-width: 768px) {
-  .stat-block { padding: 16px 20px; }
-  .btn-teal, .btn-outline { padding: 10px 16px; font-size: 10px; }
-  .hide-mobile { display: none !important; }
+/* ── Rarity pill ── */
+.rarity-pill {
+  display: inline-block;
+  padding: 2px 7px;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: 1px solid currentColor;
 }
 
-/* ── Animation ── */
-@keyframes pulse-teal {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0,196,154,0.4); }
-  50%       { box-shadow: 0 0 0 6px rgba(0,196,154,0); }
+/* ── Animations ── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
-.pulse { animation: pulse-teal 2s infinite; }
+.spinner {
+  width: 12px; height: 12px;
+  border: 2px solid #e0e3ea;
+  border-top-color: #0f1419;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
+  from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.fade-in { animation: fadeIn 0.3s ease; }
+.fade-in { animation: fadeIn 0.25s ease; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+.pulse-dot { animation: pulse-dot 1.5s infinite; }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .stat-block { padding: 14px 16px; }
+  .hide-mobile { display: none !important; }
+  .btn-primary, .btn-teal { padding: 10px 18px; font-size: 10px; }
+}

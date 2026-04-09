@@ -224,8 +224,9 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
       <li><a href="#s9"><span class="toc-num">9.</span>Technical Infra</a></li>
       <li><a href="#s10"><span class="toc-num">10.</span>Fairness</a></li>
       <li><a href="#s11"><span class="toc-num">11.</span>Roadmap</a></li>
-      <li><a href="#s12"><span class="toc-num">12.</span>Contracts</a></li>
-      <li><a href="#s13"><span class="toc-num">13.</span>Disclaimer</a></li>
+      <li><a href="#s12"><span class="toc-num">12.</span>$BITCAT Token</a></li>
+      <li><a href="#s13"><span class="toc-num">13.</span>Contracts</a></li>
+      <li><a href="#s14"><span class="toc-num">14.</span>Disclaimer</a></li>
     </ol>
     <div class="sidebar-cta"><a href="https://taocats.fun">Visit Site</a></div>
   </aside>
@@ -574,7 +575,133 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
     </section>
 
     <section class="section" id="s12">
-      <div class="section-header"><span class="sec-num">12</span><h2 class="sec-title">Contract Addresses</h2></div>
+      <div class="section-header"><span class="sec-num">12</span><h2 class="sec-title">$BITCAT Token Economics</h2></div>
+
+      <div class="subsection">
+        <div class="sub-label">12.1 Overview</div>
+        <p class="body">$BITCAT is the community token of the TAO CAT ecosystem. Earned by staking NFTs, designed with a single-direction value engine: marketplace activity reduces supply, staking rewards loyal holders, zero allocated to team.</p>
+        <div class="tbl-wrap" style="margin-top:14px">
+          <table>
+            <thead><tr><th>Property</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td>Token Name</td><td>BitCat Token</td></tr>
+              <tr><td>Symbol</td><td>$BITCAT</td></tr>
+              <tr><td>Total Supply</td><td>69,000,000,000</td></tr>
+              <tr><td>Chain</td><td>Bittensor EVM (Chain ID: 964)</td></tr>
+              <tr><td>Standard</td><td>ERC-20</td></tr>
+              <tr><td>Team Allocation</td><td>0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="sub-label">12.2 Token Allocation</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Allocation</th><th>%</th><th>Amount ($BITCAT)</th></tr></thead>
+            <tbody>
+              <tr><td>Public Sale</td><td>10%</td><td>6,900,000,000</td></tr>
+              <tr><td>Liquidity Pool</td><td>15%</td><td>10,350,000,000</td></tr>
+              <tr><td>Staking Season 1</td><td>2.5%</td><td>1,725,000,000</td></tr>
+              <tr><td>NFT Holder Airdrop</td><td>6%</td><td>4,140,000,000</td></tr>
+              <tr><td>Staking Season 2</td><td>10%</td><td>6,900,000,000</td></tr>
+              <tr><td>Marketing</td><td>5%</td><td>3,450,000,000</td></tr>
+              <tr><td>Burn Reserve</td><td>51.5%</td><td>35,535,000,000</td></tr>
+              <tr><td style="color:#00c49a;font-weight:700">Team</td><td style="color:#00c49a;font-weight:700">0%</td><td style="color:#00c49a;font-weight:700">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="sub-label">12.3 Staking Mechanics — staking.taocats.fun</div>
+        <p class="body" style="margin-bottom:12px"><span class="bold">Season 1 Pool:</span> 1,725,000,000 $BITCAT &nbsp;·&nbsp; <span class="bold">Duration:</span> 90 days &nbsp;·&nbsp; <span class="bold">Base rate:</span> 4,079 / cat / day</p>
+        <div class="tbl-wrap" style="margin-bottom:12px">
+          <table>
+            <thead><tr><th>Rarity Tier</th><th>Multiplier</th><th>Daily Rate ($BITCAT)</th></tr></thead>
+            <tbody>
+              <tr><td>Common</td><td>1×</td><td>4,079</td></tr>
+              <tr><td>Uncommon</td><td>1.2×</td><td>4,895</td></tr>
+              <tr><td>Rare</td><td>1.5×</td><td>6,119</td></tr>
+              <tr><td>Epic</td><td>2×</td><td>8,158</td></tr>
+              <tr><td style="color:#a855f7;font-weight:700">Legendary</td><td style="color:#a855f7;font-weight:700">3×</td><td style="color:#a855f7;font-weight:700">12,237</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="tbl-wrap" style="margin-bottom:12px">
+          <table>
+            <thead><tr><th>Collection Bonus</th><th>Lock Bonus</th><th>Trading Boost (7d vol)</th></tr></thead>
+            <tbody>
+              <tr><td>3+ cats → +10%</td><td>7-day lock → +25%</td><td>0.1–0.5 TAO → +5%</td></tr>
+              <tr><td>5+ cats → +20%</td><td>30-day lock → +80%</td><td>0.5–1 TAO → +10%</td></tr>
+              <tr><td>10+ cats → +50%</td><td>—</td><td>1+ TAO → +15%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="body"><span class="bold">Max daily rate</span> (Legendary · 10+ cats · 30d lock · 1+ TAO/week): <span class="mono">≈ 38,000 $BITCAT/day</span></p>
+      </div>
+
+      <div class="subsection">
+        <div class="sub-label">12.4 NFT Holder Airdrop</div>
+        <p class="body" style="margin-bottom:12px">At TGE, 4,140,000,000 $BITCAT distributed to all minted holders by rarity tier:</p>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Tier</th><th>Airdrop per Cat ($BITCAT)</th></tr></thead>
+            <tbody>
+              <tr><td>Common</td><td>600</td></tr>
+              <tr><td>Uncommon</td><td>720</td></tr>
+              <tr><td>Rare</td><td>900</td></tr>
+              <tr><td>Epic</td><td>1,200</td></tr>
+              <tr><td style="color:#a855f7;font-weight:700">Legendary</td><td style="color:#a855f7;font-weight:700">1,800</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="sub-label">12.5 Burn Engine</div>
+        <p class="body" style="margin-bottom:12px">51.5% of supply (35.535B $BITCAT) held in burn reserve, eliminated via:</p>
+        <div class="guarantee-grid">
+          <div class="g-item">
+            <div class="g-dot"></div>
+            <div>
+              <div class="g-title">Marketplace Buyback</div>
+              <p class="g-body">50% of all marketplace fees used to buy $BITCAT from DEX and burn permanently. Every NFT sale pumps token price.</p>
+            </div>
+          </div>
+          <div class="g-item">
+            <div class="g-dot"></div>
+            <div>
+              <div class="g-title">Milestone Burns</div>
+              <p class="g-body">10% of reserve burned at: mint sellout, Season 1 end, Season 2 end, every 1,000 marketplace trades, CEX listing.</p>
+            </div>
+          </div>
+          <div class="g-item">
+            <div class="g-dot"></div>
+            <div>
+              <div class="g-title">Unsold Public Sale</div>
+              <p class="g-body">Any unsold public sale allocation is burned, not returned to treasury or team wallets.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="subsection">
+        <div class="sub-label">12.6 Launch Sequence</div>
+        <pre class="code">1. BitcatToken deployed (no liquidity, no DEX pair)
+2. Staking live — NFT holders earn $BITCAT immediately
+3. Public sale (10% supply) — price discovery
+4. Liquidity: $BITCAT (public sale) + TAO (50% of mint revenue)
+5. DEX pair live → staking rewards become tradeable
+6. NFT holder airdrop claimable at TGE</pre>
+        <p class="body" style="margin-top:12px">Early minters earn maximum staking days before anyone can buy $BITCAT on open market.</p>
+      </div>
+
+    </section>
+
+    <section class="section" id="s13">
+      <div class="section-header"><span class="sec-num">13</span><h2 class="sec-title">Contract Addresses</h2></div>
       <p class="body" style="margin-bottom:14px">All contracts deployed on <span class="bold">Bittensor EVM (Chain ID: 964)</span>.</p>
       <div class="tbl-wrap">
         <table>
@@ -593,8 +720,8 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
       </div>
     </section>
 
-    <section class="section" id="s13">
-      <div class="section-header"><span class="sec-num">13</span><h2 class="sec-title">Disclaimer</h2></div>
+    <section class="section" id="s14">
+      <div class="section-header"><span class="sec-num">14</span><h2 class="sec-title">Disclaimer</h2></div>
       <div class="disclaimer">
         <p class="body" style="margin:0">TAO CAT is an experimental digital collectible project. The NFTs described in this document are not financial instruments, securities, or investment contracts. Holding a TAO CAT token does not represent ownership in any company or legal entity.</p>
         <p class="body" style="margin:0">The smart contracts extend OpenZeppelin 5.x and follow established Solidity security practices. However, these contracts have not undergone a formal third-party security audit. Users interact with them at their own risk.</p>

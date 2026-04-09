@@ -8,11 +8,12 @@ import ConnectButton from "@/components/ConnectButton";
 const ADMIN_OWNER = "0x198c2d42c71e8046f34eca9a0f5c81b9f3db2afb";
 
 const links = [
-  { href: "/",               label: "Home" },
-  { href: "/mint",           label: "Mint" },
-  { href: "/marketplace",    label: "Market" },
-  { href: "/dashboard",      label: "Dashboard" },
-  { href: "/whitepaper.html", label: "Whitepaper" },
+  { href: "/",                           label: "Home" },
+  { href: "/mint",                       label: "Mint" },
+  { href: "/marketplace",                label: "Market" },
+  { href: "/dashboard",                  label: "Dashboard" },
+  { href: "https://staking.taocats.fun", label: "Staking" },
+  { href: "/whitepaper.html",            label: "Whitepaper" },
 ];
 
 export default function Navbar() {

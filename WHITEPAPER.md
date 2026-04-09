@@ -441,7 +441,71 @@ The rarity registry stores data with no update function. Once scores, ranks, and
 
 ---
 
-## 12. Contract Addresses
+## 12. $BITCAT Token Economics
+
+### 12.1 Overview
+
+$BITCAT is the community token of the TAO CAT ecosystem. It is earned by staking TAO CAT NFTs and is designed with a single-direction value engine: marketplace activity reduces supply, staking rewards loyal holders, and zero supply is allocated to the team.
+
+- **Token Name:** BitCat Token  |  **Symbol:** $BITCAT
+- **Total Supply:** 69,000,000,000 (69 Billion)
+- **Chain:** Bittensor EVM (Chain ID: 964)  |  **Standard:** ERC-20
+
+### 12.2 Token Allocation
+
+| Allocation | % | Amount |
+|-----------|---|--------|
+| Public Sale | 10% | 6,900,000,000 |
+| Liquidity Pool | 15% | 10,350,000,000 |
+| Staking Season 1 | 2.5% | 1,725,000,000 |
+| NFT Holder Airdrop | 6% | 4,140,000,000 |
+| Staking Season 2 | 10% | 6,900,000,000 |
+| Marketing | 5% | 3,450,000,000 |
+| Burn Reserve | 51.5% | 35,535,000,000 |
+| Team | 0% | 0 |
+
+### 12.3 Staking Mechanics (staking.taocats.fun)
+
+**Season 1 Pool:** 1,725,000,000 $BITCAT · **Duration:** 90 days · **Base rate:** 4,079/cat/day
+
+| Tier | Multiplier | Daily Rate |
+|------|-----------|-----------|
+| Common | 1× | 4,079 |
+| Uncommon | 1.2× | 4,895 |
+| Rare | 1.5× | 6,119 |
+| Epic | 2× | 8,158 |
+| Legendary | 3× | 12,237 |
+
+**Collection bonus:** 3+ cats +10% · 5+ cats +20% · 10+ cats +50%
+
+**Lock bonus:** 7-day lock +25% · 30-day lock +80%
+
+**Trading boost (7-day rolling volume):** 0.1–0.5 TAO +5% · 0.5–1 TAO +10% · 1+ TAO +15%
+
+### 12.4 NFT Holder Airdrop
+
+At TGE, 4,140,000,000 $BITCAT distributed to all minted TAO CAT holders by rarity tier:
+Common 600 · Uncommon 720 · Rare 900 · Epic 1,200 · Legendary 1,800 per cat.
+
+### 12.5 Burn Engine
+
+51.5% of supply (35.535B $BITCAT) held in burn reserve, removed via:
+
+1. **Marketplace buyback** — 50% of all marketplace fees buy $BITCAT from DEX and burn permanently
+2. **Milestone burns** — 10% of reserve burned at: sellout, S1 end, S2 end, every 1,000 trades, CEX listing
+3. **Unsold public sale tokens** — burned, not retained
+
+### 12.6 Launch Sequence
+
+```
+Deploy BitcatToken → Staking live (no liquidity) → users earn $BITCAT
+→ Public sale (10%) → liquidity added (public sale + 50% mint TAO)
+→ DEX pair live → staking rewards tradeable → holder airdrop claimable
+```
+
+---
+
+## 13. Contract Addresses
 
 All contracts are deployed on **Bittensor EVM (Chain ID: 964)**.
 

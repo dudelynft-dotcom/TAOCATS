@@ -1,0 +1,35 @@
+"use client";
+import { useState } from "react";
+import { useWalletClient } from "wagmi";
+import type { Abi } from "viem";
+
+export function useContractWrite() {
+  const { data: walletClient } = useWalletClient();
+  const [isPending, setIsPending] = useState(false);
+  const [data, setData]           = useState<`0x${string}` | undefined>();
+  const [error, setError]         = useState<Error | null>(null);
+
+  function reset() { setData(undefined); setError(null); setIsPending(false); }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function writeContract(params: { address: `0x${string}`; abi: Abi | readonly any[]; functionName: string; args?: readonly any[]; value?: bigint; gas?: bigint }) {
+    if (!walletClient) { setError(new Error("Wallet not connected")); return; }
+    try {
+      setIsPending(true); setError(null); setData(undefined);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const hash = await (walletClient as any).writeContract({
+        ...params,
+        gas:     params.gas ?? BigInt(500_000),
+        account: walletClient.account,
+        chain:   walletClient.chain,
+      });
+      setData(hash as `0x${string}`);
+    } catch (e) {
+      setError(e as Error);
+    } finally {
+      setIsPending(false);
+    }
+  }
+
+  return { writeContract, isPending, data, error, reset };
+}

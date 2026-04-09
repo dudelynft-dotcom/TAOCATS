@@ -82,9 +82,7 @@ export default function WhitepaperPage() {
               <li key={i}>
                 <a
                   href={`#s${i + 1}`}
-                  style={{ display: "flex", gap: 10, alignItems: "baseline", padding: "6px 0", textDecoration: "none", color: "#5a6478", fontSize: 10, fontWeight: 700, letterSpacing: "0.04em", textTransform: "uppercase", borderBottom: "none" }}
-                  onMouseEnter={e => (e.currentTarget.style.color = "#0f1419")}
-                  onMouseLeave={e => (e.currentTarget.style.color = "#5a6478")}
+                  className="wp-toc-link"
                 >
                   <span style={{ fontFamily: "monospace", color: "#d0d5de", minWidth: 16 }}>{i + 1}.</span>
                   <span>{title}</span>

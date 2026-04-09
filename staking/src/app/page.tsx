@@ -732,7 +732,7 @@ export default function StakingPage() {
           </div>
 
           {/* Staked cats list */}
-          <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, overflow: "hidden" }}>
             <div style={{ padding: "16px 20px 14px", borderBottom: "1px solid #f1f5f9",
               display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div>

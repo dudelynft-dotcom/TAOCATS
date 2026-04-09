@@ -103,7 +103,12 @@ body {
 .cat-footer.selected-footer { background: #0f1419; border-top-color: #0f1419; }
 
 /* ── Right panel ── */
-.right-panel { display: flex; flex-direction: column; }
+.right-panel {
+  display: flex; flex-direction: column;
+  position: sticky; top: 0;
+  height: 100vh; max-height: 100vh;
+  overflow: hidden;
+}
 
 /* ── Rewards box ── */
 .rewards-box {
@@ -120,7 +125,7 @@ body {
 .rewards-number.ticking { color: #00c49a; }
 
 /* ── Staked list ── */
-.staked-list { flex: 1; overflow-y: auto; }
+.staked-list { flex: 1; overflow-y: auto; min-height: 0; }
 .staked-item {
   display: flex; align-items: center; gap: 12px;
   padding: 12px 20px;

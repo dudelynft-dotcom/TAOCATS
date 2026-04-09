@@ -853,15 +853,49 @@ export default function StakingPage() {
         </div>
       )}
 
-      {/* ── FOOTER ── */}
-      <footer style={{ borderTop: "2px solid #0f1419", padding: "18px 32px",
+      {/* ── TELEGRAM HOLDER ACCESS BANNER ── */}
+      <div style={{ borderTop: "1px solid #1e2640", background: "#080b0f", padding: "18px 32px",
         display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <span style={{ fontSize: 9, color: "#94a3b8", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ width: 32, height: 32, borderRadius: "50%", background: "#229ED9",
+            display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.23 14.168l-2.964-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.59.418z"/>
+            </svg>
+          </div>
+          <div>
+            <div style={{ fontSize: 10, fontWeight: 800, color: "#ffffff", letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 2 }}>
+              Holder-Only Telegram
+            </div>
+            <div style={{ fontSize: 9, color: "#5a6478", fontWeight: 600 }}>
+              Hold or stake a TAO Cat → get private group access
+            </div>
+          </div>
+        </div>
+        <a href="/verify"
+          style={{ padding: "9px 22px", background: "rgba(0,196,154,0.1)", color: "#00c49a",
+            border: "1px solid rgba(0,196,154,0.3)", fontWeight: 700, fontSize: 9,
+            letterSpacing: "0.12em", textTransform: "uppercase", textDecoration: "none",
+            display: "flex", alignItems: "center", gap: 6, whiteSpace: "nowrap",
+            transition: "all 0.12s" }}
+          onMouseEnter={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(0,196,154,0.18)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(0,196,154,0.6)"; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLAnchorElement).style.background = "rgba(0,196,154,0.1)"; (e.currentTarget as HTMLAnchorElement).style.borderColor = "rgba(0,196,154,0.3)"; }}>
+          <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#00c49a",
+            boxShadow: "0 0 6px #00c49a", display: "inline-block", flexShrink: 0 }} />
+          Verify Ownership →
+        </a>
+      </div>
+
+      {/* ── FOOTER ── */}
+      <footer style={{ borderTop: "1px solid #1a1f2e", padding: "18px 32px",
+        display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12,
+        background: "#080b0f" }}>
+        <span style={{ fontSize: 9, color: "#2a3040", fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase" }}>
           TAO CAT Staking · Season 1 · 90 Days
         </span>
         <div style={{ display: "flex", gap: 20 }}>
-          <a href={MAIN_SITE} style={{ fontSize: 9, color: "#94a3b8", fontWeight: 700, letterSpacing: "0.10em", textTransform: "uppercase", textDecoration: "none" }}>taocats.fun</a>
-          <a href="https://x.com/CatsonTao" target="_blank" rel="noopener noreferrer" style={{ fontSize: 9, color: "#94a3b8", fontWeight: 700, letterSpacing: "0.10em", textTransform: "uppercase", textDecoration: "none" }}>Twitter</a>
+          <a href={MAIN_SITE} style={{ fontSize: 9, color: "#2a3040", fontWeight: 700, letterSpacing: "0.10em", textTransform: "uppercase", textDecoration: "none" }}>taocats.fun</a>
+          <a href="https://x.com/CatsonTao" target="_blank" rel="noopener noreferrer" style={{ fontSize: 9, color: "#2a3040", fontWeight: 700, letterSpacing: "0.10em", textTransform: "uppercase", textDecoration: "none" }}>Twitter</a>
         </div>
       </footer>
 

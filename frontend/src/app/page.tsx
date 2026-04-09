@@ -321,6 +321,13 @@ export default function HomePage() {
                 <span style={{ width:6, height:6, borderRadius:"50%", background:"#00c49a", display:"inline-block" }} />
                 Staking — Earn $BITCAT
               </a>
+              <a href="https://staking.taocats.fun/verify"
+                style={{ padding:"10px 24px", background:"transparent", color:"#229ED9", border:"1px solid rgba(34,158,217,0.4)", fontWeight:700, fontSize:10, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-flex", alignItems:"center", gap:6 }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="#229ED9">
+                  <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.248l-1.97 9.289c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L8.23 14.168l-2.964-.924c-.643-.204-.657-.643.136-.953l11.57-4.461c.537-.194 1.006.131.59.418z"/>
+                </svg>
+                Holder Telegram
+              </a>
               <a href="/whitepaper.html"
                 style={{ padding:"10px 24px", background:"transparent", color:"#5a6478", border:"1px solid #2a3040", fontWeight:700, fontSize:10, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
                 Whitepaper →

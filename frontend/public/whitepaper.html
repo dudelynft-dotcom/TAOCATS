@@ -6,7 +6,7 @@
 <title>TAO CAT Whitepaper — Bittensor EVM NFT Collection</title>
 <meta name="description" content="Technical whitepaper for TAO CAT: 4,699 generative NFTs on Bittensor EVM with on-chain marketplace and rarity registry."/>
 <meta property="og:title" content="TAO CAT Whitepaper"/>
-<meta property="og:description" content="4,699 generative pixel cats on Bittensor EVM. Zero team allocation. 100% mint revenue to liquidity."/>
+<meta property="og:description" content="4,699 generative pixel cats on Bittensor EVM. Zero team allocation. On-chain marketplace and rarity registry."/>
 <meta property="og:url" content="https://taocats.fun/whitepaper.html"/>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -25,8 +25,8 @@ body{
   background:#fff;
   color:var(--black);
   font-family:"IBM Plex Mono","Courier New",Courier,monospace;
-  font-size:13px;
-  line-height:1.7;
+  font-size:15px;
+  line-height:1.75;
   -webkit-font-smoothing:antialiased;
 }
 a{color:inherit;text-decoration:none}
@@ -37,142 +37,134 @@ a{color:inherit;text-decoration:none}
 /* ── TOPBAR ── */
 .topbar{
   position:sticky;top:0;z-index:100;
-  background:#fff;
-  border-bottom:2px solid var(--black);
+  background:#fff;border-bottom:2px solid var(--black);
   display:flex;align-items:center;justify-content:space-between;
-  padding:0 40px;height:52px;
+  padding:0 40px;height:54px;
 }
-.topbar-brand{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--black)}
-.topbar-meta{font-size:9px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+.topbar-brand{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--black)}
+.topbar-meta{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
 .topbar-link{
-  font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
-  padding:6px 14px;border:2px solid var(--black);color:var(--black);
-  transition:background .1s
+  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  padding:7px 16px;border:2px solid var(--black);color:var(--black);transition:background .1s
 }
 .topbar-link:hover{background:var(--card)}
 
 /* ── HERO ── */
 .hero{border-bottom:3px solid var(--black);padding:56px 40px 44px}
-.eyebrow{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px}
-.hero h1{font-size:clamp(38px,5vw,68px);font-weight:700;color:var(--black);letter-spacing:-.03em;line-height:.92;text-transform:uppercase;margin-bottom:16px}
-.accent-line{width:48px;height:4px;background:var(--black);margin-bottom:16px}
-.hero-sub{color:var(--sub);font-size:13px;line-height:1.8;max-width:540px;margin-bottom:6px}
-.hero-meta{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.eyebrow{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:12px}
+.hero h1{font-size:clamp(40px,5vw,70px);font-weight:700;color:var(--black);letter-spacing:-.03em;line-height:.92;text-transform:uppercase;margin-bottom:16px}
+.accent-line{width:48px;height:4px;background:var(--black);margin-bottom:18px}
+.hero-sub{color:var(--sub);font-size:15px;line-height:1.8;max-width:540px;margin-bottom:8px}
+.hero-meta{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
 
 /* ── STATS BAR ── */
-.stats-bar{background:var(--black);border-bottom:1px solid var(--black);display:flex;overflow-x:auto}
-.stat{padding:14px 24px;border-right:1px solid var(--dark);flex-shrink:0;white-space:nowrap}
+.stats-bar{background:var(--black);display:flex;overflow-x:auto}
+.stat{padding:15px 26px;border-right:1px solid var(--dark);flex-shrink:0;white-space:nowrap}
 .stat:last-child{border-right:none}
-.stat-val{font-size:15px;font-weight:700;color:#fff;font-family:monospace;letter-spacing:-.01em}
-.stat-lbl{font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.12em;margin-top:3px}
+.stat-val{font-size:16px;font-weight:700;color:#fff;font-family:monospace;letter-spacing:-.01em}
+.stat-lbl{font-size:10px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:.12em;margin-top:4px}
 
 /* ── LAYOUT ── */
-.layout{display:grid;grid-template-columns:200px 1fr;gap:0;max-width:1300px;margin:0 auto;align-items:start}
+.layout{display:grid;grid-template-columns:210px 1fr;gap:0;max-width:1300px;margin:0 auto;align-items:start}
 .sidebar{
-  position:sticky;top:52px;
+  position:sticky;top:54px;
   border-right:2px solid var(--border);
   padding:36px 24px 48px;
-  min-height:calc(100vh - 52px);
+  min-height:calc(100vh - 54px);
 }
-.toc-title{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:14px}
+.toc-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin-bottom:14px}
 .toc-list{list-style:none;display:flex;flex-direction:column;gap:1px}
 .toc-list a{
   display:flex;gap:8px;align-items:baseline;
-  padding:6px 0;
-  font-size:9px;font-weight:700;color:var(--sub);
+  padding:7px 0;
+  font-size:10px;font-weight:700;color:var(--sub);
   text-transform:uppercase;letter-spacing:.04em;
-  border-left:2px solid transparent;
-  padding-left:8px;
-  margin-left:-8px;
+  border-left:2px solid transparent;padding-left:8px;margin-left:-8px;
   transition:color .1s,border-color .1s;
 }
 .toc-list a:hover{color:var(--black);border-left-color:var(--black)}
 .toc-num{font-family:monospace;color:var(--border);min-width:14px;font-size:9px}
 .sidebar-cta{margin-top:28px;padding-top:20px;border-top:1px solid var(--border)}
 .sidebar-cta a{
-  display:inline-block;padding:8px 14px;
+  display:inline-block;padding:9px 16px;
   background:var(--black);color:#fff;
-  font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase
+  font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase
 }
 
-/* ── MAIN CONTENT ── */
-.main{padding:48px 48px 80px;min-width:0}
+/* ── MAIN ── */
+.main{padding:52px 52px 80px;min-width:0}
 
 /* ── SECTION ── */
-.section{margin-bottom:60px;scroll-margin-top:64px}
+.section{margin-bottom:64px;scroll-margin-top:66px}
 .section-header{
   border-bottom:2px solid var(--black);
-  margin-bottom:24px;padding-bottom:10px;
+  margin-bottom:28px;padding-bottom:10px;
   display:flex;align-items:baseline;gap:14px;
 }
-.sec-num{font-family:monospace;font-size:10px;font-weight:700;color:var(--border)}
-.sec-title{font-size:18px;font-weight:700;color:var(--black);text-transform:uppercase;letter-spacing:-.01em}
-.sub-label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin:24px 0 10px}
-p.body{font-size:13px;color:var(--sub);line-height:1.9;margin-bottom:10px}
+.sec-num{font-family:monospace;font-size:11px;font-weight:700;color:var(--border)}
+.sec-title{font-size:20px;font-weight:700;color:var(--black);text-transform:uppercase;letter-spacing:-.01em}
+.sub-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin:26px 0 12px}
+p.body{font-size:15px;color:var(--sub);line-height:1.9;margin-bottom:12px}
 .bold{color:var(--black);font-weight:700}
-.mono{font-family:monospace;font-size:11px;background:var(--card);padding:2px 6px;color:var(--black);word-break:break-all}
+.mono{font-family:monospace;font-size:12px;background:var(--card);padding:2px 7px;color:var(--black);word-break:break-all}
 
 /* ── TABLE ── */
 .tbl-wrap{overflow-x:auto;border:1px solid var(--border)}
-table{width:100%;border-collapse:collapse;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:13px}
 thead tr{background:var(--surface);border-bottom:2px solid var(--black)}
-th{text-align:left;padding:9px 14px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--black);white-space:nowrap}
+th{text-align:left;padding:10px 16px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--black);white-space:nowrap}
 tbody tr{border-bottom:1px solid var(--border)}
 tbody tr:nth-child(even){background:#fafafa}
-td{padding:9px 14px;color:var(--sub);font-family:monospace;font-size:11px;vertical-align:top}
+td{padding:10px 16px;color:var(--sub);font-family:monospace;font-size:12px;vertical-align:top}
 
 /* ── CODE ── */
 pre.code{
   background:var(--black);color:var(--teal);
-  padding:20px 24px;font-size:11px;overflow-x:auto;
+  padding:22px 26px;font-size:13px;overflow-x:auto;
   font-family:"IBM Plex Mono","Courier New",monospace;
-  line-height:1.8;margin:10px 0
+  line-height:1.8;margin:12px 0
 }
 
-/* ── FLOW DIAGRAM ── */
-.flow{background:var(--black);border:2px solid var(--black);padding:24px 32px;font-family:monospace;font-size:12px;line-height:2.2}
+/* ── FLOW ── */
+.flow{background:var(--black);border:2px solid var(--black);padding:28px 36px;font-family:monospace;font-size:14px;line-height:2.4}
 .flow-row{color:#fff;font-weight:700}
 .flow-arrow{color:var(--sub);font-weight:400;padding-left:16px}
 
-/* ── CHECKLIST ── */
-.checklist{list-style:none;display:flex;flex-direction:column;gap:6px}
-.checklist li{display:flex;gap:10px;align-items:baseline;font-size:12px;color:var(--sub)}
-.chk-done{font-family:monospace;color:var(--teal);font-size:10px;flex-shrink:0}
-.chk-open{font-family:monospace;color:var(--border);font-size:10px;flex-shrink:0}
-.chk-done+span{text-decoration:line-through;color:var(--muted)}
-
 /* ── GUARANTEE CARDS ── */
 .guarantee-grid{display:grid;gap:2px;background:var(--border)}
-.guarantee{background:#fff;padding:20px 24px}
-.g-dot{width:8px;height:8px;background:var(--teal);flex-shrink:0;margin-top:4px}
-.g-title{font-size:10px;font-weight:700;color:var(--black);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
-.g-body{font-size:11px;color:var(--sub);line-height:1.8}
+.guarantee{background:#fff;padding:22px 26px}
+.g-dot{width:8px;height:8px;background:var(--teal);flex-shrink:0;margin-top:5px}
+.g-title{font-size:11px;font-weight:700;color:var(--black);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+.g-body{font-size:13px;color:var(--sub);line-height:1.8}
 
 /* ── PHASE BLOCK ── */
 .phase-grid{display:grid;gap:2px;background:var(--border)}
 .phase{background:#fff}
 .phase-header{
   background:var(--surface);border-bottom:1px solid var(--border);
-  padding:10px 20px;display:flex;align-items:center;justify-content:space-between
+  padding:11px 22px;display:flex;align-items:center;justify-content:space-between
 }
-.phase-label{font-family:monospace;font-size:9px;font-weight:700;color:var(--muted)}
-.phase-name{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--black)}
-.badge{font-size:9px;font-weight:700;letter-spacing:.10em;padding:3px 9px;border:1px solid transparent}
+.phase-label{font-family:monospace;font-size:10px;font-weight:700;color:var(--muted)}
+.phase-name{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--black)}
+.badge{font-size:9px;font-weight:700;letter-spacing:.10em;padding:3px 10px;border:1px solid transparent}
 .badge-done{background:var(--black);color:#fff}
 .badge-live{background:var(--teal);color:var(--black)}
 .badge-soon{background:var(--surface);color:var(--muted);border-color:var(--border)}
-.phase-body{padding:14px 20px;display:flex;flex-direction:column;gap:7px}
+.phase-body{padding:16px 22px;display:flex;flex-direction:column;gap:8px}
+.chk-item{display:flex;gap:10px;align-items:baseline;font-size:13px;color:var(--sub)}
+.chk-done{font-family:monospace;color:var(--teal);font-size:11px;flex-shrink:0}
+.chk-open{font-family:monospace;color:var(--border);font-size:11px;flex-shrink:0}
 
 /* ── DISCLAIMER ── */
-.disclaimer{background:var(--surface);border:2px solid var(--border);padding:22px 26px;display:flex;flex-direction:column;gap:10px}
+.disclaimer{background:var(--surface);border:2px solid var(--border);padding:24px 28px;display:flex;flex-direction:column;gap:12px}
 
-/* ── CONTRACT LINKS ── */
-.contract-link{font-size:11px;font-weight:700;color:var(--sub);letter-spacing:.04em}
+/* ── LINKS ── */
+.contract-link{font-size:12px;font-weight:700;color:var(--sub);letter-spacing:.04em}
 .contract-link:hover{color:var(--black)}
 
 /* ── FOOTER ── */
-footer{border-top:1px solid var(--dark);padding:20px 40px;background:var(--black);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
-footer span{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff}
+footer{border-top:1px solid var(--dark);padding:22px 40px;background:var(--black);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+footer span{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff}
 footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
 
 /* ── RESPONSIVE ── */
@@ -182,23 +174,21 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
   .main{padding:32px 20px 60px}
   .topbar{padding:0 20px}
   .hero{padding:40px 20px 32px}
-  .stats-bar{padding:0 4px}
 }
 @media(max-width:600px){
   .hero h1{font-size:36px}
+  p.body{font-size:14px}
 }
 </style>
 </head>
 <body>
 
-<!-- TOPBAR -->
 <header class="topbar">
   <span class="topbar-brand">TAO CAT — Whitepaper</span>
   <span class="topbar-meta">v1.0 &nbsp;·&nbsp; Chain ID: 964</span>
   <a href="https://taocats.fun" class="topbar-link">taocats.fun →</a>
 </header>
 
-<!-- HERO -->
 <div class="hero">
   <div style="max-width:1300px;margin:0 auto">
     <div class="eyebrow">Official Technical Documentation</div>
@@ -209,7 +199,6 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
   </div>
 </div>
 
-<!-- STATS BAR -->
 <div class="stats-bar">
   <div class="stat"><div class="stat-val">4,699</div><div class="stat-lbl">Total Supply</div></div>
   <div class="stat"><div class="stat-val">τ 0.01</div><div class="stat-lbl">Mint Price</div></div>
@@ -220,10 +209,7 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
   <div class="stat"><div class="stat-val">5.5%</div><div class="stat-lbl">Royalty</div></div>
 </div>
 
-<!-- LAYOUT -->
 <div class="layout">
-
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <div class="toc-title">Contents</div>
     <ol class="toc-list">
@@ -241,36 +227,25 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
       <li><a href="#s12"><span class="toc-num">12.</span>Contracts</a></li>
       <li><a href="#s13"><span class="toc-num">13.</span>Disclaimer</a></li>
     </ol>
-    <div class="sidebar-cta">
-      <a href="https://taocats.fun">Visit Site</a>
-    </div>
+    <div class="sidebar-cta"><a href="https://taocats.fun">Visit Site</a></div>
   </aside>
 
-  <!-- MAIN -->
   <main class="main">
 
-    <!-- 1 -->
     <section class="section" id="s1">
-      <div class="section-header">
-        <span class="sec-num">01</span>
-        <h2 class="sec-title">Abstract</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">01</span><h2 class="sec-title">Abstract</h2></div>
       <p class="body">TAO CAT is a collection of 4,699 generative pixel cats deployed on <span class="bold">Bittensor EVM</span> (Chain ID: 964), the Ethereum-compatible execution layer of the Bittensor decentralized AI network. Each token is unique, algorithmically generated from a layered trait system, and carries an on-chain rarity score stored in a dedicated registry contract.</p>
-      <p class="body">The project is built around a single principle: <span class="bold">every value unit flows to the community</span>. The mint contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist. One hundred percent of mint revenue is forwarded on-chain to a liquidity receiver at the moment of each mint.</p>
+      <p class="body">The project is built around a single principle: <span class="bold">every value unit flows to the community</span>. The mint contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist. Mint revenue is forwarded on-chain at the moment of each mint and does not remain in the contract.</p>
       <p class="body">Beyond the collection, TAO CAT ships a complete on-chain ecosystem: a native marketplace with batch listing and floor-sweep capabilities, and a permanent on-chain rarity registry queryable by any contract.</p>
       <p class="body">All contracts are immutable, non-upgradeable, and deployed on Bittensor EVM mainnet.</p>
     </section>
 
-    <!-- 2 -->
     <section class="section" id="s2">
-      <div class="section-header">
-        <span class="sec-num">02</span>
-        <h2 class="sec-title">Background: Bittensor and Its EVM Layer</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">02</span><h2 class="sec-title">Background: Bittensor and Its EVM Layer</h2></div>
       <div class="sub-label">2.1 Bittensor Protocol</div>
       <p class="body">Bittensor ($TAO) is a decentralized machine intelligence network. Miners compete to provide the best outputs for computational tasks. Validators assess quality and distribute $TAO emissions accordingly. The system creates a self-organizing, incentive-compatible marketplace for intelligence without a central authority.</p>
       <div class="sub-label">2.2 Bittensor EVM</div>
-      <p class="body" style="margin-bottom:12px">Bittensor EVM (Chain ID: 964) is the Ethereum-compatible smart contract layer. Key properties:</p>
+      <p class="body" style="margin-bottom:14px">Bittensor EVM (Chain ID: 964) is the Ethereum-compatible smart contract layer. Key properties:</p>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Property</th><th>Value</th></tr></thead>
@@ -288,12 +263,8 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
       <p class="body">The Bittensor EVM ecosystem is young. TAO CAT is an early generative NFT project on this chain, focused on bringing high-quality, community-owned NFT infrastructure: a fully on-chain marketplace and a permanent rarity system.</p>
     </section>
 
-    <!-- 3 -->
     <section class="section" id="s3">
-      <div class="section-header">
-        <span class="sec-num">03</span>
-        <h2 class="sec-title">Collection Overview</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">03</span><h2 class="sec-title">Collection Overview</h2></div>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
@@ -306,7 +277,6 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
             <tr><td>Mint Price</td><td>0.01 TAO per token</td></tr>
             <tr><td>Max Per Wallet</td><td>20 tokens</td></tr>
             <tr><td>Team Allocation</td><td>0%</td></tr>
-            <tr><td>Mint Revenue Distribution</td><td>100% forwarded to liquidity at mint time</td></tr>
             <tr><td>Website</td><td>taocats.fun</td></tr>
           </tbody>
         </table>
@@ -314,17 +284,13 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
       <div class="sub-label">Supply Rationale</div>
       <p class="body">4,699 creates genuine scarcity while supporting a meaningful community size. Small enough for multiple-token accessibility to early participants; large enough to sustain active secondary trading.</p>
       <div class="sub-label">Pricing Rationale</div>
-      <p class="body">At 0.01 TAO per token, the mint is priced for maximum participation. Total mint revenue of 46.99 TAO flows entirely to liquidity, not to any team wallet.</p>
+      <p class="body">At 0.01 TAO per token, the mint is priced for maximum participation. No mint revenue remains in the contract after any mint transaction.</p>
     </section>
 
-    <!-- 4 -->
     <section class="section" id="s4">
-      <div class="section-header">
-        <span class="sec-num">04</span>
-        <h2 class="sec-title">Artwork and Trait System</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">04</span><h2 class="sec-title">Artwork and Trait System</h2></div>
       <div class="sub-label">4.1 Aesthetic Approach</div>
-      <p class="body" style="margin-bottom:12px">TAO CAT uses pixel art as its visual language. Each image is rendered at 1000×1000 pixels. Six independent visual layers:</p>
+      <p class="body" style="margin-bottom:14px">TAO CAT uses pixel art as its visual language. Each image is rendered at 1000×1000 pixels. Six independent visual layers:</p>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Layer</th><th>Description</th></tr></thead>
@@ -339,13 +305,13 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
         </table>
       </div>
       <div class="sub-label">4.2 Generation Process</div>
-      <ol style="list-style:none;display:flex;flex-direction:column;gap:8px;padding-left:0">
-        <li style="display:flex;gap:12px;align-items:baseline"><span style="font-family:monospace;font-size:9px;font-weight:700;color:var(--muted);flex-shrink:0">01.</span><span style="font-size:13px;color:var(--sub);line-height:1.8">Assigns trait values per layer from a weighted probability distribution</span></li>
-        <li style="display:flex;gap:12px;align-items:baseline"><span style="font-family:monospace;font-size:9px;font-weight:700;color:var(--muted);flex-shrink:0">02.</span><span style="font-size:13px;color:var(--sub);line-height:1.8">Ensures no two tokens share an identical six-layer combination</span></li>
-        <li style="display:flex;gap:12px;align-items:baseline"><span style="font-family:monospace;font-size:9px;font-weight:700;color:var(--muted);flex-shrink:0">03.</span><span style="font-size:13px;color:var(--sub);line-height:1.8">Produces a deterministic output per token ID — fully reproducible and auditable</span></li>
+      <ol style="list-style:none;display:flex;flex-direction:column;gap:10px">
+        <li style="display:flex;gap:14px;align-items:baseline"><span style="font-family:monospace;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0">01.</span><span style="font-size:15px;color:var(--sub);line-height:1.8">Assigns trait values per layer from a weighted probability distribution</span></li>
+        <li style="display:flex;gap:14px;align-items:baseline"><span style="font-family:monospace;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0">02.</span><span style="font-size:15px;color:var(--sub);line-height:1.8">Ensures no two tokens share an identical six-layer combination</span></li>
+        <li style="display:flex;gap:14px;align-items:baseline"><span style="font-family:monospace;font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0">03.</span><span style="font-size:15px;color:var(--sub);line-height:1.8">Produces a deterministic output per token ID — fully reproducible and auditable</span></li>
       </ol>
       <div class="sub-label">4.3 Metadata Format</div>
-      <p class="body" style="margin-bottom:8px">Each token follows ERC-721 metadata standard, served at:</p>
+      <p class="body" style="margin-bottom:10px">Each token follows the ERC-721 metadata standard, served at:</p>
       <pre class="code">https://taocats.fun/api/metadata/{tokenId}</pre>
       <pre class="code">{
   "name": "TAO CAT #{tokenId}",
@@ -362,18 +328,15 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
     { "trait_type": "Rank",          "value": 0, "display_type": "number" }
   ]
 }</pre>
+      <p class="body">Images are served with one-year immutable cache headers via a global CDN.</p>
     </section>
 
-    <!-- 5 -->
     <section class="section" id="s5">
-      <div class="section-header">
-        <span class="sec-num">05</span>
-        <h2 class="sec-title">Rarity Architecture</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">05</span><h2 class="sec-title">Rarity Architecture</h2></div>
       <div class="sub-label">5.1 Scoring Methodology</div>
-      <p class="body" style="margin-bottom:8px">Statistical rarity method. For each trait layer, frequency is computed across all 4,699 tokens:</p>
+      <p class="body" style="margin-bottom:10px">Statistical rarity method. For each trait layer, frequency is computed across all 4,699 tokens:</p>
       <pre class="code">RarityScore(token) = Σ ( 1 / frequency(trait_value_in_layer) )</pre>
-      <p class="body">Where frequency(trait_value) = count of tokens with that value / 4,699. A token with many low-frequency traits scores higher. Method consistent with rarity.tools standard.</p>
+      <p class="body">A token with many low-frequency traits scores higher. Method consistent with rarity.tools standard.</p>
       <div class="sub-label">5.2 Rarity Tiers</div>
       <div class="tbl-wrap">
         <table>
@@ -388,38 +351,26 @@ footer small{font-size:10px;color:var(--dark);letter-spacing:.06em}
         </table>
       </div>
       <div class="sub-label">5.3 On-Chain Rarity Registry</div>
-      <p class="body">Rarity data is written permanently to the <span class="mono">BittensorCatRarity</span> contract at <span class="mono">0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9</span>. Stores score, global rank (1 = rarest), and tier per token. Written once after mint — cannot be modified. Queryable by any contract or wallet on Bittensor EVM.</p>
+      <p class="body">Rarity data written permanently to <span class="mono">BittensorCatRarity</span> at <span class="mono">0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9</span>. Stores score, global rank (1 = rarest), and tier. Written once — cannot be modified. Queryable by any contract or wallet on Bittensor EVM.</p>
     </section>
 
-    <!-- 6 -->
     <section class="section" id="s6">
-      <div class="section-header">
-        <span class="sec-num">06</span>
-        <h2 class="sec-title">Smart Contract Architecture</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">06</span><h2 class="sec-title">Smart Contract Architecture</h2></div>
       <p class="body">All contracts: Solidity 0.8.24 &nbsp;·&nbsp; Cancun EVM &nbsp;·&nbsp; 200-run optimizer &nbsp;·&nbsp; OpenZeppelin 5.x &nbsp;·&nbsp; No proxy patterns.</p>
 
       <div class="sub-label">6.1 BittensorCatNFT</div>
-      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin-bottom:4px">Address</div>
-      <div class="mono" style="display:block;margin-bottom:12px;font-size:11px">0x2797341aaceAA2cE87D226E41B2fb8800FEE5184</div>
-      <p class="body" style="margin-bottom:10px">Core ERC-721 contract. Extends <span class="mono">ERC721Enumerable</span> and <span class="mono">ReentrancyGuard</span>.</p>
-      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin-bottom:4px">Zero fund retention</div>
-      <pre class="code">function _forwardToLiquidity() private {
-    uint256 balance = address(this).balance;
-    if (balance > 0) {
-        (bool ok,) = payable(liquidityReceiver).call{value: balance}("");
-        require(ok, "Liquidity forward failed");
-        emit FundsForwardedToLiquidity(balance);
-    }
-}</pre>
-      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin:14px 0 4px">Automatic overpayment refund</div>
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin-bottom:6px">Address</div>
+      <div class="mono" style="display:block;margin-bottom:14px">0x2797341aaceAA2cE87D226E41B2fb8800FEE5184</div>
+      <p class="body">Core ERC-721 contract. Extends <span class="mono">ERC721Enumerable</span> and <span class="mono">ReentrancyGuard</span>.</p>
+      <p class="body"><span class="bold">Zero fund retention.</span> The contract has no <span class="mono">withdraw()</span> function. The contract balance is always zero after any mint transaction — funds are forwarded on-chain within the same transaction they are received.</p>
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin:16px 0 6px">Automatic overpayment refund</div>
       <pre class="code">uint256 paid   = mintPrice * quantity;
 uint256 excess = msg.value - paid;
 if (excess > 0) {
     (bool refunded,) = payable(msg.sender).call{value: excess}("");
     require(refunded, "Refund failed");
 }</pre>
-      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin:14px 0 4px">One-way reveal</div>
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin:16px 0 6px">One-way reveal</div>
       <pre class="code">function reveal(string calldata baseURI) external onlyOwner {
     require(!revealed, "Already revealed");
     _baseTokenURI = baseURI;
@@ -428,14 +379,14 @@ if (excess > 0) {
 }</pre>
 
       <div class="sub-label">6.2 BittensorCatRarity</div>
-      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin-bottom:4px">Address</div>
-      <div class="mono" style="display:block;margin-bottom:12px;font-size:11px">0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9</div>
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin-bottom:6px">Address</div>
+      <div class="mono" style="display:block;margin-bottom:14px">0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9</div>
       <p class="body">On-chain rarity registry. Stores score, rank, and tier for all 4,699 tokens. Read functions public and callable by any address or contract.</p>
 
       <div class="sub-label">6.3 TaoCatsMarketV2</div>
-      <div style="font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin-bottom:4px">Address</div>
-      <div class="mono" style="display:block;margin-bottom:12px;font-size:11px">0xa6B87FA663D8DF0Cc8caA0347431d8599Dc8D475</div>
-      <p class="body" style="margin-bottom:12px">Fully on-chain marketplace. No off-chain order books, no signed messages, no trusted relay.</p>
+      <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.10em;margin-bottom:6px">Address</div>
+      <div class="mono" style="display:block;margin-bottom:14px">0xa6B87FA663D8DF0Cc8caA0347431d8599Dc8D475</div>
+      <p class="body" style="margin-bottom:14px">Fully on-chain marketplace. No off-chain order books, no signed messages, no trusted relay.</p>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Component</th><th>Rate</th><th>Recipient</th></tr></thead>
@@ -453,12 +404,8 @@ uint256 public constant TOTAL_FEE_BPS   = 650;   // 6.5%
 uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
     </section>
 
-    <!-- 7 -->
     <section class="section" id="s7">
-      <div class="section-header">
-        <span class="sec-num">07</span>
-        <h2 class="sec-title">Marketplace</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">07</span><h2 class="sec-title">Marketplace</h2></div>
       <div class="sub-label">7.1 Trade Execution Flow</div>
       <pre class="code">1. Seller → approve(marketplaceAddress, tokenId)
 2. Seller → list(tokenId, priceInTAO)
@@ -470,38 +417,35 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
       <p class="body">Steps 5–7 occur atomically. Any failure reverts the entire transaction.</p>
       <div class="sub-label">7.2 sweepFloor</div>
       <pre class="code">function sweepFloor(uint256[] calldata tokenIds) external payable nonReentrant</pre>
-      <p class="body">Purchases multiple floor listings in one transaction. Each seller paid individually within the same call. Excess TAO refunded automatically.</p>
+      <p class="body">Purchases multiple floor listings in one transaction. Each seller paid individually. Excess TAO refunded automatically.</p>
       <div class="sub-label">7.3 listBatch</div>
       <pre class="code">function listBatch(uint256[] calldata tokenIds, uint256[] calldata prices) external</pre>
       <p class="body">Lists multiple tokens simultaneously with a single transaction. Requires prior approval of marketplace address.</p>
     </section>
 
-    <!-- 8 -->
     <section class="section" id="s8">
-      <div class="section-header">
-        <span class="sec-num">08</span>
-        <h2 class="sec-title">Economics and Value Flow</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">08</span><h2 class="sec-title">Economics and Value Flow</h2></div>
       <div class="sub-label">8.1 Value Flow</div>
       <div class="flow">
-        <div class="flow-row">MINT (0.01 TAO × 4,699 tokens = 46.99 TAO)</div>
-        <div class="flow-arrow">↓ &nbsp;100% forwarded on-chain in same transaction</div>
-        <div class="flow-row">LIQUIDITY RECEIVER WALLET</div>
-        <div class="flow-arrow">↓ &nbsp;seeds on-chain liquidity pool</div>
-        <div class="flow-row">ON-CHAIN LIQUIDITY POOL</div>
-        <div class="flow-arrow">↓ &nbsp;secondary trading generates</div>
+        <div class="flow-row">MINT (0.01 TAO per token)</div>
+        <div class="flow-arrow">↓ &nbsp;Forwarded on-chain at mint time</div>
+        <div class="flow-row">COMMUNITY ECOSYSTEM</div>
+        <div class="flow-arrow">↓ &nbsp;Secondary trading generates</div>
         <div class="flow-row">MARKETPLACE FEES (6.5% per sale)</div>
-        <div class="flow-arrow">↓ &nbsp;funds treasury for</div>
+        <div class="flow-arrow">↓ &nbsp;Funds treasury for</div>
         <div class="flow-row">ONGOING ECOSYSTEM DEVELOPMENT</div>
       </div>
-      <div class="sub-label">8.2 Zero-Extraction Design</div>
+      <div class="sub-label">8.2 Holder Value Streams</div>
+      <p class="body"><span class="bold">1. NFT appreciation.</span> As Bittensor EVM activity grows, demand for early, well-designed collections with proven on-chain infrastructure increases. Floor price appreciation reflects the growth of the underlying ecosystem.</p>
+      <p class="body"><span class="bold">2. Marketplace royalty flow.</span> Every secondary sale generates 6.5% in fees directed to the treasury. This fee supports ongoing development of the marketplace, rarity tooling, and ecosystem integrations.</p>
+      <div class="sub-label">8.3 Zero-Extraction Design</div>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Excluded Feature</th><th>Reason</th></tr></thead>
           <tbody>
             <tr><td>Team NFT allocation</td><td>Team receives no reserved allocation</td></tr>
             <tr><td>Pre-mine or reserve supply</td><td>All tokens publicly minted at same price</td></tr>
-            <tr><td>withdraw() in NFT contract</td><td>Mint funds cannot be redirected</td></tr>
+            <tr><td>withdraw() in NFT contract</td><td>Mint funds cannot be held by contract</td></tr>
             <tr><td>Upgradeable proxy contracts</td><td>Eliminates post-deploy logic changes</td></tr>
             <tr><td>Whitelist or guaranteed allocations</td><td>Equal access for all participants</td></tr>
           </tbody>
@@ -509,12 +453,8 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
       </div>
     </section>
 
-    <!-- 9 -->
     <section class="section" id="s9">
-      <div class="section-header">
-        <span class="sec-num">09</span>
-        <h2 class="sec-title">Technical Infrastructure</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">09</span><h2 class="sec-title">Technical Infrastructure</h2></div>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Component</th><th>Technology</th></tr></thead>
@@ -526,37 +466,32 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
             <tr><td>Hosting</td><td>Vercel (global CDN)</td></tr>
             <tr><td>Solidity Version</td><td>0.8.24</td></tr>
             <tr><td>EVM Target</td><td>Cancun</td></tr>
-            <tr><td>Build Framework</td><td>Hardhat</td></tr>
             <tr><td>Base Libraries</td><td>OpenZeppelin 5.x</td></tr>
             <tr><td>Optimizer</td><td>Enabled, 200 runs</td></tr>
           </tbody>
         </table>
       </div>
       <div class="sub-label">9.1 Metadata System</div>
-      <p class="body">Token metadata is served by a Next.js API route that reads pre-generated JSON files per token ID and constructs a fully resolved response with an absolute image URL derived from the request host header. Images are cached at Vercel CDN edge with <span class="mono">Cache-Control: public, max-age=31536000, immutable</span>.</p>
+      <p class="body">Token metadata is served by a Next.js API route that reads pre-generated JSON files per token ID and constructs a fully resolved response with an absolute image URL. Images are cached at CDN edge with <span class="mono">Cache-Control: public, max-age=31536000, immutable</span>.</p>
       <div class="sub-label">9.2 RPC Proxy</div>
-      <p class="body">Custom JSON-RPC proxy at <span class="mono">taocats.fun/api/rpc</span> handles Bittensor EVM gas estimation edge cases, ensuring mint and marketplace transactions simulate correctly across all wallets. Mainnet: <span class="mono">?net=main</span> &nbsp;·&nbsp; Testnet: <span class="mono">?net=test</span>.</p>
+      <p class="body">Custom JSON-RPC proxy at <span class="mono">taocats.fun/api/rpc</span> handles Bittensor EVM gas estimation edge cases, ensuring mint and marketplace transactions simulate correctly across all supported wallets.</p>
     </section>
 
-    <!-- 10 -->
     <section class="section" id="s10">
-      <div class="section-header">
-        <span class="sec-num">10</span>
-        <h2 class="sec-title">Fairness Guarantees</h2>
-      </div>
-      <p class="body" style="margin-bottom:16px">Each guarantee is enforceable on-chain and verifiable by reading the deployed contract bytecode.</p>
+      <div class="section-header"><span class="sec-num">10</span><h2 class="sec-title">Fairness Guarantees</h2></div>
+      <p class="body" style="margin-bottom:18px">Each guarantee is enforceable on-chain and verifiable by reading the deployed contract bytecode.</p>
       <div class="guarantee-grid">
         <div class="guarantee">
-          <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="display:flex;gap:14px;align-items:flex-start">
             <div class="g-dot"></div>
             <div>
-              <div class="g-title">Mint Funds Cannot Be Diverted</div>
-              <p class="g-body">BittensorCatNFT has no withdraw() function. _forwardToLiquidity() runs unconditionally at end of every mint. liquidityReceiver is set at construction with no setter. Verify: inspect ABI for absence of withdraw or setLiquidityReceiver.</p>
+              <div class="g-title">Mint Funds Cannot Be Retained</div>
+              <p class="g-body">BittensorCatNFT has no withdraw() function. The contract balance is always zero after any mint transaction. Verify: inspect contract ABI for absence of any withdraw function.</p>
             </div>
           </div>
         </div>
         <div class="guarantee">
-          <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="display:flex;gap:14px;align-items:flex-start">
             <div class="g-dot"></div>
             <div>
               <div class="g-title">No Post-Deploy Logic Changes</div>
@@ -565,7 +500,7 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
           </div>
         </div>
         <div class="guarantee">
-          <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="display:flex;gap:14px;align-items:flex-start">
             <div class="g-dot"></div>
             <div>
               <div class="g-title">Equal Access to Mint</div>
@@ -574,7 +509,7 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
           </div>
         </div>
         <div class="guarantee">
-          <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="display:flex;gap:14px;align-items:flex-start">
             <div class="g-dot"></div>
             <div>
               <div class="g-title">On-Chain Rarity Immutability</div>
@@ -585,82 +520,62 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
       </div>
     </section>
 
-    <!-- 11 -->
     <section class="section" id="s11">
-      <div class="section-header">
-        <span class="sec-num">11</span>
-        <h2 class="sec-title">Roadmap</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">11</span><h2 class="sec-title">Roadmap</h2></div>
       <div class="phase-grid">
         <div class="phase">
           <div class="phase-header">
-            <div style="display:flex;gap:16px;align-items:center">
-              <span class="phase-label">Phase 1</span>
-              <span class="phase-name">Deployment</span>
-            </div>
+            <div style="display:flex;gap:16px;align-items:center"><span class="phase-label">Phase 1</span><span class="phase-name">Deployment</span></div>
             <span class="badge badge-done">Completed</span>
           </div>
           <div class="phase-body">
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-done">✓</span><span style="font-size:12px;color:var(--muted);text-decoration:line-through">Deploy BittensorCatNFT on Bittensor EVM mainnet</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-done">✓</span><span style="font-size:12px;color:var(--muted);text-decoration:line-through">Deploy BittensorCatRarity</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-done">✓</span><span style="font-size:12px;color:var(--muted);text-decoration:line-through">Deploy TaoCatsMarketV2 and TaoCatsMarket</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-done">✓</span><span style="font-size:12px;color:var(--muted);text-decoration:line-through">Launch taocats.fun with mint, marketplace, and activity UI</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-done">✓</span><span style="font-size:12px;color:var(--muted);text-decoration:line-through">Open public mint at 0.01 TAO</span></div>
+            <div class="chk-item"><span class="chk-done">✓</span><span style="text-decoration:line-through;color:var(--muted)">Deploy BittensorCatNFT on Bittensor EVM mainnet</span></div>
+            <div class="chk-item"><span class="chk-done">✓</span><span style="text-decoration:line-through;color:var(--muted)">Deploy BittensorCatRarity</span></div>
+            <div class="chk-item"><span class="chk-done">✓</span><span style="text-decoration:line-through;color:var(--muted)">Deploy TaoCatsMarketV2 and TaoCatsMarket</span></div>
+            <div class="chk-item"><span class="chk-done">✓</span><span style="text-decoration:line-through;color:var(--muted)">Launch taocats.fun with mint, marketplace, and activity UI</span></div>
+            <div class="chk-item"><span class="chk-done">✓</span><span style="text-decoration:line-through;color:var(--muted)">Open public mint at 0.01 TAO</span></div>
           </div>
         </div>
         <div class="phase">
           <div class="phase-header">
-            <div style="display:flex;gap:16px;align-items:center">
-              <span class="phase-label">Phase 2</span>
-              <span class="phase-name">Reveal</span>
-            </div>
+            <div style="display:flex;gap:16px;align-items:center"><span class="phase-label">Phase 2</span><span class="phase-name">Reveal</span></div>
             <span class="badge badge-live">In Progress</span>
           </div>
           <div class="phase-body">
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Execute collection reveal (set baseURI in NFT contract)</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Write rarity scores and ranks to BittensorCatRarity</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Enable marketplace trading on taocats.fun</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Execute collection reveal (set baseURI in NFT contract)</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Write rarity scores and ranks to BittensorCatRarity</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Enable marketplace trading on taocats.fun</span></div>
           </div>
         </div>
         <div class="phase">
           <div class="phase-header">
-            <div style="display:flex;gap:16px;align-items:center">
-              <span class="phase-label">Phase 3</span>
-              <span class="phase-name">Marketplace Enhancement</span>
-            </div>
+            <div style="display:flex;gap:16px;align-items:center"><span class="phase-label">Phase 3</span><span class="phase-name">Marketplace Enhancement</span></div>
             <span class="badge badge-soon">Upcoming</span>
           </div>
           <div class="phase-body">
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Surface on-chain rarity in marketplace listings</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Real-time on-chain activity feed</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Trait-based search and filtering</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Volume, floor history, and wallet analytics</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Surface on-chain rarity in marketplace listings</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Real-time on-chain activity feed</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Trait-based search and filtering</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Volume, floor history, and wallet analytics</span></div>
           </div>
         </div>
         <div class="phase">
           <div class="phase-header">
-            <div style="display:flex;gap:16px;align-items:center">
-              <span class="phase-label">Phase 4</span>
-              <span class="phase-name">Ecosystem Integration</span>
-            </div>
+            <div style="display:flex;gap:16px;align-items:center"><span class="phase-label">Phase 4</span><span class="phase-name">Ecosystem Integration</span></div>
             <span class="badge badge-soon">Upcoming</span>
           </div>
           <div class="phase-body">
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Integration with Bittensor EVM wallets and explorers</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Collaborations with Bittensor subnet projects</span></div>
-            <div style="display:flex;gap:10px;align-items:baseline"><span class="chk-open">○</span><span style="font-size:12px;color:var(--sub)">Cross-subnet utility exploration for TAO CAT holders</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Integration with Bittensor EVM wallets and explorers</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Collaborations with Bittensor subnet projects</span></div>
+            <div class="chk-item"><span class="chk-open">○</span><span>Cross-subnet utility exploration for TAO CAT holders</span></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- 12 -->
     <section class="section" id="s12">
-      <div class="section-header">
-        <span class="sec-num">12</span>
-        <h2 class="sec-title">Contract Addresses</h2>
-      </div>
-      <p class="body" style="margin-bottom:12px">All contracts deployed on <span class="bold">Bittensor EVM (Chain ID: 964)</span>.</p>
+      <div class="section-header"><span class="sec-num">12</span><h2 class="sec-title">Contract Addresses</h2></div>
+      <p class="body" style="margin-bottom:14px">All contracts deployed on <span class="bold">Bittensor EVM (Chain ID: 964)</span>.</p>
       <div class="tbl-wrap">
         <table>
           <thead><tr><th>Contract</th><th>Address</th></tr></thead>
@@ -672,18 +587,14 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
           </tbody>
         </table>
       </div>
-      <div style="margin-top:14px;display:flex;flex-direction:column;gap:4px">
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:6px">
         <a href="https://evm-explorer.tao.network" target="_blank" rel="noopener noreferrer" class="contract-link">Block Explorer → evm-explorer.tao.network</a>
         <a href="https://taocats.fun" class="contract-link">Website → taocats.fun</a>
       </div>
     </section>
 
-    <!-- 13 -->
     <section class="section" id="s13">
-      <div class="section-header">
-        <span class="sec-num">13</span>
-        <h2 class="sec-title">Disclaimer</h2>
-      </div>
+      <div class="section-header"><span class="sec-num">13</span><h2 class="sec-title">Disclaimer</h2></div>
       <div class="disclaimer">
         <p class="body" style="margin:0">TAO CAT is an experimental digital collectible project. The NFTs described in this document are not financial instruments, securities, or investment contracts. Holding a TAO CAT token does not represent ownership in any company or legal entity.</p>
         <p class="body" style="margin:0">The smart contracts extend OpenZeppelin 5.x and follow established Solidity security practices. However, these contracts have not undergone a formal third-party security audit. Users interact with them at their own risk.</p>
@@ -694,7 +605,6 @@ uint256 public constant BPS_DENOMINATOR = 10_000;</pre>
   </main>
 </div>
 
-<!-- FOOTER -->
 <footer>
   <span>TAO CAT — Whitepaper v1.0</span>
   <small>Bittensor EVM &nbsp;·&nbsp; Chain 964 &nbsp;·&nbsp; 4,699 Cats</small>

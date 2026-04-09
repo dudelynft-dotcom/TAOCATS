@@ -310,6 +310,32 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* ── Whitepaper layout (responsive) ── */
+.wp-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 48px;
+  align-items: start;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 56px 40px 80px;
+}
+@media (max-width: 900px) {
+  .wp-layout {
+    grid-template-columns: 1fr;
+    padding: 32px 20px 64px;
+  }
+  .wp-sidebar {
+    display: none;
+  }
+  .wp-hero-inner {
+    padding: 40px 20px 36px !important;
+  }
+  .wp-stats-bar {
+    padding: 0 20px !important;
+  }
+}
+
 /* ── Whitepaper TOC links ── */
 .wp-toc-link {
   display: flex;

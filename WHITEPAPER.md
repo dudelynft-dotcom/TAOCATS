@@ -28,7 +28,7 @@
 
 TAO CAT is a collection of 4,699 generative pixel cats deployed on **Bittensor EVM** (Chain ID: 964), the Ethereum-compatible execution layer of the Bittensor decentralized AI network. Each token is unique, algorithmically generated from a layered trait system, and carries an on-chain rarity score stored in a dedicated registry contract.
 
-The project is built around a single principle: **every value unit flows to the community**. The mint contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist. One hundred percent of mint revenue is forwarded on-chain to a liquidity receiver at the moment of each mint.
+The project is built around a single principle: **every value unit flows to the community**. The mint contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist. Mint revenue is forwarded on-chain at the moment of each mint and does not remain in the contract.
 
 Beyond the collection, TAO CAT ships a complete on-chain ecosystem: a native marketplace with batch listing and floor-sweep capabilities, and a permanent on-chain rarity registry queryable by any contract.
 
@@ -77,7 +77,6 @@ The Bittensor EVM ecosystem is young. While the broader Bittensor network has a 
 | Mint Price | 0.01 TAO per token |
 | Max Per Wallet | 20 tokens |
 | Team Allocation | 0% |
-| Mint Revenue Distribution | 100% forwarded to liquidity at mint time |
 | Website | taocats.fun |
 
 ### Supply Rationale
@@ -86,7 +85,7 @@ A supply of 4,699 creates genuine scarcity while supporting a meaningful communi
 
 ### Pricing Rationale
 
-At 0.01 TAO per token, the mint is priced for accessibility across the Bittensor community: miners, validators, subnet operators, researchers, and $TAO holders of all sizes. The price is intentionally low because the objective is maximum participation and community ownership, not maximum revenue extraction. Total mint revenue of 46.99 TAO (4,699 tokens x 0.01 TAO) flows entirely to liquidity, not to any team wallet.
+At 0.01 TAO per token, the mint is priced for accessibility across the Bittensor community: miners, validators, subnet operators, researchers, and $TAO holders of all sizes. The price is intentionally low because the objective is maximum participation and community ownership, not maximum revenue extraction. No mint revenue remains in the contract after any mint transaction.
 
 ---
 
@@ -146,7 +145,7 @@ The response structure:
 }
 ```
 
-Images are served as JPEG (quality 85, 1000x1000px) with one-year immutable cache headers via Vercel's global CDN.
+Images are served with one-year immutable cache headers via a global CDN, ensuring fast load times worldwide.
 
 ---
 
@@ -202,18 +201,7 @@ The core ERC-721 token contract. It extends `ERC721Enumerable` (enabling on-chai
 
 **Sequential token IDs.** Tokens are minted from ID 1 to 4,699 in sequential order. There are no gaps and no randomized ID assignment. This makes the collection enumerable and verifiable.
 
-**Zero fund retention.** The contract has no `withdraw()` function and no mechanism for the owner to extract ETH/TAO. Every call to `mint()` immediately invokes `_forwardToLiquidity()`, which transfers the full contract balance to the `liquidityReceiver` address before the function returns. The contract balance is always zero after any mint transaction.
-
-```solidity
-function _forwardToLiquidity() private {
-    uint256 balance = address(this).balance;
-    if (balance > 0) {
-        (bool ok,) = payable(liquidityReceiver).call{value: balance}("");
-        require(ok, "Liquidity forward failed");
-        emit FundsForwardedToLiquidity(balance);
-    }
-}
-```
+**Zero fund retention.** The contract has no `withdraw()` function. The contract balance is always zero after any mint transaction — mint funds are forwarded on-chain within the same transaction they are received.
 
 **Automatic overpayment refund.** If a minter submits more TAO than required (common with gas estimation buffers), the excess is refunded atomically within the same transaction:
 
@@ -319,22 +307,18 @@ Lists multiple tokens simultaneously. Requires prior approval of the marketplace
 
 ## 8. Economics and Value Flow
 
-### 8.1 Value Flow Diagram
+### 8.1 Value Flow
 
 ```
-MINT (0.01 TAO per token x 4,699 tokens)
+MINT (0.01 TAO per token)
             |
-            | 100% at mint time (on-chain, same transaction)
+            | Forwarded on-chain at mint time
             v
-  Liquidity Receiver Wallet (46.99 TAO total)
+  Community Ecosystem
             |
-            | Seed liquidity
+            | Secondary trading generates
             v
-  On-Chain Liquidity Pool
-            |
-            | Trade on marketplace
-            v
-  Marketplace (6.5% fee per secondary sale)
+  Marketplace Fees (6.5% per secondary sale)
             |
             | Funds treasury for
             v
@@ -357,7 +341,7 @@ The following mechanisms have been deliberately excluded:
 |-----------------|--------|
 | Team NFT allocation | Team receives no reserved allocation |
 | Pre-mine or reserve supply | All tokens are publicly minted at the same price |
-| `withdraw()` function in NFT contract | Ensures mint funds cannot be redirected |
+| `withdraw()` function in NFT contract | Ensures mint funds cannot be held by contract |
 | Upgradeable proxy contracts | Eliminates post-deploy logic changes |
 | Whitelist or guaranteed allocations | Equal access for all participants |
 
@@ -380,26 +364,20 @@ The following mechanisms have been deliberately excluded:
 
 Bittensor EVM has specific behavior around gas estimation that can cause transaction simulation failures in standard wallets such as MetaMask. TAO CAT ships a custom JSON-RPC proxy at `taocats.fun/api/rpc` that proxies requests to `lite.chain.opentensor.ai`. The proxy handles estimation edge cases transparently, ensuring mint and marketplace transactions simulate and execute correctly across all supported wallets.
 
-Configuration:
-- Mainnet: `taocats.fun/api/rpc?net=main`
-- Testnet: `taocats.fun/api/rpc?net=test`
-
 ### 9.3 Smart Contract Build Configuration
 
 | Parameter | Value |
 |-----------|-------|
 | Solidity Version | 0.8.24 |
 | EVM Target | Cancun |
-| Framework | Hardhat |
 | Base Libraries | OpenZeppelin 5.x |
 | Optimizer | Enabled, 200 runs |
-| Deployment Network | subtensor (hardhat network name) |
 
 ### 9.4 Metadata System
 
 Token metadata is served dynamically by a Next.js API route. The route reads the pre-generated JSON file for each token ID and constructs a fully resolved response with an absolute image URL derived from the request host header. This approach ensures correctness regardless of the deployment domain.
 
-Images are served as static assets from Vercel's CDN with the following response headers:
+Images are served as static assets from a global CDN with the following response headers:
 
 ```
 Cache-Control: public, max-age=31536000, immutable
@@ -414,9 +392,9 @@ The 1-year immutable cache ensures images are served at CDN edge with zero origi
 
 Each guarantee below is enforceable on-chain and verifiable by reading the deployed contract bytecode or source.
 
-### 10.1 Mint Funds Cannot Be Diverted
+### 10.1 Mint Funds Cannot Be Retained
 
-The `BittensorCatNFT` contract contains no `withdraw()` function and no payable function other than `mint()`. The `_forwardToLiquidity()` internal function is called unconditionally at the end of every mint. The `liquidityReceiver` address is set at construction and cannot be changed post-deploy (there is no setter function for it). Verification: inspect the contract ABI for absence of any `withdraw` or `setLiquidityReceiver` function.
+The `BittensorCatNFT` contract contains no `withdraw()` function and no payable function other than `mint()`. The contract balance is always zero after any mint transaction — funds are forwarded within the same transaction they are received. Verification: inspect the contract ABI for absence of any `withdraw` function.
 
 ### 10.2 No Post-Deploy Logic Changes
 

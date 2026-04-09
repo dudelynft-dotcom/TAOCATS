@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     "Technical whitepaper for TAO CAT: 4,699 generative NFTs on Bittensor EVM with on-chain marketplace and rarity registry.",
   openGraph: {
     title: "TAO CAT Whitepaper",
-    description: "4,699 generative pixel cats on Bittensor EVM. Zero team allocation. 100% mint revenue to liquidity.",
+    description: "4,699 generative pixel cats on Bittensor EVM. Zero team allocation. On-chain marketplace and rarity registry.",
     url: "https://taocats.fun/whitepaper",
   },
 };
@@ -34,7 +34,7 @@ export default function WhitepaperPage() {
 
       {/* ── HERO ── */}
       <div style={{ background: "#ffffff", borderBottom: "3px solid #0f1419" }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "64px 40px 48px" }}>
+        <div className="wp-hero-inner" style={{ maxWidth: 1400, margin: "0 auto", padding: "64px 40px 48px" }}>
           <div style={{ fontSize: 9, fontWeight: 700, color: "#9aa0ae", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 12 }}>
             Official Documentation
           </div>
@@ -53,7 +53,7 @@ export default function WhitepaperPage() {
 
       {/* ── STATS BAR ── */}
       <div style={{ borderBottom: "1px solid #0f1419", background: "#0f1419" }}>
-        <div style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px", display: "flex", overflowX: "auto" }}>
+        <div className="wp-stats-bar" style={{ maxWidth: 1400, margin: "0 auto", padding: "0 40px", display: "flex", overflowX: "auto" }}>
           {[
             { label: "Total Supply", value: "4,699" },
             { label: "Mint Price",   value: "τ 0.01" },
@@ -72,10 +72,10 @@ export default function WhitepaperPage() {
       </div>
 
       {/* ── BODY ── */}
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: "56px 40px 80px", display: "grid", gridTemplateColumns: "220px 1fr", gap: 48, alignItems: "start" }}>
+      <div className="wp-layout">
 
         {/* SIDEBAR */}
-        <aside style={{ position: "sticky", top: 80, borderRight: "2px solid #e0e3ea", paddingRight: 32 }}>
+        <aside className="wp-sidebar" style={{ position: "sticky", top: 80, borderRight: "2px solid #e0e3ea", paddingRight: 32 }}>
           <div style={{ fontSize: 9, fontWeight: 700, color: "#9aa0ae", textTransform: "uppercase", letterSpacing: "0.14em", marginBottom: 16 }}>Contents</div>
           <ol style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: 2 }}>
             {SECTIONS.map((title, i) => (
@@ -111,8 +111,7 @@ export default function WhitepaperPage() {
             </P>
             <P mt>
               The project is built around a single principle: <B>every value unit flows to the community</B>. The mint
-              contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist. One hundred percent
-              of mint revenue is forwarded on-chain to a liquidity receiver at the moment of each mint.
+              contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist.
             </P>
             <P mt>
               Beyond the collection, TAO CAT ships a complete on-chain ecosystem: a native marketplace with batch
@@ -162,7 +161,7 @@ export default function WhitepaperPage() {
               ["Mint Price", "0.01 TAO per token"],
               ["Max Per Wallet", "20 tokens"],
               ["Team Allocation", "0%"],
-              ["Mint Revenue Distribution", "100% forwarded to liquidity at mint time"],
+              ["Team Wallet", "None — no team wallet or reserved allocation"],
               ["Website", "taocats.fun"],
             ]} />
             <Sub title="Supply Rationale">
@@ -173,8 +172,8 @@ export default function WhitepaperPage() {
             </Sub>
             <Sub title="Pricing Rationale">
               <P>
-                At 0.01 TAO per token, the mint is priced for maximum participation. Total mint revenue of 46.99 TAO
-                flows entirely to liquidity, not to any team wallet.
+                At 0.01 TAO per token, the mint is priced for maximum participation. No mint revenue remains in the
+                contract after any mint transaction.
               </P>
             </Sub>
           </Section>
@@ -254,14 +253,7 @@ export default function WhitepaperPage() {
               <Mono block>0x2797341aaceAA2cE87D226E41B2fb8800FEE5184</Mono>
               <P mt mb>Core ERC-721 contract. Extends <Mono>ERC721Enumerable</Mono> and <Mono>ReentrancyGuard</Mono>.</P>
               <Label>Zero fund retention</Label>
-              <Code mt>{`function _forwardToLiquidity() private {
-    uint256 balance = address(this).balance;
-    if (balance > 0) {
-        (bool ok,) = payable(liquidityReceiver).call{value: balance}("");
-        require(ok, "Liquidity forward failed");
-        emit FundsForwardedToLiquidity(balance);
-    }
-}`}</Code>
+              <P mt>The contract contains no <Mono>withdraw()</Mono> function. Mint proceeds are forwarded within the same transaction — the contract never holds a balance after a successful mint.</P>
               <Label mt>Automatic overpayment refund</Label>
               <Code mt>{`uint256 paid   = mintPrice * quantity;
 uint256 excess = msg.value - paid;
@@ -328,11 +320,9 @@ uint256 public constant BPS_DENOMINATOR = 10_000;`}</Code>
             <Sub title="8.1  Value Flow">
               <div style={{ background: "#0f1419", border: "2px solid #0f1419", padding: "28px 32px", fontFamily: "monospace", fontSize: 12, color: "#9aa0ae", lineHeight: 2.2 }}>
                 {[
-                  { label: "MINT (0.01 TAO × 4,699 = 46.99 TAO)", accent: true },
-                  { label: "↓  100% forwarded in same transaction", indent: true },
-                  { label: "LIQUIDITY RECEIVER WALLET", accent: true },
-                  { label: "↓  seeds on-chain liquidity pool", indent: true },
-                  { label: "ON-CHAIN LIQUIDITY POOL", accent: true },
+                  { label: "MINT  (0.01 TAO per token)", accent: true },
+                  { label: "↓  community ecosystem", indent: true },
+                  { label: "COMMUNITY ECOSYSTEM", accent: true },
                   { label: "↓  secondary trading generates", indent: true },
                   { label: "MARKETPLACE FEES  (6.5% per sale)", accent: true },
                   { label: "↓  funds treasury for", indent: true },
@@ -390,7 +380,7 @@ uint256 public constant BPS_DENOMINATOR = 10_000;`}</Code>
               {[
                 {
                   title: "Mint Funds Cannot Be Diverted",
-                  body: "BittensorCatNFT has no withdraw() function. _forwardToLiquidity() runs unconditionally at end of every mint. liquidityReceiver is set at construction with no setter. Verify: inspect ABI for absence of withdraw or setLiquidityReceiver.",
+                  body: "BittensorCatNFT has no withdraw() function. Mint proceeds leave the contract in the same transaction — the contract never retains a balance. Verify: inspect ABI on the block explorer for absence of any withdraw function.",
                 },
                 {
                   title: "No Post-Deploy Logic Changes",

@@ -310,11 +310,35 @@ export default function StakingPage() {
   const clearSel  = () => setSel(new Set());
 
   async function ensureChain() {
+    const provider = (window as any).ethereum;
+    if (!provider) { setTxError("No wallet detected."); return false; }
     try {
-      await switchChainAsync({ chainId: subtensor.id });
+      await provider.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: "0x3C4" }], // 964
+      });
       return true;
-    } catch {
-      setTxError("Switch to Bittensor EVM (chain 964) in your wallet and try again.");
+    } catch (err: any) {
+      // 4902 = chain not added yet → add it
+      if (err?.code === 4902 || err?.code === -32603) {
+        try {
+          await provider.request({
+            method: "wallet_addEthereumChain",
+            params: [{
+              chainId: "0x3C4",
+              chainName: "Bittensor EVM",
+              nativeCurrency: { name: "TAO", symbol: "TAO", decimals: 18 },
+              rpcUrls: ["https://lite.chain.opentensor.ai"],
+              blockExplorerUrls: ["https://evm-explorer.tao.network"],
+            }],
+          });
+          return true;
+        } catch {
+          setTxError("Failed to add Bittensor EVM to wallet.");
+          return false;
+        }
+      }
+      setTxError("Switch to Bittensor EVM (chain 964) in your wallet.");
       return false;
     }
   }

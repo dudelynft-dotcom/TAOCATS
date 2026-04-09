@@ -11,6 +11,35 @@ import NftModal from "@/components/NftModal";
 import { CONTRACTS } from "@/lib/config";
 import { SIMPLE_MARKET_ABI, MARKETPLACE_ABI, RARITY_ABI } from "@/lib/abis";
 
+// ── Trading gate ──────────────────────────────────────────────────────────────
+// Edit this timestamp (Unix ms) to control when trading opens.
+const TRADING_OPENS_MS = 1744228800000; // 2026-04-09T20:00:00Z — change me!
+
+function fmtCountdown(ms: number) {
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sc = s % 60;
+  return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(sc).padStart(2,"0")}`;
+}
+
+function TradingCountdownBanner({ remaining }: { remaining: number }) {
+  return (
+    <div style={{ background:"#ff4d4d", color:"#fff", textAlign:"center", padding:"14px 20px",
+      borderBottom:"2px solid #c00", position:"relative", zIndex:10 }}>
+      <div style={{ fontSize:10, fontWeight:800, letterSpacing:"0.15em", marginBottom:4 }}>
+        MARKETPLACE TRADING TEMPORARILY PAUSED
+      </div>
+      <div style={{ fontFamily:"monospace", fontSize:28, fontWeight:800, letterSpacing:"0.04em" }}>
+        {fmtCountdown(remaining)}
+      </div>
+      <div style={{ fontSize:9, fontWeight:700, letterSpacing:"0.10em", opacity:0.85, marginTop:4 }}>
+        TRADING OPENS IN — BROWSE LISTINGS NOW
+      </div>
+    </div>
+  );
+}
+
 // ── Types ──────────────────────────────────────────────────────────────────────
 type Tab      = "listings" | "activity" | "offers";
 type SortBy   = "price_asc" | "price_desc" | "id_asc" | "id_desc";
@@ -215,6 +244,11 @@ function MarketplaceContent() {
   const [sales, setSales]               = useState<SaleRecord[]>([]);
   const [loadingSales, setLoadingSales] = useState(false);
   const [salesError, setSalesError]     = useState(false);
+
+  // ── Trading gate ──────────────────────────────────────────────────────────
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => { const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
+  const tradingOpen = now >= TRADING_OPENS_MS;
 
   const { address, isConnected } = useAccount();
   const publicClient = usePublicClient();
@@ -429,6 +463,9 @@ function MarketplaceContent() {
         </div>
       </div>
 
+      {/* TRADING COUNTDOWN */}
+      {!tradingOpen && <TradingCountdownBanner remaining={Math.max(0, TRADING_OPENS_MS - now)} />}
+
       {/* COLLECTION HEADER */}
       <div style={{ borderBottom:"2px solid #000" }}>
         <div className="container-app" style={{ padding:"20px 0" }}>
@@ -475,7 +512,7 @@ function MarketplaceContent() {
             </button>
           ))}
           <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:8, paddingRight:4 }}>
-            {tab === "listings" && listings.length > 0 && (
+            {tab === "listings" && listings.length > 0 && tradingOpen && (
               <button onClick={() => { setSweepMode(!sweepMode); setSweepSelected(new Set()); }}
                 style={{ padding:"6px 14px", background: sweepMode ? "#0f1419" : "transparent",
                   color: sweepMode ? "#fff" : "#0f1419", border:"2px solid #0f1419",
@@ -645,7 +682,13 @@ function MarketplaceContent() {
                             τ {parseFloat(formatEther(l.price)).toFixed(3)}
                           </div>
 
-                          {!sweepMode && isConnected && (
+                          {!sweepMode && !tradingOpen && (
+                            <div style={{ fontSize:9, color:"#ff4d4d", fontWeight:800, textAlign:"center",
+                              padding:"8px 0", letterSpacing:"0.08em" }}>
+                              {fmtCountdown(Math.max(0, TRADING_OPENS_MS - now))}
+                            </div>
+                          )}
+                          {!sweepMode && tradingOpen && isConnected && (
                             <div style={{ display:"flex", gap:4 }}>
                               {/* BUY */}
                               <button
@@ -669,7 +712,7 @@ function MarketplaceContent() {
                               </button>
                             </div>
                           )}
-                          {!sweepMode && !isConnected && (
+                          {!sweepMode && tradingOpen && !isConnected && (
                             <div style={{ fontSize:9, color:"#9aa0ae", fontWeight:700, textAlign:"center", padding:"8px 0" }}>
                               CONNECT TO BUY
                             </div>
@@ -732,7 +775,12 @@ function MarketplaceContent() {
                       <span style={{ fontFamily:"monospace", fontWeight:800, fontSize:14 }}>
                         τ {parseFloat(formatEther(l.price)).toFixed(3)}
                       </span>
-                      {!sweepMode && isConnected && (
+                      {!sweepMode && !tradingOpen && (
+                        <div style={{ fontSize:9, color:"#ff4d4d", fontWeight:800, fontFamily:"monospace", flexShrink:0 }}>
+                          {fmtCountdown(Math.max(0, TRADING_OPENS_MS - now))}
+                        </div>
+                      )}
+                      {!sweepMode && tradingOpen && isConnected && (
                         <div style={{ display:"flex", gap:4, flexShrink:0 }}>
                           <button onClick={e => { e.stopPropagation(); handleBuy(l.tokenId, l.id); }}
                             disabled={isBusy && buyingId === l.id}

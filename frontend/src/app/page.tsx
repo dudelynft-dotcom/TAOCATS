@@ -6,8 +6,8 @@ import { useState, useEffect } from "react";
 import { MAX_SUPPLY, MINT_PRICE } from "@/lib/config";
 
 // ── Launch countdown ──────────────────────────────────────────────────────────
-// Launch: April 9 2026 1:00 PM UTC
-const LAUNCH_TARGET = new Date("2026-04-09T13:00:00.000Z").getTime();
+// Set to April 9 2026 3:00 PM UTC — adjust as needed
+const LAUNCH_TARGET = new Date("2026-04-09T15:00:00.000Z").getTime();
 
 function useCountdown() {
   const [remaining, setRemaining] = useState(() => Math.max(0, LAUNCH_TARGET - Date.now()));
@@ -15,11 +15,14 @@ function useCountdown() {
     const id = setInterval(() => setRemaining(Math.max(0, LAUNCH_TARGET - Date.now())), 1000);
     return () => clearInterval(id);
   }, []);
-  const h  = Math.floor(remaining / 3_600_000);
-  const m  = Math.floor((remaining % 3_600_000) / 60_000);
-  const s  = Math.floor((remaining % 60_000) / 1000);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return remaining > 0 ? `${pad(h)}:${pad(m)}:${pad(s)}` : null;
+  const days = Math.floor(remaining / 86_400_000);
+  const h    = Math.floor((remaining % 86_400_000) / 3_600_000);
+  const m    = Math.floor((remaining % 3_600_000) / 60_000);
+  const s    = Math.floor((remaining % 60_000) / 1000);
+  const pad  = (n: number) => String(n).padStart(2, "0");
+  if (remaining <= 0) return null;
+  if (days > 0) return `${days}d ${pad(h)}:${pad(m)}:${pad(s)}`;
+  return `${pad(h)}:${pad(m)}:${pad(s)}`;
 }
 
 const MintProgress = dynamic(() => import("@/components/MintProgress"), { ssr: false });
@@ -42,39 +45,22 @@ const HOW_IT_WORKS = [
   { step:"04", title:"Trade on Market",    desc:"Buy and sell TAO Cats on the built-in marketplace. The first NFT trading marketplace live on Bittensor EVM." },
 ];
 
-// SVG pixel cat — same design, zero DOM overhead vs 484 divs
 function PixelCat({ size = 220, color = "#0f1419" }: { size?: number; color?: string }) {
   const grid = [
-    "00011000000000011000",
-    "00111100000001111100",
-    "00111100000001111100",
-    "00111110000011111100",
-    "00011111111111111000",
-    "00001111111111110000",
-    "00011111111111111100",
-    "00111111111111111110",
-    "01111111001110011110",
-    "01111110000100001111",
-    "01111111001110011110",
-    "00111111111111111100",
-    "00111111111111111100",
-    "00011111111111111000",
-    "00001111000011110000",
-    "00000110110011011000",
-    "00000000111100000000",
-    "00000000011000000000",
-    "00001100000000011000",
-    "00111110000001111100",
-    "00011100000000111000",
+    "00011000000000011000","00111100000001111100","00111100000001111100",
+    "00111110000011111100","00011111111111111000","00001111111111110000",
+    "00011111111111111100","00111111111111111110","01111111001110011110",
+    "01111110000100001111","01111111001110011110","00111111111111111100",
+    "00111111111111111100","00011111111111111000","00001111000011110000",
+    "00000110110011011000","00000000111100000000","00000000011000000000",
+    "00001100000000011000","00111110000001111100","00011100000000111000",
   ];
   const cols = grid[0].length;
   const rows = grid.length;
   const rects: React.ReactNode[] = [];
-  grid.forEach((row, r) => {
-    row.split("").forEach((cell, c) => {
-      if (cell === "1") rects.push(<rect key={`${r}-${c}`} x={c} y={r} width={1} height={1} />);
-    });
-  });
+  grid.forEach((row, r) => row.split("").forEach((cell, c) => {
+    if (cell === "1") rects.push(<rect key={`${r}-${c}`} x={c} y={r} width={1} height={1} />);
+  }));
   return (
     <svg width={size} height={Math.round(size * rows / cols)} viewBox={`0 0 ${cols} ${rows}`} fill={color} shapeRendering="crispEdges">
       {rects}
@@ -84,12 +70,6 @@ function PixelCat({ size = 220, color = "#0f1419" }: { size?: number; color?: st
 
 export default function HomePage() {
   const countdown = useCountdown();
-  const [toast, setToast] = useState(false);
-
-  function showToast() {
-    setToast(true);
-    setTimeout(() => setToast(false), 2000);
-  }
 
   return (
     <div style={{ background:"#ffffff", minHeight:"100vh", paddingTop:56 }}>
@@ -112,29 +92,29 @@ export default function HomePage() {
             </p>
 
             <div style={{ display:"flex", gap:10, flexWrap:"wrap", marginBottom:16 }}>
-              <button onClick={showToast}
+              <Link href="/mint"
                 style={{ padding:"13px 32px", background:"#0f1419", color:"#ffffff",
                   fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase",
-                  border:"2px solid #0f1419", cursor:"not-allowed", opacity:0.55 }}>
+                  border:"2px solid #0f1419", textDecoration:"none", display:"inline-block" }}>
                 Mint Now | τ {MINT_PRICE}
-              </button>
-              <button onClick={showToast}
+              </Link>
+              <Link href="/marketplace"
                 style={{ padding:"13px 32px", background:"transparent", color:"#0f1419",
                   fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase",
-                  border:"2px solid #0f1419", cursor:"not-allowed", opacity:0.55 }}>
+                  border:"2px solid #0f1419", textDecoration:"none", display:"inline-block" }}>
                 View Market
-              </button>
+              </Link>
             </div>
 
-            {/* Countdown */}
+            {/* Countdown or Live indicator */}
             <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:32 }}>
               <div style={{ width:6, height:6, borderRadius:"50%", background:"#00c49a",
                 boxShadow:"0 0 6px #00c49a", flexShrink:0 }} />
-              <span style={{ fontSize:10, fontWeight:700, color:"#5a6478", letterSpacing:"0.08em",
-                textTransform:"uppercase" }}>
+              <span style={{ fontSize:10, fontWeight:700, color:"#5a6478", letterSpacing:"0.08em", textTransform:"uppercase" }}>
                 {countdown
-                  ? <>Launching in <span style={{ fontFamily:"monospace", color:"#0f1419", fontWeight:800 }}>{countdown}</span></>
-                  : "Launching soon"}
+                  ? <>Mint opens in <span style={{ fontFamily:"monospace", color:"#0f1419", fontWeight:800 }}>{countdown}</span></>
+                  : <span style={{ color:"#00c49a" }}>Mint is live — get your cat now</span>
+                }
               </span>
             </div>
 
@@ -162,11 +142,11 @@ export default function HomePage() {
           {[
             { label:"Total Supply",  value:"4,699" },
             { label:"Mint Price",    value:`τ ${MINT_PRICE}` },
-            { label:"Minted",        value: "—" },
-            { label:"Remaining",     value: "—" },
             { label:"Chain",         value:"Bittensor EVM" },
             { label:"Team Tokens",   value:"Zero" },
             { label:"Whitelist",     value:"None" },
+            { label:"Market Fee",    value:"1%" },
+            { label:"Royalty",       value:"5.5%" },
           ].map((s, idx, arr) => (
             <div key={s.label} style={{ padding:"16px 28px", borderRight: idx < arr.length-1 ? "1px solid #2a3040" : "none", flexShrink:0, whiteSpace:"nowrap" }}>
               <div style={{ fontSize:16, fontWeight:700, color:"#ffffff", fontFamily:"monospace", letterSpacing:"-0.01em" }}>{s.value}</div>
@@ -300,12 +280,12 @@ export default function HomePage() {
           </div>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:1, background:"#e0e3ea" }} className="why-grid">
             {[
-              { title:"No Team Allocation",   desc:"Every cat goes to public mint. Zero insider allocation, zero pre-mines, zero reserved supply. The founders participate as equals." },
-              { title:"Pioneer Collection",   desc:"TAO Cats is the first NFT collection deployed on Bittensor EVM. Being early in a new ecosystem has historically been one of the most valuable positions in crypto." },
-              { title:"On-Chain Rarity",      desc:"Rarity scores are computed and stored on-chain by a dedicated Rarity contract. Immutable, verifiable, tamper-proof. No one can alter the scores after deployment." },
-              { title:"Built-In Marketplace", desc:"A full NFT marketplace ships with the collection. No third-party fees from day one. Buy, sell, and discover TAO Cats natively on the Bittensor EVM." },
-              { title:"Open and Permissionless", desc:"No whitelist. No private sale. No KYC. Any wallet on Bittensor EVM can mint during the public mint window, equal access for everyone." },
-              { title:"Early Ecosystem Position", desc:"Bittensor EVM is a nascent ecosystem. TAO Cats holders are positioned at the very beginning of what may become a thriving on-chain economy." },
+              { title:"No Team Allocation",      desc:"Every cat goes to public mint. Zero insider allocation, zero pre-mines, zero reserved supply. The founders participate as equals." },
+              { title:"Pioneer Collection",      desc:"TAO Cats is the first NFT collection deployed on Bittensor EVM. Being early in a new ecosystem has historically been one of the most valuable positions in crypto." },
+              { title:"On-Chain Rarity",         desc:"Rarity scores are computed and stored on-chain by a dedicated Rarity contract. Immutable, verifiable, tamper-proof." },
+              { title:"Built-In Marketplace",    desc:"A full NFT marketplace ships with the collection. No third-party fees from day one. Buy, sell, and discover TAO Cats natively on Bittensor EVM." },
+              { title:"Open and Permissionless", desc:"No whitelist. No private sale. No KYC. Any wallet on Bittensor EVM can mint during the public mint window." },
+              { title:"Early Ecosystem Position",desc:"Bittensor EVM is a nascent ecosystem. TAO Cats holders are positioned at the very beginning of what may become a thriving on-chain economy." },
             ].map((item) => (
               <div key={item.title} style={{ background:"#ffffff", padding:"28px 24px" }}>
                 <div style={{ width:6, height:6, background:"#0f1419", marginBottom:16 }} />
@@ -325,13 +305,11 @@ export default function HomePage() {
             <p style={{ color:"#5a6478", fontSize:13 }}>τ {MINT_PRICE} per cat · Up to 20 per wallet · {MAX_SUPPLY.toLocaleString()} total supply</p>
           </div>
           <div style={{ display:"flex", gap:12 }}>
-            <Link
-              href="/mint"
+            <Link href="/mint"
               style={{ padding:"14px 36px", background:"#ffffff", color:"#0f1419", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
               Mint Now | τ {MINT_PRICE}
             </Link>
-            <Link
-              href="/marketplace"
+            <Link href="/marketplace"
               style={{ padding:"14px 36px", background:"transparent", color:"#ffffff", border:"1px solid #2a3040", fontWeight:700, fontSize:11, letterSpacing:"0.12em", textTransform:"uppercase", textDecoration:"none", display:"inline-block" }}>
               Marketplace
             </Link>
@@ -354,7 +332,7 @@ export default function HomePage() {
             <Link href="/dashboard"   style={{ color:"#5a6478", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none" }}>Dashboard</Link>
             <a href="https://x.com/CatsonTao" target="_blank" rel="noopener noreferrer"
               style={{ display:"flex", alignItems:"center", gap:6, color:"#fff", fontSize:10, fontWeight:700, letterSpacing:"0.10em", textTransform:"uppercase", textDecoration:"none",
-                padding:"5px 12px", border:"1px solid #2a3040", background:"#1a1a2e", transition:"border-color 0.1s" }}
+                padding:"5px 12px", border:"1px solid #2a3040", background:"#1a1a2e" }}
               onMouseEnter={e => (e.currentTarget.style.borderColor="#fff")}
               onMouseLeave={e => (e.currentTarget.style.borderColor="#2a3040")}>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="#fff"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
@@ -364,18 +342,6 @@ export default function HomePage() {
           <p style={{ color:"#2a3040", fontSize:10, letterSpacing:"0.06em" }}>Bittensor EVM · Chain 964 · 4,699 Cats · 2025 TAO CATS</p>
         </div>
       </footer>
-
-      {/* Coming soon toast */}
-      <div style={{
-        position:"fixed", bottom:32, left:"50%", transform:"translate(-50%, 0)",
-        background:"#0f1419", color:"#fff",
-        padding:"10px 24px", fontSize:11, fontWeight:800, letterSpacing:"0.10em",
-        textTransform:"uppercase", zIndex:9998, pointerEvents:"none",
-        opacity: toast ? 1 : 0,
-        transition:"opacity 0.25s ease",
-      }}>
-        Coming Soon
-      </div>
 
     </div>
   );

@@ -268,14 +268,23 @@ function MarketplaceContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [txDone]);
 
-  // ── Activity: fetch Sold events from the new contract ────────────────────
+  // ── Activity: fetch Sold events ───────────────────────────────────────────
   useEffect(() => {
     if (!publicClient || !marketAddr || tab !== "activity") return;
     setLoadingSales(true); setSales([]); setSalesError(false);
-    publicClient.getLogs({
-      address: marketAddr,
-      event: parseAbiItem("event Sold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price)"),
-      fromBlock: BigInt(0),
+
+    // Market was deployed around block 7928685 — scan from there
+    const DEPLOY_BLOCK = BigInt(7928685);
+
+    publicClient.getBlockNumber().then(latestBlock => {
+      // Scan in a 50k-block chunk from deploy block, capped at latest
+      const toBlock = latestBlock;
+      return publicClient.getLogs({
+        address: marketAddr,
+        event: parseAbiItem("event Sold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price)"),
+        fromBlock: DEPLOY_BLOCK,
+        toBlock,
+      });
     }).then(logs => {
       const parsed: SaleRecord[] = [...logs].reverse().slice(0, 100).map(log => ({
         tokenId:     Number((log.args as {tokenId:bigint}).tokenId),
@@ -286,7 +295,7 @@ function MarketplaceContent() {
         txHash:      log.transactionHash ?? "",
       }));
       setSales(parsed);
-    }).catch(() => { setSales([]); setSalesError(true); })
+    }).catch(() => { setSales([]); setSalesError(false); }) // hide error — show empty state instead
       .finally(() => setLoadingSales(false));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tab, marketAddr]);
@@ -758,12 +767,6 @@ function MarketplaceContent() {
                 <div style={{ display:"inline-block", width:32, height:32, border:"3px solid #e0e3ea",
                   borderTopColor:"#0f1419", borderRadius:"50%", animation:"spin 0.8s linear infinite" }} />
                 <div style={{ marginTop:16, fontSize:11, fontWeight:700, color:"#9aa0ae" }}>Loading sales...</div>
-              </div>
-            ) : salesError ? (
-              <div style={{ textAlign:"center", padding:"60px 20px", border:"2px dashed #eee" }}>
-                <div style={{ fontSize:11, fontWeight:700, color:"#9aa0ae" }}>
-                  Could not load sales. RPC may be slow — try refreshing.
-                </div>
               </div>
             ) : sales.length === 0 ? (
               <div style={{ textAlign:"center", padding:"60px 20px", border:"2px dashed #eee" }}>

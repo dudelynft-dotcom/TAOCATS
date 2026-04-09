@@ -3,6 +3,16 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
 
+  async redirects() {
+    return [
+      {
+        source: "/whitepaper",
+        destination: "/whitepaper.html",
+        permanent: true,
+      },
+    ];
+  },
+
   async headers() {
     return [
       {

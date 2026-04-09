@@ -18,7 +18,7 @@ export const subtensor = defineChain({
 
 export const wagmiConfig = createConfig({
   chains: [subtensor],
-  transports: { [subtensor.id]: http("https://taocats.fun/api/rpc?net=main") },
+  transports: { [subtensor.id]: http("https://lite.chain.opentensor.ai") },
   connectors: [injected()],
   storage: createStorage({ storage: cookieStorage }),
   ssr: true,

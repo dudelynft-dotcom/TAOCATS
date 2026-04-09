@@ -1,6 +1,6 @@
 # TAO CAT Whitepaper
 
-**A Generative NFT Collection with On-Chain Marketplace, Rarity Registry, and Community Token on Bittensor EVM**
+**A Generative NFT Collection with On-Chain Marketplace and Rarity Registry on Bittensor EVM**
 
 **Version 1.0 | Bittensor EVM Mainnet | April 2026**
 
@@ -14,14 +14,13 @@
 4. [Artwork and Trait System](#4-artwork-and-trait-system)
 5. [Rarity Architecture](#5-rarity-architecture)
 6. [Smart Contract Architecture](#6-smart-contract-architecture)
-7. [The $BTCAT Token](#7-the-btcat-token)
-8. [Marketplace](#8-marketplace)
-9. [Economics and Value Flow](#9-economics-and-value-flow)
-10. [Technical Infrastructure](#10-technical-infrastructure)
-11. [Fairness Guarantees](#11-fairness-guarantees)
-12. [Roadmap](#12-roadmap)
-13. [Contract Addresses](#13-contract-addresses)
-14. [Disclaimer](#14-disclaimer)
+7. [Marketplace](#7-marketplace)
+8. [Economics and Value Flow](#8-economics-and-value-flow)
+9. [Technical Infrastructure](#9-technical-infrastructure)
+10. [Fairness Guarantees](#10-fairness-guarantees)
+11. [Roadmap](#11-roadmap)
+12. [Contract Addresses](#12-contract-addresses)
+13. [Disclaimer](#13-disclaimer)
 
 ---
 
@@ -29,11 +28,11 @@
 
 TAO CAT is a collection of 4,699 generative pixel cats deployed on **Bittensor EVM** (Chain ID: 964), the Ethereum-compatible execution layer of the Bittensor decentralized AI network. Each token is unique, algorithmically generated from a layered trait system, and carries an on-chain rarity score stored in a dedicated registry contract.
 
-The project is built around a single principle: **every value unit flows to the community**. The mint contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist. One hundred percent of mint revenue is forwarded on-chain to a liquidity receiver at the moment of each mint. The $BTCAT community token is distributed entirely to NFT holders, with no portion reserved for any team, advisor, or investor.
+The project is built around a single principle: **every value unit flows to the community**. The mint contract holds zero funds. There is no team allocation, no pre-mine, and no whitelist. One hundred percent of mint revenue is forwarded on-chain to a liquidity receiver at the moment of each mint.
 
-Beyond the collection, TAO CAT ships a complete on-chain ecosystem: a native marketplace with batch listing and floor-sweep capabilities, a permanent on-chain rarity registry queryable by any contract, and an ERC-20 community token backed by the liquidity seeded from mint proceeds.
+Beyond the collection, TAO CAT ships a complete on-chain ecosystem: a native marketplace with batch listing and floor-sweep capabilities, and a permanent on-chain rarity registry queryable by any contract.
 
-All four contracts are immutable, non-upgradeable, and deployed on Bittensor EVM mainnet.
+All contracts are immutable, non-upgradeable, and deployed on Bittensor EVM mainnet.
 
 ---
 
@@ -62,7 +61,7 @@ Because Bittensor EVM is fully EVM-compatible, any Solidity contract that runs o
 
 ### 2.3 The NFT Landscape on Bittensor EVM
 
-The Bittensor EVM ecosystem is young. While the broader Bittensor network has a large and growing community of AI researchers, miners, and validators, on-chain culture and NFT infrastructure are still forming. TAO CAT is an early generative NFT project on this chain, focused on bringing high-quality, community-owned NFT infrastructure to the Bittensor ecosystem: a fully on-chain marketplace, a permanent rarity system, and a community token with no team allocation.
+The Bittensor EVM ecosystem is young. While the broader Bittensor network has a large and growing community of AI researchers, miners, and validators, on-chain culture and NFT infrastructure are still forming. TAO CAT is an early generative NFT project on this chain, focused on bringing high-quality, community-owned NFT infrastructure to the Bittensor ecosystem: a fully on-chain marketplace and a permanent rarity system.
 
 ---
 
@@ -83,7 +82,7 @@ The Bittensor EVM ecosystem is young. While the broader Bittensor network has a 
 
 ### Supply Rationale
 
-A supply of 4,699 creates genuine scarcity while supporting a meaningful community size. The collection is small enough that holding multiple tokens is accessible to early participants, while large enough to sustain active secondary market trading and broad $BTCAT distribution.
+A supply of 4,699 creates genuine scarcity while supporting a meaningful community size. The collection is small enough that holding multiple tokens is accessible to early participants, while large enough to sustain active secondary market trading.
 
 ### Pricing Rationale
 
@@ -276,73 +275,15 @@ uint256 public constant BPS_DENOMINATOR = 10_000;
 
 `sweepFloor(tokenIds[])` buys multiple listed tokens in a single transaction. Each seller is paid individually within the same transaction. Fees are distributed atomically. This function enables efficient floor accumulation without multiple separate transactions.
 
-### 6.4 BtcatToken
-
-**Address:** `0x5246088E136F44c739bDBeade6b638697b88B073`
-
-The $BTCAT ERC-20 community token. See Section 7 for full specification.
-
 ---
 
-## 7. The $BTCAT Token
+## 7. Marketplace
 
-### 7.1 Specification
-
-| Parameter | Value |
-|-----------|-------|
-| Name | BTCAT |
-| Symbol | $BTCAT |
-| Decimals | 18 |
-| Total Supply | 4,699,000,000 |
-| Per-NFT Entitlement | 1,000,000 $BTCAT |
-| Team Allocation | 0% |
-| Chain | Bittensor EVM (Chain ID: 964) |
-| Contract | `0x5246088E136F44c739bDBeade6b638697b88B073` |
-
-The total supply is derived directly from collection size: 4,699 tokens multiplied by 1,000,000 $BTCAT per token. There is no additional supply, no inflation mechanism, and no reserve.
-
-### 7.2 Distribution Mechanism
-
-The distribution process is enforced by the contract and consists of the following steps:
-
-1. The owner deploys the distributor contract
-2. The owner calls `setDistributor(distributorAddress)` on the $BTCAT contract
-3. The function transfers 100% of the supply to the distributor and sets `distributorLocked = true`
-4. From this point, the distributor address cannot be changed and no further minting is possible
-5. NFT holders call the distributor to claim their 1,000,000 $BTCAT per held token
-
-The lock is enforced as follows:
-
-```solidity
-function setDistributor(address _distributor) external onlyOwner {
-    require(!distributorLocked, "Distributor already locked");
-    require(_distributor != address(0), "Zero address");
-    distributor       = _distributor;
-    distributorLocked = true;
-    _transfer(msg.sender, _distributor, balanceOf(msg.sender));
-    emit DistributorSet(_distributor);
-}
-```
-
-After `setDistributor` is called, the deployer holds zero $BTCAT. Every token is in the distributor. No entity can reassign it.
-
-### 7.3 Liquidity Bootstrapping
-
-Every 0.01 TAO paid during minting is forwarded directly to the `liquidityReceiver` address in the same transaction. At full mint, this accumulates to 46.99 TAO. These funds are used to seed the $BTCAT / TAO trading pair on Bittensor EVM, providing immediate on-chain liquidity at launch. The liquidity is community-funded: every minter collectively contributes to the pool that backs the token they receive.
-
-### 7.4 Token Utility
-
-$BTCAT functions as the community token of the TAO CAT ecosystem. Its initial utility is as a claim on participation in the project. Future utility will be governed by community proposals and may include governance voting weight, marketplace fee discounts, and access to future drops or collaborations.
-
----
-
-## 8. Marketplace
-
-### 8.1 Architecture
+### 7.1 Architecture
 
 The TAO CAT marketplace at taocats.fun/marketplace operates entirely on-chain. State transitions (listings, purchases, cancellations) are Bittensor EVM transactions. There is no off-chain component to the marketplace's core trading logic.
 
-### 8.2 Trade Execution Flow
+### 7.2 Trade Execution Flow
 
 The following sequence describes a standard trade:
 
@@ -358,7 +299,7 @@ The following sequence describes a standard trade:
 
 All steps from (5) to (7) occur atomically within a single transaction. If any step fails, the entire transaction reverts.
 
-### 8.3 sweepFloor
+### 7.3 sweepFloor
 
 ```solidity
 function sweepFloor(uint256[] calldata tokenIds) external payable nonReentrant
@@ -366,7 +307,7 @@ function sweepFloor(uint256[] calldata tokenIds) external payable nonReentrant
 
 Purchases multiple floor listings in a single transaction. For each token ID in the array, the contract verifies the listing exists, transfers the NFT to the buyer, pays the seller, and distributes fees. If the total value sent exceeds the sum of listing prices, the excess is refunded.
 
-### 8.4 listBatch
+### 7.4 listBatch
 
 ```solidity
 function listBatch(uint256[] calldata tokenIds, uint256[] calldata prices) external
@@ -376,9 +317,9 @@ Lists multiple tokens simultaneously. Requires prior approval of the marketplace
 
 ---
 
-## 9. Economics and Value Flow
+## 8. Economics and Value Flow
 
-### 9.1 Value Flow Diagram
+### 8.1 Value Flow Diagram
 
 ```
 MINT (0.01 TAO per token x 4,699 tokens)
@@ -387,13 +328,9 @@ MINT (0.01 TAO per token x 4,699 tokens)
             v
   Liquidity Receiver Wallet (46.99 TAO total)
             |
-            | Used to seed
+            | Seed liquidity
             v
-  $BTCAT / TAO Trading Pair
-            |
-            | Distributed to
-            v
-  NFT Holders (1,000,000 $BTCAT per token)
+  On-Chain Liquidity Pool
             |
             | Trade on marketplace
             v
@@ -404,34 +341,31 @@ MINT (0.01 TAO per token x 4,699 tokens)
   Ongoing Development and Ecosystem Growth
 ```
 
-### 9.2 Holder Value Streams
+### 8.2 Holder Value Streams
 
-A TAO CAT holder has three independent sources of value:
+A TAO CAT holder has two independent sources of value:
 
 **1. NFT appreciation.** As Bittensor EVM activity grows, demand for early, well-designed collections with proven on-chain infrastructure increases. Floor price appreciation reflects the growth of the underlying ecosystem.
 
-**2. $BTCAT allocation.** Each token entitles its holder to 1,000,000 $BTCAT. This allocation is proportional: every holder of any token receives an equal share. The $BTCAT token is backed by the TAO liquidity pool seeded from mint proceeds.
+**2. Marketplace royalty flow.** Every secondary sale generates 6.5% in fees directed to the treasury. This fee supports ongoing development of the marketplace, rarity tooling, and ecosystem integrations, which in turn benefits all holders.
 
-**3. Marketplace royalty flow.** Every secondary sale generates 6.5% in fees directed to the treasury. This fee supports ongoing development of the marketplace, rarity tooling, and ecosystem integrations, which in turn benefits all holders.
-
-### 9.3 Zero-Extraction Design
+### 8.3 Zero-Extraction Design
 
 The following mechanisms have been deliberately excluded:
 
 | Excluded Feature | Reason |
 |-----------------|--------|
-| Team token allocation | Team receives no $BTCAT or NFT allocation |
+| Team NFT allocation | Team receives no reserved allocation |
 | Pre-mine or reserve supply | All tokens are publicly minted at the same price |
 | `withdraw()` function in NFT contract | Ensures mint funds cannot be redirected |
 | Upgradeable proxy contracts | Eliminates post-deploy logic changes |
-| Vesting schedules with cliff unlocks | No tokens vest to insiders |
 | Whitelist or guaranteed allocations | Equal access for all participants |
 
 ---
 
-## 10. Technical Infrastructure
+## 9. Technical Infrastructure
 
-### 10.1 Frontend
+### 9.1 Frontend
 
 | Component | Technology |
 |-----------|-----------|
@@ -442,7 +376,7 @@ The following mechanisms have been deliberately excluded:
 | Hosting | Vercel (global CDN) |
 | Domain | taocats.fun |
 
-### 10.2 RPC Proxy
+### 9.2 RPC Proxy
 
 Bittensor EVM has specific behavior around gas estimation that can cause transaction simulation failures in standard wallets such as MetaMask. TAO CAT ships a custom JSON-RPC proxy at `taocats.fun/api/rpc` that proxies requests to `lite.chain.opentensor.ai`. The proxy handles estimation edge cases transparently, ensuring mint and marketplace transactions simulate and execute correctly across all supported wallets.
 
@@ -450,7 +384,7 @@ Configuration:
 - Mainnet: `taocats.fun/api/rpc?net=main`
 - Testnet: `taocats.fun/api/rpc?net=test`
 
-### 10.3 Smart Contract Build Configuration
+### 9.3 Smart Contract Build Configuration
 
 | Parameter | Value |
 |-----------|-------|
@@ -461,7 +395,7 @@ Configuration:
 | Optimizer | Enabled, 200 runs |
 | Deployment Network | subtensor (hardhat network name) |
 
-### 10.4 Metadata System
+### 9.4 Metadata System
 
 Token metadata is served dynamically by a Next.js API route. The route reads the pre-generated JSON file for each token ID and constructs a fully resolved response with an absolute image URL derived from the request host header. This approach ensures correctness regardless of the deployment domain.
 
@@ -476,33 +410,29 @@ The 1-year immutable cache ensures images are served at CDN edge with zero origi
 
 ---
 
-## 11. Fairness Guarantees
+## 10. Fairness Guarantees
 
 Each guarantee below is enforceable on-chain and verifiable by reading the deployed contract bytecode or source.
 
-### 11.1 Mint Funds Cannot Be Diverted
+### 10.1 Mint Funds Cannot Be Diverted
 
 The `BittensorCatNFT` contract contains no `withdraw()` function and no payable function other than `mint()`. The `_forwardToLiquidity()` internal function is called unconditionally at the end of every mint. The `liquidityReceiver` address is set at construction and cannot be changed post-deploy (there is no setter function for it). Verification: inspect the contract ABI for absence of any `withdraw` or `setLiquidityReceiver` function.
 
-### 11.2 No Team Token Allocation
+### 10.2 No Post-Deploy Logic Changes
 
-The $BTCAT contract mints the full supply to the deployer in the constructor. The `setDistributor()` function, which must be called before any distribution, transfers the full balance to the distributor contract and sets `distributorLocked = true`. After this call, the deployer holds zero $BTCAT permanently. Verification: check the token transfer events on block explorer from the deployment transaction through `setDistributor`.
+None of the contracts use `TransparentUpgradeableProxy`, `UUPSUpgradeable`, or any proxy pattern. The bytecode at each address is the final bytecode. Verification: confirm absence of proxy patterns by inspecting contract storage slots and ABI on block explorer.
 
-### 11.3 No Post-Deploy Logic Changes
-
-None of the four contracts use `TransparentUpgradeableProxy`, `UUPSUpgradeable`, or any proxy pattern. The bytecode at each address is the final bytecode. Verification: confirm absence of proxy patterns by inspecting contract storage slots and ABI on block explorer.
-
-### 11.4 Equal Access to Mint
+### 10.3 Equal Access to Mint
 
 There is no `require(whitelist[msg.sender])` or similar check in the `mint()` function. The only admission criteria are: mint is active, quantity is between 1 and 20, wallet has not exceeded the 20-token cap, total supply has not been reached, and sufficient TAO is attached. These conditions apply identically to every address.
 
-### 11.5 On-Chain Rarity Immutability
+### 10.4 On-Chain Rarity Immutability
 
 The rarity registry stores data with no update function. Once scores, ranks, and tiers are written by the owner, they are permanent. Verification: inspect the rarity contract for absence of any setter functions callable after initial population.
 
 ---
 
-## 12. Roadmap
+## 11. Roadmap
 
 ### Phase 1: Deployment (Completed)
 
@@ -518,30 +448,22 @@ The rarity registry stores data with no update function. Once scores, ranks, and
 - [ ] Write rarity scores and ranks to BittensorCatRarity
 - [ ] Enable marketplace trading on taocats.fun
 
-### Phase 3: Token Distribution
-
-- [ ] Deploy $BTCAT distributor contract
-- [ ] Call setDistributor to transfer full supply and lock
-- [ ] Enable claim interface for NFT holders (1,000,000 $BTCAT per token)
-- [ ] Seed $BTCAT / TAO liquidity pool with 46.99 TAO from mint
-
-### Phase 4: Marketplace Enhancement
+### Phase 3: Marketplace Enhancement
 
 - [ ] Surface on-chain rarity data in marketplace listings and token pages
 - [ ] On-chain activity feed with real-time sale and listing events
 - [ ] Trait-based search and filtering in collection explorer
 - [ ] Improved analytics: volume, floor history, wallet holdings
 
-### Phase 5: Ecosystem Integration
+### Phase 4: Ecosystem Integration
 
 - [ ] Integration with Bittensor EVM wallets and explorers
-- [ ] Community governance proposals for treasury usage
 - [ ] Collaborations with other Bittensor subnet projects
 - [ ] Exploration of cross-subnet utility for TAO CAT holders
 
 ---
 
-## 13. Contract Addresses
+## 12. Contract Addresses
 
 All contracts are deployed on **Bittensor EVM (Chain ID: 964)**.
 
@@ -551,21 +473,16 @@ All contracts are deployed on **Bittensor EVM (Chain ID: 964)**.
 | Rarity Registry | `0xF71287025f79f9cEec21f5F451A5C1FcE46D34a9` |
 | MarketV2 | `0xa6B87FA663D8DF0Cc8caA0347431d8599Dc8D475` |
 | Simple Market | `0xfFF9F5eD81f805da27c022290C188eb6Fa3Ac7dE` |
-| $BTCAT Token | `0x5246088E136F44c739bDBeade6b638697b88B073` |
 
 Block Explorer: https://evm-explorer.tao.network
 
 Website: https://taocats.fun
 
-Source: https://github.com/dudelynft-dotcom/TAOCATS
-
 ---
 
-## 14. Disclaimer
+## 13. Disclaimer
 
 TAO CAT is an experimental digital collectible project. The NFTs described in this document are not financial instruments, securities, or investment contracts. Holding a TAO CAT token does not represent ownership in any company or legal entity, and does not carry any rights to dividends, profits, or future revenue.
-
-The $BTCAT token described herein is a community token with no guaranteed monetary value. Secondary market prices for both the NFTs and $BTCAT are determined entirely by market participants and may be zero.
 
 The smart contracts in this project extend OpenZeppelin 5.x libraries and follow established Solidity security practices. However, these contracts have not undergone a formal third-party security audit. Users interact with them at their own risk.
 

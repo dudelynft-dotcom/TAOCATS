@@ -2,6 +2,9 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { formatEther } from "viem";
+import { useReadContract, usePublicClient } from "wagmi";
+import { CONTRACTS } from "@/lib/config";
+import { NFT_ABI } from "@/lib/abis";
 
 const TIER_STYLE: Record<string, { text: string; bg: string; border: string }> = {
   Legendary: { text: "#7c3aed", bg: "#ede9fe", border: "#7c3aed" },
@@ -11,8 +14,10 @@ const TIER_STYLE: Record<string, { text: string; bg: string; border: string }> =
   Common:    { text: "#475569", bg: "#f1f5f9", border: "#cbd5e1" },
 };
 
-// Deterministic traits from tokenId — replaced by IPFS metadata at reveal
-function getTraits(id: number) {
+interface TraitItem { trait: string; value: string; }
+
+// Fallback: deterministic preview traits before reveal
+function getPreviewTraits(id: number): TraitItem[] {
   const BACKGROUNDS = ["Void","Sunset","Aurora","Cyber","Forest","Ocean","Desert","Neon","Sakura","Matrix"];
   const BODIES      = ["Tabby","Siamese","Bengal","Persian","Sphynx","Maine Coon","Scottish Fold","Ragdoll"];
   const EYES        = ["Laser","Sleepy","Wide","Sunglasses","Cyclops","Diamond","3D Glasses","Alien"];
@@ -30,12 +35,19 @@ function getTraits(id: number) {
   ];
 }
 
+// Resolve IPFS URI to HTTP gateway URL
+function ipfsToHttp(uri: string): string {
+  if (!uri) return "";
+  if (uri.startsWith("ipfs://")) return uri.replace("ipfs://", "https://ipfs.io/ipfs/");
+  if (uri.startsWith("https://")) return uri;
+  return uri;
+}
+
 interface Props {
   id: number;
   tier?: string;
   rank?: number;
   score?: number;
-  // Listing info (optional — when shown in marketplace context)
   price?: bigint;
   seller?: `0x${string}`;
   isConnected?: boolean;
@@ -43,7 +55,6 @@ interface Props {
   onBuy?: () => void;
   onMakeOffer?: (price: string, days: number) => void;
   isBuying?: boolean;
-  // Legacy slot for dashboard backward compat
   action?: React.ReactNode;
   onClose: () => void;
 }
@@ -53,9 +64,53 @@ export default function NftModal({
   isConnected, userAddress, onBuy, onMakeOffer, isBuying,
   action, onClose,
 }: Props) {
-  const [offerOpen, setOfferOpen]   = useState(false);
-  const [offerPrice, setOfferPrice] = useState("");
-  const [offerDays, setOfferDays]   = useState("7");
+  const [offerOpen, setOfferOpen]     = useState(false);
+  const [offerPrice, setOfferPrice]   = useState("");
+  const [offerDays, setOfferDays]     = useState("7");
+  const [imageUrl, setImageUrl]       = useState<string | null>(null);
+  const [realTraits, setRealTraits]   = useState<TraitItem[] | null>(null);
+  const [metaLoading, setMetaLoading] = useState(false);
+
+  const publicClient = usePublicClient();
+
+  // Check if collection is revealed
+  const { data: revealed } = useReadContract({
+    address: CONTRACTS.NFT as `0x${string}`,
+    abi: NFT_ABI,
+    functionName: "revealed",
+  });
+
+  // Fetch real metadata from tokenURI after reveal
+  useEffect(() => {
+    if (!revealed || !publicClient) return;
+    setMetaLoading(true);
+
+    publicClient.readContract({
+      address: CONTRACTS.NFT as `0x${string}`,
+      abi: NFT_ABI,
+      functionName: "tokenURI",
+      args: [BigInt(id)],
+    }).then(async (uri) => {
+      const metaUrl = ipfsToHttp(uri as string);
+      if (!metaUrl) return;
+      const res = await fetch(metaUrl);
+      const data = await res.json();
+
+      // Parse image
+      if (data.image) setImageUrl(ipfsToHttp(data.image));
+
+      // Parse attributes
+      if (Array.isArray(data.attributes)) {
+        const traits: TraitItem[] = data.attributes.map((a: { trait_type?: string; value?: unknown }) => ({
+          trait: a.trait_type ?? "Trait",
+          value: String(a.value ?? ""),
+        }));
+        setRealTraits(traits);
+      }
+    }).catch(() => {
+      // Metadata fetch failed — keep placeholder
+    }).finally(() => setMetaLoading(false));
+  }, [revealed, id, publicClient]);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
@@ -67,11 +122,13 @@ export default function NftModal({
     };
   }, [onClose]);
 
-  const ts         = tier ? (TIER_STYLE[tier] ?? TIER_STYLE.Common) : null;
-  const traits     = getTraits(id);
-  const priceEth   = price ? parseFloat(formatEther(price)).toFixed(3) : null;
-  const isSeller   = !!(seller && userAddress && seller.toLowerCase() === userAddress.toLowerCase());
-  const hasActions = !!(action || price != null);
+  const ts           = tier ? (TIER_STYLE[tier] ?? TIER_STYLE.Common) : null;
+  const traits       = realTraits ?? getPreviewTraits(id);
+  const isPreview    = !realTraits;
+  const priceEth     = price ? parseFloat(formatEther(price)).toFixed(3) : null;
+  const isSeller     = !!(seller && userAddress && seller.toLowerCase() === userAddress.toLowerCase());
+  const hasActions   = !!(action || price != null);
+  const displayImage = imageUrl ?? `/samples/${id % 12 + 1}.png`;
 
   function submitOffer() {
     if (!offerPrice || !onMakeOffer) return;
@@ -114,10 +171,17 @@ export default function NftModal({
         </div>
 
         {/* ── IMAGE ── */}
-        <div style={{ aspectRatio:"1/1", position:"relative", overflow:"hidden" }}>
-          <Image src={`/samples/${id % 12 + 1}.png`} alt={`TAO Cat #${id}`} fill
-            style={{ objectFit:"cover" }} />
-          {/* Rank — top right */}
+        <div style={{ aspectRatio:"1/1", position:"relative", overflow:"hidden", background:"#f7f8fa" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {revealed && imageUrl ? (
+            // After reveal: use real IPFS image via regular <img> (external URL)
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={displayImage} alt={`TAO Cat #${id}`}
+              style={{ width:"100%", height:"100%", objectFit:"cover", display:"block" }} />
+          ) : (
+            <Image src={`/samples/${id % 12 + 1}.png`} alt={`TAO Cat #${id}`} fill
+              style={{ objectFit:"cover" }} />
+          )}
           {rank && (
             <div style={{ position:"absolute", top:0, right:0, padding:"8px 14px",
               background:"rgba(0,0,0,0.88)", color:"#fff", fontSize:13, fontWeight:800,
@@ -125,7 +189,6 @@ export default function NftModal({
               RANK #{rank}
             </div>
           )}
-          {/* Tier — bottom left */}
           {tier && ts && (
             <div style={{ position:"absolute", bottom:12, left:12, padding:"5px 14px",
               background:ts.bg, color:ts.text, fontSize:10, fontWeight:800,
@@ -133,7 +196,6 @@ export default function NftModal({
               {tier.toUpperCase()}
             </div>
           )}
-          {/* Price — bottom right */}
           {priceEth && (
             <div style={{ position:"absolute", bottom:12, right:12, padding:"5px 14px",
               background:"#0f1419", color:"#fff", fontSize:13, fontWeight:800,
@@ -144,29 +206,37 @@ export default function NftModal({
         </div>
 
         {/* ── RARITY STATS ── */}
-        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr",
-          gap:1, background:"#e0e3ea" }}>
+        <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:1, background:"#e0e3ea" }}>
           {[
             { l:"TIER",  v: tier  ?? "—",                         color: ts?.text ?? "#0f1419" },
             { l:"RANK",  v: rank  ? `#${rank}`  : "—",            color: "#0f1419" },
             { l:"SCORE", v: score ? score.toLocaleString() : "—", color: "#0f1419" },
           ].map(s => (
             <div key={s.l} style={{ background:"#fff", padding:"14px 16px" }}>
-              <div style={{ fontFamily:"monospace", fontSize:15, fontWeight:800, color:s.color }}>
-                {s.v}
-              </div>
+              <div style={{ fontFamily:"monospace", fontSize:15, fontWeight:800, color:s.color }}>{s.v}</div>
               <div style={{ fontSize:8, color:"#9aa0ae", textTransform:"uppercase",
-                letterSpacing:"0.10em", marginTop:3, fontWeight:700 }}>
-                {s.l}
-              </div>
+                letterSpacing:"0.10em", marginTop:3, fontWeight:700 }}>{s.l}</div>
             </div>
           ))}
         </div>
 
         {/* ── TRAITS ── */}
         <div style={{ padding:"16px 20px", borderTop:"1px solid #f0f1f4" }}>
-          <div style={{ fontSize:9, fontWeight:800, letterSpacing:"0.12em", color:"#9aa0ae",
-            textTransform:"uppercase", marginBottom:10 }}>TRAITS</div>
+          <div style={{ display:"flex", alignItems:"center", gap:8, marginBottom:10 }}>
+            <div style={{ fontSize:9, fontWeight:800, letterSpacing:"0.12em", color:"#9aa0ae",
+              textTransform:"uppercase" }}>TRAITS</div>
+            {isPreview && !metaLoading && (
+              <span style={{ fontSize:8, fontWeight:700, color:"#f59e0b", letterSpacing:"0.06em",
+                background:"#fef3c7", padding:"1px 6px" }}>
+                PREVIEW · REVEALS AT MINTOUT
+              </span>
+            )}
+            {metaLoading && (
+              <span style={{ fontSize:8, fontWeight:700, color:"#9aa0ae", letterSpacing:"0.06em" }}>
+                Loading…
+              </span>
+            )}
+          </div>
           <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:6 }}>
             {traits.map(t => (
               <div key={t.trait} style={{ border:"1px solid #f0f1f4", padding:"8px 10px",
@@ -193,8 +263,6 @@ export default function NftModal({
         {/* ── ACTIONS ── */}
         {hasActions && (
           <div style={{ padding:"16px 20px", borderTop:"2px solid #0f1419" }}>
-
-            {/* Legacy action slot (dashboard) */}
             {action ? action : (
               <>
                 {!isConnected ? (
@@ -203,15 +271,12 @@ export default function NftModal({
                     Connect wallet to buy or make offer
                   </div>
                 ) : isSeller ? (
-                  /* Seller's own listing */
                   <div style={{ padding:"12px", background:"#f7f8fa", textAlign:"center",
                     border:"1px solid #e0e3ea", fontSize:10, fontWeight:700, color:"#5a6478" }}>
                     YOUR LISTING · τ {priceEth}
                   </div>
                 ) : (
-                  /* Buyer actions */
                   <div style={{ display:"flex", flexDirection:"column", gap:8 }}>
-                    {/* BUY */}
                     {onBuy && priceEth && (
                       <button onClick={onBuy} disabled={isBuying}
                         style={{ width:"100%", padding:"14px",
@@ -222,8 +287,6 @@ export default function NftModal({
                         {isBuying ? "CONFIRMING..." : `BUY NOW · τ ${priceEth}`}
                       </button>
                     )}
-
-                    {/* MAKE OFFER toggle */}
                     {onMakeOffer && !offerOpen && (
                       <button onClick={() => setOfferOpen(true)}
                         style={{ width:"100%", padding:"11px", background:"#fff",
@@ -232,23 +295,17 @@ export default function NftModal({
                         MAKE OFFER
                       </button>
                     )}
-
-                    {/* Offer form */}
                     {offerOpen && (
                       <div style={{ border:"2px solid #0f1419", padding:14 }}>
                         <div style={{ fontSize:9, fontWeight:800, letterSpacing:"0.10em",
                           marginBottom:10, color:"#0f1419" }}>MAKE AN OFFER</div>
                         <div style={{ display:"flex", gap:8, marginBottom:8 }}>
-                          <input
-                            value={offerPrice}
-                            onChange={e => setOfferPrice(e.target.value)}
-                            placeholder="Price in TAO"
-                            autoFocus
+                          <input value={offerPrice} onChange={e => setOfferPrice(e.target.value)}
+                            placeholder="Price in TAO" autoFocus
                             style={{ flex:1, padding:"8px 10px", border:"1.5px solid #e0e3ea",
                               fontSize:13, fontFamily:"monospace", fontWeight:700 }} />
                           <select value={offerDays} onChange={e => setOfferDays(e.target.value)}
-                            style={{ padding:"8px", border:"1.5px solid #e0e3ea",
-                              fontSize:11, fontWeight:700 }}>
+                            style={{ padding:"8px", border:"1.5px solid #e0e3ea", fontSize:11, fontWeight:700 }}>
                             <option value="1">1d</option>
                             <option value="3">3d</option>
                             <option value="7">7d</option>
@@ -272,8 +329,7 @@ export default function NftModal({
                             CANCEL
                           </button>
                         </div>
-                        <div style={{ marginTop:8, fontSize:8, color:"#9aa0ae", fontWeight:700,
-                          lineHeight:1.5 }}>
+                        <div style={{ marginTop:8, fontSize:8, color:"#9aa0ae", fontWeight:700, lineHeight:1.5 }}>
                           Funds are held in the contract until accepted or cancelled.
                         </div>
                       </div>

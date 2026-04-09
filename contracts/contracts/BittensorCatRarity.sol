@@ -150,47 +150,55 @@ contract BittensorCatRarity {
      * @return score   0–1000 rarity score
      * @return rank    1–4699 global rank (1 = rarest)
      * @return tier    Tier string
-     * @return isSet   True if rarity has been set for this token
      */
     function rarityOf(uint256 tokenId)
         external
         view
         returns (
-            uint16  score,
-            uint16  rank,
-            string memory tier,
-            bool    isSet
+            uint256 score,
+            uint256 rank,
+            string memory tier
         )
     {
         if (tokenId == 0 || tokenId > MAX_SUPPLY) revert InvalidTokenId();
-        score = _scores[tokenId];
-        rank  = _ranks[tokenId];
-        isSet = rank != 0;
+        uint16 s = _scores[tokenId];
+        uint16 r = _ranks[tokenId];
+        score = s;
+        rank  = r;
 
-        if (!isSet)              tier = "Unset";
-        else if (score >= LEGENDARY_MIN) tier = "Legendary";
-        else if (score >= EPIC_MIN)      tier = "Epic";
-        else if (score >= RARE_MIN)      tier = "Rare";
-        else if (score >= UNCOMMON_MIN)  tier = "Uncommon";
-        else                             tier = "Common";
+        if (r == 0)                  tier = "Unset";
+        else if (s >= LEGENDARY_MIN) tier = "Legendary";
+        else if (s >= EPIC_MIN)      tier = "Epic";
+        else if (s >= RARE_MIN)      tier = "Rare";
+        else if (s >= UNCOMMON_MIN)  tier = "Uncommon";
+        else                         tier = "Common";
     }
 
     /**
-     * @notice Batch query — returns scores and ranks for an array of token IDs.
+     * @notice Batch query — returns scores, ranks, and tier strings for an array of token IDs.
      */
     function rarityBatch(uint256[] calldata tokenIds)
         external
         view
-        returns (uint16[] memory scores, uint16[] memory ranks)
+        returns (uint256[] memory scores, uint256[] memory ranks, string[] memory tiers)
     {
         uint256 len = tokenIds.length;
-        scores = new uint16[](len);
-        ranks  = new uint16[](len);
+        scores = new uint256[](len);
+        ranks  = new uint256[](len);
+        tiers  = new string[](len);
         for (uint256 i; i < len; ++i) {
             uint256 id = tokenIds[i];
             if (id == 0 || id > MAX_SUPPLY) revert InvalidTokenId();
-            scores[i] = _scores[id];
-            ranks[i]  = _ranks[id];
+            uint16 s = _scores[id];
+            uint16 r = _ranks[id];
+            scores[i] = s;
+            ranks[i]  = r;
+            if (r == 0)                  tiers[i] = "Unset";
+            else if (s >= LEGENDARY_MIN) tiers[i] = "Legendary";
+            else if (s >= EPIC_MIN)      tiers[i] = "Epic";
+            else if (s >= RARE_MIN)      tiers[i] = "Rare";
+            else if (s >= UNCOMMON_MIN)  tiers[i] = "Uncommon";
+            else                         tiers[i] = "Common";
         }
     }
 }

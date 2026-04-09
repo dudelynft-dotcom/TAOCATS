@@ -21,7 +21,7 @@ const TIER_STYLE: Record<string, { text: string; bg: string }> = {
 const MARKET = () => CONTRACTS.SIMPLE_MARKET as `0x${string}`;
 const NFT_A  = () => CONTRACTS.NFT           as `0x${string}`;
 
-type Step = "idle" | "approving" | "approved" | "listing" | "listed" | "batchApproving" | "batchListing";
+type Step = "idle" | "approving" | "approved" | "listing" | "listed";
 
 export default function DashboardPage() {
   const { address, isConnected } = useAccount();
@@ -33,12 +33,6 @@ export default function DashboardPage() {
   const [listingId, setListingId]   = useState<number|null>(null);
   const [listPrice, setListPrice]   = useState("");
   const [step, setStep]             = useState<Step>("idle");
-
-  // Batch list
-  const [batchMode, setBatchMode]   = useState(false);
-  const [batchSelected, setBatchSelected] = useState<Set<number>>(new Set());
-  const [batchPrices, setBatchPrices]     = useState<Record<number,string>>({});
-  const [batchStep, setBatchStep]         = useState<"idle"|"approving"|"listing"|"done">("idle");
 
   // Delist
   const [delistId, setDelistId]     = useState<number|null>(null);
@@ -99,27 +93,6 @@ export default function DashboardPage() {
       resetWrite();
       refetchListings();
       refetchOwned();
-    } else if (batchStep === "approving") {
-      refetchApproval();
-      setBatchStep("listing");
-      resetWrite();
-      // auto-proceed to batch list
-      const ids  = Array.from(batchSelected);
-      const prcs = ids.map(id => parseEther(batchPrices[id] ?? "0"));
-      setBatchStep("listing");
-      writeContract({
-        address: MARKET(), abi: SIMPLE_MARKET_ABI,
-        functionName: "listBatch",
-        args: [ids.map(BigInt), prcs],
-      });
-    } else if (batchStep === "listing") {
-      setBatchStep("done");
-      setBatchMode(false);
-      setBatchSelected(new Set());
-      setBatchPrices({});
-      resetWrite();
-      refetchListings();
-      refetchOwned();
     } else if (delistId != null) {
       setDelistId(null);
       resetWrite();
@@ -167,32 +140,6 @@ export default function DashboardPage() {
     setListingId(null);
     setListPrice("");
     setStep("idle");
-  }
-
-  // Batch list handlers
-  function toggleBatchSelect(id: number) {
-    setBatchSelected(prev => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }
-
-  function handleBatchApproveAndList() {
-    const ids = Array.from(batchSelected);
-    if (ids.length === 0) return;
-    const allPriced = ids.every(id => batchPrices[id] && parseFloat(batchPrices[id]) > 0);
-    if (!allPriced) { alert("Set a price for all selected NFTs"); return; }
-
-    if (!isApproved) {
-      setBatchStep("approving");
-      writeContract({ address: NFT_A(), abi: ERC721_ABI, functionName: "setApprovalForAll", args: [MARKET(), true] });
-    } else {
-      setBatchStep("listing");
-      const prcs = ids.map(id => parseEther(batchPrices[id]));
-      writeContract({ address: MARKET(), abi: SIMPLE_MARKET_ABI, functionName: "listBatch",
-        args: [ids.map(BigInt), prcs] });
-    }
   }
 
   if (!isConnected) {
@@ -245,8 +192,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Tabs */}
-        <div style={{ borderBottom:"2px solid #0f1419", marginBottom:32, display:"flex",
-          justifyContent:"space-between", alignItems:"center" }}>
+        <div style={{ borderBottom:"2px solid #0f1419", marginBottom:32 }}>
           <div style={{ display:"flex" }}>
             {(["owned","offers"] as const).map(t => (
               <button key={t} onClick={() => setActiveTab(t)}
@@ -258,45 +204,7 @@ export default function DashboardPage() {
               </button>
             ))}
           </div>
-          {/* Batch list toggle */}
-          {activeTab === "owned" && ownedCount > 0 && (
-            <button
-              onClick={() => { setBatchMode(!batchMode); setBatchSelected(new Set()); setBatchPrices({}); setBatchStep("idle"); }}
-              style={{ padding:"6px 14px", background: batchMode ? "#0f1419" : "transparent",
-                color: batchMode ? "#fff" : "#0f1419", border:"2px solid #0f1419",
-                fontSize:8, fontWeight:800, cursor:"pointer", letterSpacing:"0.08em",
-                textTransform:"uppercase" }}>
-              {batchMode ? "CANCEL BATCH" : "LIST MULTIPLE"}
-            </button>
-          )}
         </div>
-
-        {/* Batch list toolbar */}
-        {batchMode && activeTab === "owned" && (
-          <div style={{ background:"#f7f8fa", border:"2px solid #0f1419", padding:"16px 20px",
-            marginBottom:20, display:"flex", alignItems:"center", gap:16, flexWrap:"wrap" }}>
-            <div style={{ fontSize:10, fontWeight:800, color:"#0f1419" }}>
-              {batchSelected.size > 0
-                ? `${batchSelected.size} NFT${batchSelected.size > 1 ? "s" : ""} selected`
-                : "Click NFTs to select for batch listing"}
-            </div>
-            {batchSelected.size > 0 && (
-              <button
-                onClick={handleBatchApproveAndList}
-                disabled={isBusy}
-                style={{ padding:"8px 20px", background:"#0f1419", color:"#fff", border:"none",
-                  fontSize:9, fontWeight:800, cursor: isBusy ? "not-allowed" : "pointer",
-                  letterSpacing:"0.08em", textTransform:"uppercase", marginLeft:"auto" }}>
-                {batchStep === "approving" && isBusy ? "APPROVING..." :
-                 batchStep === "listing"   && isBusy ? "LISTING..." :
-                 !isApproved ? `APPROVE & LIST ${batchSelected.size}` : `LIST ${batchSelected.size} NFTS`}
-              </button>
-            )}
-            {batchStep === "done" && (
-              <span style={{ fontSize:9, fontWeight:800, color:"#16a34a" }}>✓ Batch listed!</span>
-            )}
-          </div>
-        )}
 
         {/* OWNED tab */}
         {activeTab === "owned" && (
@@ -320,41 +228,14 @@ export default function DashboardPage() {
                 const isActive    = listingId === id;
                 const listedPrice = listedMap.get(id);
                 const isDelisting = delistId === id && isBusy;
-                const isBatchSel  = batchSelected.has(id);
 
                 return (
-                  <div key={id}
-                    style={{ border: batchMode && isBatchSel ? "2px solid #0f1419" : "1.5px solid #e0e3ea",
-                      background:"#fff", position:"relative",
-                      outline: batchMode && isBatchSel ? "2px solid #0f1419" : "none" }}
-                    onClick={batchMode && !listedPrice ? () => toggleBatchSelect(id) : undefined}>
-
-                    {/* Batch checkbox */}
-                    {batchMode && !listedPrice && (
-                      <div style={{ position:"absolute", top:8, left:8, zIndex:2,
-                        width:20, height:20, background: isBatchSel ? "#0f1419" : "#fff",
-                        border:"2px solid #0f1419", display:"flex", alignItems:"center",
-                        justifyContent:"center", cursor:"pointer" }}>
-                        {isBatchSel && <span style={{ color:"#fff", fontSize:12, lineHeight:1 }}>✓</span>}
-                      </div>
-                    )}
-                    {batchMode && isBatchSel && (
-                      <div style={{ padding:"4px 8px", background:"#f7f8fa",
-                        borderBottom:"1px solid #e0e3ea" }}>
-                        <input
-                          value={batchPrices[id] ?? ""}
-                          onChange={e => setBatchPrices(p => ({ ...p, [id]: e.target.value }))}
-                          onClick={e => e.stopPropagation()}
-                          placeholder="Price in TAO"
-                          style={{ width:"100%", padding:"5px 8px", border:"1.5px solid #0f1419",
-                            fontSize:11, fontFamily:"monospace", fontWeight:700, boxSizing:"border-box" }} />
-                      </div>
-                    )}
+                  <div key={id} style={{ border:"1.5px solid #e0e3ea", background:"#fff", position:"relative" }}>
 
                     {/* Image */}
                     <div style={{ aspectRatio:"1/1", background:"#f7f8fa", position:"relative",
-                      overflow:"hidden", cursor: batchMode ? "pointer" : "default" }}
-                      onClick={!batchMode ? () => setModalNft({ id, tier, rank, score }) : undefined}>
+                      overflow:"hidden", cursor:"pointer" }}
+                      onClick={() => setModalNft({ id, tier, rank, score })}>
                       <Image src={`/samples/${id % 12 + 1}.png`} alt={`#${id}`} fill
                         style={{ objectFit:"cover" }} />
                       {rank && (
@@ -390,83 +271,81 @@ export default function DashboardPage() {
                         ) : null}
                       </div>
 
-                      {!batchMode && (
-                        listedPrice && !isActive ? (
-                          /* DELIST */
-                          <button onClick={() => handleDelist(id)} disabled={isDelisting}
-                            style={{ width:"100%", padding:"7px", background:"transparent",
-                              border:"1.5px solid #e0e3ea", fontSize:8, fontWeight:800,
-                              cursor: isDelisting ? "not-allowed" : "pointer",
-                              color:"#9aa0ae", textTransform:"uppercase" }}>
-                            {isDelisting ? "DELISTING..." : "DELIST"}
-                          </button>
+                      {listedPrice && !isActive ? (
+                        /* DELIST */
+                        <button onClick={() => handleDelist(id)} disabled={isDelisting}
+                          style={{ width:"100%", padding:"7px", background:"transparent",
+                            border:"1.5px solid #e0e3ea", fontSize:8, fontWeight:800,
+                            cursor: isDelisting ? "not-allowed" : "pointer",
+                            color:"#9aa0ae", textTransform:"uppercase" }}>
+                          {isDelisting ? "DELISTING..." : "DELIST"}
+                        </button>
 
-                        ) : !isActive ? (
-                          /* LIST FOR SALE */
-                          <button onClick={() => openListForm(id)}
-                            style={{ width:"100%", padding:"7px", background:"#0f1419",
-                              color:"#fff", border:"none", fontSize:8, fontWeight:800,
-                              cursor:"pointer", letterSpacing:"0.06em", textTransform:"uppercase" }}>
-                            LIST FOR SALE
-                          </button>
+                      ) : !isActive ? (
+                        /* LIST FOR SALE */
+                        <button onClick={() => openListForm(id)}
+                          style={{ width:"100%", padding:"7px", background:"#0f1419",
+                            color:"#fff", border:"none", fontSize:8, fontWeight:800,
+                            cursor:"pointer", letterSpacing:"0.06em", textTransform:"uppercase" }}>
+                          LIST FOR SALE
+                        </button>
 
-                        ) : (
-                          /* Listing form */
-                          <div>
-                            <div style={{ display:"flex", gap:4, marginBottom:6 }}>
-                              {["1. Approve","2. List"].map((s, si) => {
-                                const done = si === 0 ? (isApproved || step === "approved" || step === "listing" || step === "listed") : step === "listed";
-                                const active = si === 0 ? (!isApproved && step === "idle") : (step === "approved" && isApproved);
-                                return (
-                                  <div key={s} style={{ flex:1, padding:"3px 0", textAlign:"center",
-                                    fontSize:8, fontWeight:800,
-                                    background: done ? "#0f1419" : active ? "#f0f9ff" : "#f7f8fa",
-                                    color: done ? "#fff" : active ? "#0369a1" : "#9aa0ae",
-                                    border: active ? "1px solid #0369a1" : "1px solid transparent" }}>
-                                    {s}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                            <input value={listPrice} onChange={e => setListPrice(e.target.value)}
-                              placeholder="Price in TAO" autoFocus
-                              style={{ width:"100%", padding:"7px 10px", border:"1.5px solid #0f1419",
-                                fontSize:12, fontFamily:"monospace", fontWeight:700,
-                                marginBottom:6, boxSizing:"border-box" }} />
-                            <div style={{ display:"flex", gap:4, marginBottom:4 }}>
-                              {!isApproved && step !== "approved" ? (
-                                <button onClick={handleApprove} disabled={isBusy}
-                                  style={{ flex:1, padding:"8px", background:"#0369a1", color:"#fff",
-                                    border:"none", fontSize:8, fontWeight:800,
-                                    cursor: isBusy ? "not-allowed" : "pointer", textTransform:"uppercase" }}>
-                                  {step === "approving" && isBusy ? "APPROVING..." : "1. APPROVE"}
-                                </button>
-                              ) : (
-                                <button onClick={handleList} disabled={isBusy || !listPrice}
-                                  style={{ flex:1, padding:"8px", background:"#0f1419", color:"#fff",
-                                    border:"none", fontSize:8, fontWeight:800,
-                                    cursor: (isBusy || !listPrice) ? "not-allowed" : "pointer",
-                                    opacity: !listPrice ? 0.5 : 1, textTransform:"uppercase" }}>
-                                  {step === "listing" && isBusy ? "LISTING..." : step === "listed" ? "✓ LISTED" : "2. LIST NFT"}
-                                </button>
-                              )}
-                              <button onClick={closeListForm}
-                                style={{ padding:"8px 10px", background:"transparent",
-                                  border:"1.5px solid #e0e3ea", fontSize:9, fontWeight:800,
-                                  cursor:"pointer", color:"#9aa0ae" }}>✕</button>
-                            </div>
-                            {step === "listed" && (
-                              <div style={{ fontSize:8, color:"#16a34a", fontWeight:700 }}>✓ Listed!</div>
-                            )}
-                            {writeError && (
-                              <div style={{ padding:"5px 8px", background:"#fff0f0",
-                                border:"1px solid #ef4444", fontSize:8, color:"#b91c1c",
-                                fontWeight:700, wordBreak:"break-word" }}>
-                                {(writeError as Error).message?.slice(0,150) ?? "Failed"}
-                              </div>
-                            )}
+                      ) : (
+                        /* Listing form */
+                        <div>
+                          <div style={{ display:"flex", gap:4, marginBottom:6 }}>
+                            {["1. Approve","2. List"].map((s, si) => {
+                              const done = si === 0 ? (isApproved || step === "approved" || step === "listing" || step === "listed") : step === "listed";
+                              const active = si === 0 ? (!isApproved && step === "idle") : (step === "approved" && isApproved);
+                              return (
+                                <div key={s} style={{ flex:1, padding:"3px 0", textAlign:"center",
+                                  fontSize:8, fontWeight:800,
+                                  background: done ? "#0f1419" : active ? "#f0f9ff" : "#f7f8fa",
+                                  color: done ? "#fff" : active ? "#0369a1" : "#9aa0ae",
+                                  border: active ? "1px solid #0369a1" : "1px solid transparent" }}>
+                                  {s}
+                                </div>
+                              );
+                            })}
                           </div>
-                        )
+                          <input value={listPrice} onChange={e => setListPrice(e.target.value)}
+                            placeholder="Price in TAO" autoFocus
+                            style={{ width:"100%", padding:"7px 10px", border:"1.5px solid #0f1419",
+                              fontSize:12, fontFamily:"monospace", fontWeight:700,
+                              marginBottom:6, boxSizing:"border-box" }} />
+                          <div style={{ display:"flex", gap:4, marginBottom:4 }}>
+                            {!isApproved && step !== "approved" ? (
+                              <button onClick={handleApprove} disabled={isBusy}
+                                style={{ flex:1, padding:"8px", background:"#0369a1", color:"#fff",
+                                  border:"none", fontSize:8, fontWeight:800,
+                                  cursor: isBusy ? "not-allowed" : "pointer", textTransform:"uppercase" }}>
+                                {step === "approving" && isBusy ? "APPROVING..." : "1. APPROVE"}
+                              </button>
+                            ) : (
+                              <button onClick={handleList} disabled={isBusy || !listPrice}
+                                style={{ flex:1, padding:"8px", background:"#0f1419", color:"#fff",
+                                  border:"none", fontSize:8, fontWeight:800,
+                                  cursor: (isBusy || !listPrice) ? "not-allowed" : "pointer",
+                                  opacity: !listPrice ? 0.5 : 1, textTransform:"uppercase" }}>
+                                {step === "listing" && isBusy ? "LISTING..." : step === "listed" ? "✓ LISTED" : "2. LIST NFT"}
+                              </button>
+                            )}
+                            <button onClick={closeListForm}
+                              style={{ padding:"8px 10px", background:"transparent",
+                                border:"1.5px solid #e0e3ea", fontSize:9, fontWeight:800,
+                                cursor:"pointer", color:"#9aa0ae" }}>✕</button>
+                          </div>
+                          {step === "listed" && (
+                            <div style={{ fontSize:8, color:"#16a34a", fontWeight:700 }}>✓ Listed!</div>
+                          )}
+                          {writeError && (
+                            <div style={{ padding:"5px 8px", background:"#fff0f0",
+                              border:"1px solid #ef4444", fontSize:8, color:"#b91c1c",
+                              fontWeight:700, wordBreak:"break-word" }}>
+                              {(writeError as Error).message?.slice(0,150) ?? "Failed"}
+                            </div>
+                          )}
+                        </div>
                       )}
                     </div>
                   </div>

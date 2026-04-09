@@ -96,8 +96,8 @@ function VerifyInner() {
             <div style={{ display: "flex", alignItems: "center", marginBottom: 40 }}>
               {steps.map((s, i) => {
                 const done    = i < stepIdx || currentStep === "success";
-                const active  = i === stepIdx && step !== "success";
-                const future  = i > stepIdx && step !== "success";
+                const active  = i === stepIdx && currentStep !== "success";
+                const future  = i > stepIdx && currentStep !== "success";
                 return (
                   <div key={s.id} style={{ display: "flex", alignItems: "center", flex: i < steps.length - 1 ? 1 : "none" }}>
                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>

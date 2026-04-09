@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useWriteContract } from "wagmi";
 import type { Abi } from "viem";
+import { subtensor } from "./config";
 
 // Thin wrapper around wagmi's useWriteContract so the rest of the app
 // doesn't need changing. The key difference from the old walletClient approach:
@@ -22,6 +23,7 @@ export function useContractWrite() {
         args:         params.args,
         value:        params.value,
         gas:          params.gas ?? BigInt(500_000),
+        chainId:      subtensor.id,
       });
     } catch (e) {
       setError(e as Error);

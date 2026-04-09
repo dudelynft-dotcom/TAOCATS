@@ -1,0 +1,12 @@
+{
+  "name": "taocats-verify-bot",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node index.mjs"
+  },
+  "dependencies": {
+    "grammy": "^1.21.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

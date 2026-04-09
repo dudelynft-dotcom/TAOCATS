@@ -7,11 +7,11 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const NFT_ADDRESS = process.env.NFT_ADDRESS ?? "";
-// Metadata CID from Pinata upload
-const BASE_URI = "ipfs://Qmf4PHejaDT8wXLHSy7YjiBoPd6NW4c4BDpkGAz7SUdZoR/";
+const BASE_URI    = process.env.BASE_URI ?? "";
 
 async function main() {
   if (!NFT_ADDRESS) { console.error("Set NFT_ADDRESS in contracts/.env"); process.exit(1); }
+  if (!BASE_URI)    { console.error("Set BASE_URI in contracts/.env");    process.exit(1); }
 
   const [owner] = await ethers.getSigners();
   const nft = new ethers.Contract(NFT_ADDRESS, [

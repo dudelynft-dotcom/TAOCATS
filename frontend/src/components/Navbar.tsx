@@ -8,10 +8,11 @@ import ConnectButton from "@/components/ConnectButton";
 const ADMIN_OWNER = "0x198c2d42c71e8046f34eca9a0f5c81b9f3db2afb";
 
 const links = [
-  { href: "/",            label: "Home" },
-  { href: "/mint",        label: "Mint" },
-  { href: "/marketplace", label: "Market" },
-  { href: "/dashboard",   label: "Dashboard" },
+  { href: "/",               label: "Home" },
+  { href: "/mint",           label: "Mint" },
+  { href: "/marketplace",    label: "Market" },
+  { href: "/dashboard",      label: "Dashboard" },
+  { href: "/whitepaper.html", label: "Whitepaper" },
 ];
 
 export default function Navbar() {
@@ -40,22 +41,22 @@ export default function Navbar() {
         <div style={{ display:"flex", alignItems:"center", gap:8, flex:1, justifyContent:"center", overflowX:"auto", scrollbarWidth:"none" }}>
           {links.map((l) => {
             const active = pathname === l.href;
-            return (
-              <Link key={l.href} href={l.href}
-                style={{
-                  padding:"8px 0",
-                  margin:"0 clamp(4px, 1.5vw, 12px)",
-                  fontSize:"clamp(9px, 2.5vw, 11px)",
-                  fontWeight:800,
-                  letterSpacing:"0.08em",
-                  textTransform:"uppercase",
-                  textDecoration:"none",
-                  whiteSpace:"nowrap",
-                  color: active ? "#000" : "#9aa0ae",
-                  borderBottom: active ? "3px solid #00c49a" : "3px solid transparent"
-                }}>
-                {l.label}
-              </Link>
+            const style = {
+              padding:"8px 0",
+              margin:"0 clamp(4px, 1.5vw, 12px)",
+              fontSize:"clamp(9px, 2.5vw, 11px)" as const,
+              fontWeight:800,
+              letterSpacing:"0.08em",
+              textTransform:"uppercase" as const,
+              textDecoration:"none",
+              whiteSpace:"nowrap" as const,
+              color: active ? "#000" : "#9aa0ae",
+              borderBottom: active ? "3px solid #00c49a" : "3px solid transparent"
+            };
+            return l.href.endsWith(".html") ? (
+              <a key={l.href} href={l.href} style={style}>{l.label}</a>
+            ) : (
+              <Link key={l.href} href={l.href} style={style}>{l.label}</Link>
             );
           })}
           {isOwner && (

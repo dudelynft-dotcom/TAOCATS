@@ -13,7 +13,7 @@ import { SIMPLE_MARKET_ABI, MARKETPLACE_ABI, RARITY_ABI } from "@/lib/abis";
 
 // ── Trading gate ──────────────────────────────────────────────────────────────
 // Edit this timestamp (Unix ms) to control when trading opens.
-const TRADING_OPENS_MS = 1744228800000; // 2026-04-09T20:00:00Z — change me!
+const TRADING_OPENS_MS = 1744239600000; // 2026-04-09T23:00:00Z — ~2hrs from deployment
 
 function fmtCountdown(ms: number) {
   const s = Math.floor(ms / 1000);

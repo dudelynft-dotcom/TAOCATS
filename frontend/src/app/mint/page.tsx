@@ -32,8 +32,11 @@ export default function MintPage() {
   const countdown = useCountdown();
   const [mintedIds, setMintedIds]   = useState<number[]>([]);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [mounted, setMounted]       = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const { address, isConnected } = useAccount();
+  const connected = mounted && isConnected;
   const publicClient = usePublicClient();
 
   const { data: totalSupply, refetch: refetchSupply } = useReadContract({
@@ -230,7 +233,7 @@ export default function MintPage() {
                 </div>
               </div>
 
-              {!isConnected ? (
+              {!connected ? (
                 <div style={{ textAlign:"center", padding:"32px 0" }}>
                   <p style={{ fontSize:12, color:"#5a6478", marginBottom:20, fontWeight:500 }}>
                     Connect your wallet to mint

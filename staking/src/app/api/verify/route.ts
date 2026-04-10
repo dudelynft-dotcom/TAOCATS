@@ -88,40 +88,6 @@ async function createSingleUseInviteLink(): Promise<string | null> {
   return json.ok ? json.result.invite_link : null;
 }
 
-// ── Unrestrict user in Telegram group ─────────────────────────────────────────
-async function unrestrictUser(userId: number, chatId: number): Promise<boolean> {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  if (!botToken) return false;
-
-  const res = await fetch(
-    `https://api.telegram.org/bot${botToken}/restrictChatMember`,
-    {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: chatId,
-        user_id: userId,
-        permissions: {
-          can_send_messages:        true,
-          can_send_audios:          true,
-          can_send_documents:       true,
-          can_send_photos:          true,
-          can_send_videos:          true,
-          can_send_video_notes:     true,
-          can_send_voice_notes:     true,
-          can_send_polls:           true,
-          can_send_other_messages:  true,
-          can_add_web_page_previews:true,
-          can_change_info:          false,
-          can_invite_users:         true,
-          can_pin_messages:         false,
-        },
-      }),
-    }
-  );
-  const json = await res.json();
-  return json.ok === true;
-}
 
 // ── POST /api/verify ──────────────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
@@ -143,7 +109,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Verification link expired. Request a new one in Telegram." }, { status: 401 });
     }
   }
-  const { userId, chatId } = decoded ?? { userId: 0, chatId: 0 };
+  const { userId } = decoded ?? { userId: 0 };
 
   // 2. Verify wallet signature
   const message = `Verify TAO Cat NFT ownership\n\nWallet: ${address}\nToken: ${token ?? ""}`;
@@ -196,15 +162,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 4. Unrestrict in Telegram (only when coming from bot link with valid userId/chatId)
-  if (userId && chatId) {
-    const ok = await unrestrictUser(userId, chatId);
-    if (!ok) {
-      return NextResponse.json(
-        { error: "NFT verified but Telegram unrestrict failed. Contact an admin." },
-        { status: 500 }
-      );
-    }
+  // 4. Signal bot to cancel kick timer (best-effort, never fail the response)
+  if (userId) {
+    try {
+      const botWebhook = process.env.BOT_INTERNAL_URL ?? "http://localhost:3001";
+      await fetch(`${botWebhook}/verified`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, secret: process.env.JWT_SECRET }),
+      });
+    } catch { /* bot might not be running — ignore */ }
   }
 
   // 5. Generate single-use invite link (falls back to static link if not configured)
